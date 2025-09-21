@@ -95,21 +95,5 @@ php artisan serve
 
 ---
 
-## 📩 Contact Me
-💼 Need a **Full Stack Laravel Developer**? Let's work together!
 
-📧 **Email:** kieukienquocvn@gmail.com 
-📲 **WhatsApp:** 0919925302
-
-🔗 **[Hire Me on Upwork](https://)**
-
-### ☕ Support My Work
-If you find this project helpful, consider [buying me a coffee](https://). Your support helps maintain and improve this project! 🚀
-
----
-
-## 📜 License
-🔹 Feel free to use & modify!
-
-⭐ **If you find this project helpful, don't forget to star it!** ⭐
 
