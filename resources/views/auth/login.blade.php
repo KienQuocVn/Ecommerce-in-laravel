@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>E-SHOP || Login Page</title>
+  <title>SHOPFY || Trang đăng nhập</title>
   @include('backend.layouts.head')
 
 </head>
@@ -24,7 +24,7 @@
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                    <h1 class="h4 text-gray-900 mb-4">Chào mừng trở lại!</h1>
                   </div>
                   <form class="user"  method="POST" action="{{ route('login') }}">
                     @csrf
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-user btn-block">
-                      Login
+                      Đăng nhập
                     </button>
                   </form>
                   <hr>

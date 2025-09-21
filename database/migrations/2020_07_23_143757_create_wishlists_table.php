@@ -18,9 +18,9 @@ class CreateWishlistsTable extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('cart_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->float('price');
+            $table->decimal('price', 15, 2)->unsigned();
             $table->integer('quantity');
-            $table->float('amount');
+            $table->decimal('amount', 15, 2)->unsigned();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('cart_id')->references('id')->on('carts')->onDelete('SET NULL');

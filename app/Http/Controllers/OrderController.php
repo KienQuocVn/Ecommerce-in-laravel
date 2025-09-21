@@ -57,7 +57,7 @@ class OrderController extends Controller
         // return $request->all();
 
         if(empty(Cart::where('user_id',auth()->user()->id)->where('order_id',null)->first())){
-            request()->session()->flash('error','Cart is Empty !');
+            session()->flash('error','Cart is Empty !');
             return back();
         }
         // $cart=Cart::get();
@@ -147,7 +147,7 @@ class OrderController extends Controller
         Cart::where('user_id', auth()->user()->id)->where('order_id', null)->update(['order_id' => $order->id]);
 
         // dd($users);        
-        request()->session()->flash('success','Your product successfully placed in order');
+        session()->flash('success','Your product successfully placed in order');
         return redirect()->route('home');
     }
 
@@ -201,10 +201,10 @@ class OrderController extends Controller
         }
         $status=$order->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Successfully updated order');
+            session()->flash('success','Successfully updated order');
         }
         else{
-            request()->session()->flash('error','Error while updating order');
+            session()->flash('error','Error while updating order');
         }
         return redirect()->route('order.index');
     }
@@ -221,15 +221,15 @@ class OrderController extends Controller
         if($order){
             $status=$order->delete();
             if($status){
-                request()->session()->flash('success','Order Successfully deleted');
+                session()->flash('success','Order Successfully deleted');
             }
             else{
-                request()->session()->flash('error','Order can not deleted');
+                session()->flash('error','Order can not deleted');
             }
             return redirect()->route('order.index');
         }
         else{
-            request()->session()->flash('error','Order can not found');
+            session()->flash('error','Order can not found');
             return redirect()->back();
         }
     }
@@ -243,28 +243,28 @@ class OrderController extends Controller
         $order=Order::where('user_id',auth()->user()->id)->where('order_number',$request->order_number)->first();
         if($order){
             if($order->status=="new"){
-            request()->session()->flash('success','Your order has been placed. please wait.');
+            session()->flash('success','Your order has been placed. please wait.');
             return redirect()->route('home');
 
             }
             elseif($order->status=="process"){
-                request()->session()->flash('success','Your order is under processing please wait.');
+                session()->flash('success','Your order is under processing please wait.');
                 return redirect()->route('home');
     
             }
             elseif($order->status=="delivered"){
-                request()->session()->flash('success','Your order is successfully delivered.');
+                session()->flash('success','Your order is successfully delivered.');
                 return redirect()->route('home');
     
             }
             else{
-                request()->session()->flash('error','Your order canceled. please try again');
+                session()->flash('error','Your order canceled. please try again');
                 return redirect()->route('home');
     
             }
         }
         else{
-            request()->session()->flash('error','Invalid order numer please try again');
+            session()->flash('error','Invalid order numer please try again');
             return back();
         }
     }

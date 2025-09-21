@@ -56,10 +56,10 @@ class PostCommentController extends Controller
         ];
         Notification::send($user, new StatusNotification($details));
         if($status){
-            request()->session()->flash('success','Thank you for your comment');
+            session()->flash('success','Thank you for your comment');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Please try again!!');
+            session()->flash('error','Something went wrong! Please try again!!');
         }
         return redirect()->back();
     }
@@ -88,7 +88,7 @@ class PostCommentController extends Controller
             return view('backend.comment.edit')->with('comment',$comments);
         }
         else{
-            request()->session()->flash('error','Comment not found');
+            session()->flash('error','Comment not found');
             return redirect()->back();
         }
     }
@@ -108,15 +108,15 @@ class PostCommentController extends Controller
             // return $data;
             $status=$comment->fill($data)->update();
             if($status){
-                request()->session()->flash('success','Comment successfully updated');
+                session()->flash('success','Comment successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                session()->flash('error','Something went wrong! Please try again!!');
             }
             return redirect()->route('comment.index');
         }
         else{
-            request()->session()->flash('error','Comment not found');
+            session()->flash('error','Comment not found');
             return redirect()->back();
         }
 
@@ -134,15 +134,15 @@ class PostCommentController extends Controller
         if($comment){
             $status=$comment->delete();
             if($status){
-                request()->session()->flash('success','Post Comment successfully deleted');
+                session()->flash('success','Post Comment successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error occurred please try again');
+                session()->flash('error','Error occurred please try again');
             }
             return back();
         }
         else{
-            request()->session()->flash('error','Post Comment not found');
+            session()->flash('error','Post Comment not found');
             return redirect()->back();
         }
     }

@@ -9,7 +9,7 @@
          </div>
      </div>
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary float-left">Order Lists</h6>
+      <h6 class="m-0 font-weight-bold text-primary float-left">Danh sách đơn hàng</h6>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -17,28 +17,28 @@
         <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>S.N.</th>
-              <th>Order No.</th>
-              <th>Name</th>
+              <th>ID</th>
+              <th>Số đơn hàng</th>
+              <th>Tên</th>
               <th>Email</th>
-              <th>Quantity</th>
+              <th>Số lượng</th>
               <th>Charge</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>Tổng số tiền</th>
+              <th>Trang thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-              <th>S.N.</th>
-              <th>Order No.</th>
-              <th>Name</th>
+              <th>ID</th>
+              <th>Số đơn hàng</th>
+              <th>Tên</th>
               <th>Email</th>
-              <th>Quantity</th>
+              <th>Số lượng</th>
               <th>Charge</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>Tổng số tiền</th>
+              <th>Trang thái</th>
+              <th>Hành động</th>
               </tr>
           </tfoot>
           <tbody>
@@ -76,7 +76,7 @@
         </table>
         <span style="float:right">{{$orders->links()}}</span>
         @else
-          <h6 class="text-center">No orders found!!! Please order some products</h6>
+          <h6 class="text-center">Không tìm thấy đơn hàng nào!!! Vui lòng đặt hàng một số sản phẩm</h6>
         @endif
       </div>
     </div>

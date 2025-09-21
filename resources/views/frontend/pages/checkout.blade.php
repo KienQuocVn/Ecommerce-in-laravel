@@ -11,8 +11,8 @@
                 <div class="col-12">
                     <div class="bread-inner">
                         <ul class="bread-list">
-                            <li><a href="{{route('home')}}">Home<i class="ti-arrow-right"></i></a></li>
-                            <li class="active"><a href="javascript:void(0)">Checkout</a></li>
+                            <li><a href="{{route('home')}}">Trang chủ<i class="ti-arrow-right"></i></a></li>
+                            <li class="active"><a href="javascript:void(0)">Thanh toán</a></li>
                         </ul>
                     </div>
                 </div>
@@ -30,13 +30,13 @@
 
                         <div class="col-lg-8 col-12">
                             <div class="checkout-form">
-                                <h2>Make Your Checkout Here</h2>
-                                <p>Please register in order to checkout more quickly</p>
+                                <h2>Thực hiện thanh toán tại đây</h2>
+                                <p>Vui lòng đăng ký để thanh toán nhanh hơn</p>
                                 <!-- Form -->
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>First Name<span>*</span></label>
+                                            <label>Tên<span>*</span></label>
                                             <input type="text" name="first_name" placeholder="" value="{{old('first_name')}}" value="{{old('first_name')}}">
                                             @error('first_name')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -45,7 +45,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Last Name<span>*</span></label>
+                                            <label>Họ<span>*</span></label>
                                             <input type="text" name="last_name" placeholder="" value="{{old('lat_name')}}">
                                             @error('last_name')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Email Address<span>*</span></label>
+                                            <label>Email <span>*</span></label>
                                             <input type="email" name="email" placeholder="" value="{{old('email')}}">
                                             @error('email')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Phone Number <span>*</span></label>
+                                            <label>Số điện thoại<span>*</span></label>
                                             <input type="number" name="phone" placeholder="" required value="{{old('phone')}}">
                                             @error('phone')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -72,7 +72,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Country<span>*</span></label>
+                                            <label>Quốc gia<span>*</span></label>
                                             <select name="country" id="country">
                                                 <option value="AF">Afghanistan</option>
                                                 <option value="AX">Åland Islands</option>
@@ -324,7 +324,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Address Line 1<span>*</span></label>
+                                            <label>Dòng địa chỉ 1<span>*</span></label>
                                             <input type="text" name="address1" placeholder="" value="{{old('address1')}}">
                                             @error('address1')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -333,7 +333,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Address Line 2</label>
+                                            <label>Dòng địa chỉ 2</label>
                                             <input type="text" name="address2" placeholder="" value="{{old('address2')}}">
                                             @error('address2')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -342,7 +342,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
-                                            <label>Postal Code</label>
+                                            <label>Mã bưu chính</label>
                                             <input type="text" name="post_code" placeholder="" value="{{old('post_code')}}">
                                             @error('post_code')
                                                 <span class='text-danger'>{{$message}}</span>
@@ -358,15 +358,15 @@
                             <div class="order-details">
                                 <!-- Order Widget -->
                                 <div class="single-widget">
-                                    <h2>CART  TOTALS</h2>
+                                    <h2>TỔNG CỘNG GIỎ HÀNG</h2>
                                     <div class="content">
                                         <ul>
-										    <li class="order_subtotal" data-price="{{Helper::totalCartPrice()}}">Cart Subtotal<span>${{number_format(Helper::totalCartPrice(),2)}}</span></li>
+										    <li class="order_subtotal" data-price="{{Helper::totalCartPrice()}}">Tổng phụ giỏ hàng<span>${{number_format(Helper::totalCartPrice(),2)}}</span></li>
                                             <li class="shipping">
-                                                Shipping Cost
+                                                Chi phí vận chuyển
                                                 @if(count(Helper::shipping())>0 && Helper::cartCount()>0)
                                                     <select name="shipping" class="nice-select">
-                                                        <option value="">Select your address</option>
+                                                        <option value="">Chọn địa chỉ của bạn</option>
                                                         @foreach(Helper::shipping() as $shipping)
                                                         <option value="{{$shipping->id}}" class="shippingOption" data-price="{{$shipping->price}}">{{$shipping->type}}: ${{$shipping->price}}</option>
                                                         @endforeach
@@ -377,7 +377,7 @@
                                             </li>
                                             
                                             @if(session('coupon'))
-                                            <li class="coupon_price" data-price="{{session('coupon')['value']}}">You Save<span>${{number_format(session('coupon')['value'],2)}}</span></li>
+                                            <li class="coupon_price" data-price="{{session('coupon')['value']}}">Bạn tiết kiệm<span>${{number_format(session('coupon')['value'],2)}}</span></li>
                                             @endif
                                             @php
                                                 $total_amount=Helper::totalCartPrice();
@@ -396,12 +396,12 @@
                                 <!--/ End Order Widget -->
                                 <!-- Order Widget -->
                                 <div class="single-widget">
-                                    <h2>Payments</h2>
+                                    <h2>Thanh toán</h2>
                                     <div class="content">
                                         <div class="checkbox">
-                                            {{-- <label class="checkbox-inline" for="1"><input name="updates" id="1" type="checkbox"> Check Payments</label> --}}
+                                            {{-- <label class="checkbox-inline" for="1"><input name="updates" id="1" type="checkbox"> Kiểm tra thanh toán</label> --}}
                                             <form-group>
-                                                <input name="payment_method"  type="radio" value="cod"> <label> Cash On Delivery</label><br>
+                                                <input name="payment_method"  type="radio" value="cod"> <label> Thanh toán khi nhận hàng</label><br>
                                                 <input name="payment_method"  type="radio" value="paypal"> <label> PayPal</label> 
                                             </form-group>
                                             
@@ -420,7 +420,7 @@
                                 <div class="single-widget get-button">
                                     <div class="content">
                                         <div class="button">
-                                            <button type="submit" class="btn">proceed to checkout</button>
+                                            <button type="submit" class="btn">tiến hành thanh toán</button>
                                         </div>
                                     </div>
                                 </div>
@@ -435,47 +435,47 @@
     
     <!-- Start Shop Services Area  -->
     <section class="shop-services section home">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Service -->
-                    <div class="single-service">
-                        <i class="ti-rocket"></i>
-                        <h4>Free shiping</h4>
-                        <p>Orders over $100</p>
-                    </div>
-                    <!-- End Single Service -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Service -->
-                    <div class="single-service">
-                        <i class="ti-reload"></i>
-                        <h4>Free Return</h4>
-                        <p>Within 30 days returns</p>
-                    </div>
-                    <!-- End Single Service -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Service -->
-                    <div class="single-service">
-                        <i class="ti-lock"></i>
-                        <h4>Sucure Payment</h4>
-                        <p>100% secure payment</p>
-                    </div>
-                    <!-- End Single Service -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Service -->
-                    <div class="single-service">
-                        <i class="ti-tag"></i>
-                        <h4>Best Peice</h4>
-                        <p>Guaranteed price</p>
-                    </div>
-                    <!-- End Single Service -->
-                </div>
-            </div>
-        </div>
-    </section>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-3 col-md-6 col-12">
+				<!-- Start Single Service -->
+				<div class="single-service">
+					<i class="ti-rocket"></i>
+					<h4>Miễn phí vận chuyển</h4>
+					<p>Đơn hàng trên 100k</p>
+				</div>
+				<!-- End Single Service -->
+			</div>
+			<div class="col-lg-3 col-md-6 col-12">
+				<!-- Start Single Service -->
+				<div class="single-service">
+					<i class="ti-reload"></i>
+					<h4>Trả hàng miễn phí</h4>
+					<p>Trả hàng trong vòng 30 ngày</p>
+				</div>
+				<!-- End Single Service -->
+			</div>
+			<div class="col-lg-3 col-md-6 col-12">
+				<!-- Start Single Service -->
+				<div class="single-service">
+					<i class="ti-lock"></i>
+					<h4>Thanh toán an toàn</h4>
+					<p>Thanh toán an toàn 100%</p>
+				</div>
+				<!-- End Single Service -->
+			</div>
+			<div class="col-lg-3 col-md-6 col-12">
+				<!-- Start Single Service -->
+				<div class="single-service">
+					<i class="ti-tag"></i>
+					<h4>Giá tốt nhất</h4>
+					<p>Giá đảm bảo</p>
+				</div>
+				<!-- End Single Service -->
+			</div>
+		</div>
+	</div>
+</section>
     <!-- End Shop Services -->
     
     <!-- Start Shop Newsletter  -->

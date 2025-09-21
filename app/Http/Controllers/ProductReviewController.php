@@ -61,10 +61,10 @@ class ProductReviewController extends Controller
         ];
         Notification::send($user,new StatusNotification($details));
         if($status){
-            request()->session()->flash('success','Thank you for your feedback');
+            session()->flash('success','Thank you for your feedback');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Please try again!!');
+            session()->flash('error','Something went wrong! Please try again!!');
         }
         return redirect()->back();
     }
@@ -119,14 +119,14 @@ class ProductReviewController extends Controller
             // ];
             // Notification::send($user,new StatusNotification($details));
             if($status){
-                request()->session()->flash('success','Review Successfully updated');
+                session()->flash('success','Review Successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                session()->flash('error','Something went wrong! Please try again!!');
             }
         }
         else{
-            request()->session()->flash('error','Review not found!!');
+            session()->flash('error','Review not found!!');
         }
 
         return redirect()->route('review.index');
@@ -143,10 +143,10 @@ class ProductReviewController extends Controller
         $review=ProductReview::find($id);
         $status=$review->delete();
         if($status){
-            request()->session()->flash('success','Successfully deleted review');
+            session()->flash('success','Successfully deleted review');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Try again');
+            session()->flash('error','Something went wrong! Try again');
         }
         return redirect()->route('review.index');
     }

@@ -3,12 +3,12 @@
 @section('main-content')
 
 <div class="card">
-    <h5 class="card-header">Add Post</h5>
+    <h5 class="card-header">Thêm bài viết</h5>
     <div class="card-body">
       <form method="post" action="{{route('post.store')}}">
         {{csrf_field()}}
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>
+          <label for="inputTitle" class="col-form-label">Tiêu đề <span class="text-danger">*</span></label>
           <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{old('title')}}" class="form-control">
           @error('title')
           <span class="text-danger">{{$message}}</span>
@@ -16,7 +16,7 @@
         </div>
 
         <div class="form-group">
-          <label for="quote" class="col-form-label">Quote</label>
+          <label for="quote" class="col-form-label">Trích dẫn</label>
           <textarea class="form-control" id="quote" name="quote">{{old('quote')}}</textarea>
           @error('quote')
           <span class="text-danger">{{$message}}</span>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="form-group">
-          <label for="summary" class="col-form-label">Summary <span class="text-danger">*</span></label>
+          <label for="summary" class="col-form-label">Bản tóm tắt <span class="text-danger">*</span></label>
           <textarea class="form-control" id="summary" name="summary">{{old('summary')}}</textarea>
           @error('summary')
           <span class="text-danger">{{$message}}</span>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="form-group">
-          <label for="description" class="col-form-label">Description</label>
+          <label for="description" class="col-form-label">Mô tả</label>
           <textarea class="form-control" id="description" name="description">{{old('description')}}</textarea>
           @error('description')
           <span class="text-danger">{{$message}}</span>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="form-group">
-          <label for="post_cat_id">Category <span class="text-danger">*</span></label>
+          <label for="post_cat_id">Loại <span class="text-danger">*</span></label>
           <select name="post_cat_id" class="form-control">
               <option value="">--Select any category--</option>
               @foreach($categories as $key=>$data)
@@ -50,7 +50,7 @@
         </div>
 
         <div class="form-group">
-          <label for="tags">Tag</label>
+          <label for="tags">Thẻ</label>
           <select name="tags[]" multiple  data-live-search="true" class="form-control selectpicker">
               <option value="">--Select any tag--</option>
               @foreach($tags as $key=>$data)
@@ -59,7 +59,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="added_by">Author</label>
+          <label for="added_by">Tác giả</label>
           <select name="added_by" class="form-control">
               <option value="">--Select any one--</option>
               @foreach($users as $key=>$data)
@@ -68,11 +68,11 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="inputPhoto" class="col-form-label">Photo <span class="text-danger">*</span></label>
+          <label for="inputPhoto" class="col-form-label">Hình ảnh <span class="text-danger">*</span></label>
           <div class="input-group">
               <span class="input-group-btn">
                   <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-primary">
-                  <i class="fa fa-picture-o"></i> Choose
+                  <i class="fa fa-picture-o"></i> Chọn
                   </a>
               </span>
           <input id="thumbnail" class="form-control" type="text" name="photo" value="{{old('photo')}}">
@@ -84,7 +84,7 @@
         </div>
         
         <div class="form-group">
-          <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
+          <label for="status" class="col-form-label">Trạng thái <span class="text-danger">*</span></label>
           <select name="status" class="form-control">
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -94,8 +94,8 @@
           @enderror
         </div>
         <div class="form-group mb-3">
-          <button type="reset" class="btn btn-warning">Reset</button>
-           <button class="btn btn-success" type="submit">Submit</button>
+          <button type="reset" class="btn btn-warning">Cài lại</button>
+           <button class="btn btn-success" type="submit">Lưu</button>
         </div>
       </form>
     </div>

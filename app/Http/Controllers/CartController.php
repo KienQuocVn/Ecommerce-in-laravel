@@ -18,13 +18,13 @@ class CartController extends Controller
     public function addToCart(Request $request){
         // dd($request->all());
         if (empty($request->slug)) {
-            request()->session()->flash('error','Invalid Products');
+            session()->flash('error','Invalid Products');
             return back();
         }        
         $product = Product::where('slug', $request->slug)->first();
         // return $product;
         if (empty($product)) {
-            request()->session()->flash('error','Invalid Products');
+            session()->flash('error','Invalid Products');
             return back();
         }
 
@@ -50,7 +50,7 @@ class CartController extends Controller
             $cart->save();
             $wishlist=Wishlist::where('user_id',auth()->user()->id)->where('cart_id',null)->update(['cart_id'=>$cart->id]);
         }
-        request()->session()->flash('success','Product successfully added to cart');
+        session()->flash('success','Product successfully added to cart');
         return back();       
     }  
 
@@ -67,7 +67,7 @@ class CartController extends Controller
             return back()->with('error','Out of stock, You can add other products.');
         }
         if ( ($request->quant[1] < 1) || empty($product) ) {
-            request()->session()->flash('error','Invalid Products');
+            session()->flash('error','Invalid Products');
             return back();
         }    
 
@@ -96,7 +96,7 @@ class CartController extends Controller
             // return $cart;
             $cart->save();
         }
-        request()->session()->flash('success','Product successfully added to cart.');
+        session()->flash('success','Product successfully added to cart.');
         return back();       
     } 
     
@@ -104,10 +104,10 @@ class CartController extends Controller
         $cart = Cart::find($request->id);
         if ($cart) {
             $cart->delete();
-            request()->session()->flash('success','Cart successfully removed');
+            session()->flash('success','Cart successfully removed');
             return back();  
         }
-        request()->session()->flash('error','Error please try again');
+        session()->flash('error','Error please try again');
         return back();       
     }     
 
@@ -127,7 +127,7 @@ class CartController extends Controller
                     // return $quant;
 
                     if($cart->product->stock < $quant){
-                        request()->session()->flash('error','Out of stock');
+                        session()->flash('error','Out of stock');
                         return back();
                     }
                     $cart->quantity = ($cart->product->stock > $quant) ? $quant  : $cart->product->stock;

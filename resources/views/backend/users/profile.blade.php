@@ -1,6 +1,6 @@
 @extends('backend.layouts.master')
 
-@section('title','Admin Profile')
+@section('title','Hồ sơ quản trị viên')
 
 @section('main-content')
 
@@ -11,10 +11,10 @@
         </div>
     </div>
    <div class="card-header py-3">
-     <h4 class=" font-weight-bold">Profile</h4>
+     <h4 class=" font-weight-bold">Hồ sơ</h4>
      <ul class="breadcrumbs">
          <li><a href="{{route('admin')}}" style="color:#999">Dashboard</a></li>
-         <li><a href="" class="active text-primary">Profile Page</a></li>
+         <li><a href="" class="active text-primary">Trang hồ sơ</a></li>
      </ul>
    </div>
    <div class="card-body">
@@ -106,12 +106,12 @@
     .breadcrumbs li+li:before{
       content:"/\00a0";
     }
-    .image{
-        background:url('{{asset('backend/img/background.jpg')}}');
-        height:150px;
-        background-position:center;
-        background-attachment:cover;
-        position: relative;
+    .image {
+    background: url('/backend/img/background.jpg');
+    height: 150px;
+    background-position: center;
+    background-size: cover;
+    position: relative;
     }
     .image img{
         position: absolute;

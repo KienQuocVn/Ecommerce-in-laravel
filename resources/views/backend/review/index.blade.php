@@ -9,7 +9,7 @@
          </div>
      </div>
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary float-left">Review Lists</h6>
+      <h6 class="m-0 font-weight-bold text-primary float-left">Danh sách đánh giá</h6>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -17,26 +17,26 @@
         <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>S.N.</th>
-              <th>Review By</th>
-              <th>Product Title</th>
-              <th>Review</th>
-              <th>Rate</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>ID</th>
+              <th>Đánh giá bởi</th>
+              <th>Tiêu đề sản phẩm</th>
+              <th>Ôn tập</th>
+              <th>Tỷ lệ</th>
+              <th>Ngày</th>
+              <th>Trạng thái</th>
+              <th>Hoạt động</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-              <th>S.N.</th>
-              <th>Review By</th>
-              <th>Product Title</th>
-              <th>Review</th>
-              <th>Rate</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>ID</th>
+              <th>Đánh giá bởi</th>
+              <th>Tiêu đề sản phẩm</th>
+              <th>Ôn tập</th>
+              <th>Tỷ lệ</th>
+              <th>Ngày</th>
+              <th>Trạng thái</th>
+              <th>Hoạt động</th>
               </tr>
           </tfoot>
           <tbody>

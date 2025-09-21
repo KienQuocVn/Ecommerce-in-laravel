@@ -17,10 +17,10 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->string('order_number')->unique();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->float('sub_total');
+            $table->decimal('sub_total', 15, 2)->unsigned();
             $table->unsignedBigInteger('shipping_id')->nullable();
-            $table->float('coupon')->nullable();
-            $table->float('total_amount');
+            $table->decimal('coupon', 12, 2)->nullable()->unsigned();
+            $table->decimal('total_amount', 15, 2)->unsigned();
             $table->integer('quantity');
             $table->enum('payment_method',['cod','paypal'])->default('cod');
             $table->enum('payment_status',['paid','unpaid'])->default('unpaid');

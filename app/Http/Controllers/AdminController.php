@@ -40,10 +40,10 @@ class AdminController extends Controller
         $data=$request->all();
         $status=$user->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Successfully updated your profile');
+            session()->flash('success','Successfully updated your profile');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            session()->flash('error','Please try again!');
         }
         return redirect()->back();
     }
@@ -70,10 +70,10 @@ class AdminController extends Controller
         // return $settings;
         $status=$settings->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Setting successfully updated');
+            session()->flash('success','Setting successfully updated');
         }
         else{
-            request()->session()->flash('error','Please try again');
+            session()->flash('error','Please try again');
         }
         return redirect()->route('admin');
     }
@@ -126,22 +126,22 @@ class AdminController extends Controller
             //Regenerate the storage link folder
             try{
                 Artisan::call('storage:link');
-                request()->session()->flash('success', 'Successfully storage linked.');
+                session()->flash('success', 'Successfully storage linked.');
                 return redirect()->back();
             }
             catch(\Exception $exception){
-                request()->session()->flash('error', $exception->getMessage());
+                session()->flash('error', $exception->getMessage());
                 return redirect()->back();
             }
         }
         else{
             try{
                 Artisan::call('storage:link');
-                request()->session()->flash('success', 'Successfully storage linked.');
+                session()->flash('success', 'Successfully storage linked.');
                 return redirect()->back();
             }
             catch(\Exception $exception){
-                request()->session()->flash('error', $exception->getMessage());
+                session()->flash('error', $exception->getMessage());
                 return redirect()->back();
             }
         }

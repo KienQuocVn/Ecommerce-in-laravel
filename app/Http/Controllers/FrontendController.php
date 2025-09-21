@@ -10,11 +10,11 @@ use App\Models\Post;
 use App\Models\Cart;
 use App\Models\Brand;
 use App\User;
-use Auth;
-use Session;
-use Newsletter;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Spatie\Newsletter\Newsletter;
 use DB;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 class FrontendController extends Controller
@@ -192,7 +192,7 @@ class FrontendController extends Controller
             if(!empty($data['price_range'])){
                 $priceRangeURL .='&price='.$data['price_range'];
             }
-            if(request()->is('e-shop.loc/product-grids')){
+            if(is('e-shop.loc/product-grids')){
                 return redirect()->route('product-grids',$catURL.$brandURL.$priceRangeURL.$showURL.$sortByURL);
             }
             else{
@@ -214,7 +214,7 @@ class FrontendController extends Controller
     public function productBrand(Request $request){
         $products=Brand::getProductByBrand($request->slug);
         $recent_products=Product::where('status','active')->orderBy('id','DESC')->limit(3)->get();
-        if(request()->is('e-shop.loc/product-grids')){
+        if(is('e-shop.loc/product-grids')){
             return view('frontend.pages.product-grids')->with('products',$products->products)->with('recent_products',$recent_products);
         }
         else{
@@ -227,7 +227,7 @@ class FrontendController extends Controller
         // return $request->slug;
         $recent_products=Product::where('status','active')->orderBy('id','DESC')->limit(3)->get();
 
-        if(request()->is('e-shop.loc/product-grids')){
+        if(is('e-shop.loc/product-grids')){
             return view('frontend.pages.product-grids')->with('products',$products->products)->with('recent_products',$recent_products);
         }
         else{
@@ -240,7 +240,7 @@ class FrontendController extends Controller
         // return $products;
         $recent_products=Product::where('status','active')->orderBy('id','DESC')->limit(3)->get();
 
-        if(request()->is('e-shop.loc/product-grids')){
+        if(is('e-shop.loc/product-grids')){
             return view('frontend.pages.product-grids')->with('products',$products->sub_products)->with('recent_products',$recent_products);
         }
         else{
@@ -353,11 +353,11 @@ class FrontendController extends Controller
         $data= $request->all();
         if(Auth::attempt(['email' => $data['email'], 'password' => $data['password'],'status'=>'active'])){
             Session::put('user',$data['email']);
-            request()->session()->flash('success','Successfully login');
+            session()->flash('success', 'Successfully login');
             return redirect()->route('home');
         }
         else{
-            request()->session()->flash('error','Invalid email and password pleas try again!');
+            session()->flash('error','Invalid email and password pleas try again!');
             return redirect()->back();
         }
     }
@@ -365,7 +365,7 @@ class FrontendController extends Controller
     public function logout(){
         Session::forget('user');
         Auth::logout();
-        request()->session()->flash('success','Logout successfully');
+        session()->flash('success','Logout successfully');
         return back();
     }
 
@@ -384,11 +384,11 @@ class FrontendController extends Controller
         $check=$this->create($data);
         Session::put('user',$data['email']);
         if($check){
-            request()->session()->flash('success','Successfully registered');
+            session()->flash('success','Successfully registered');
             return redirect()->route('home');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            session()->flash('error','Please try again!');
             return back();
         }
     }
@@ -409,7 +409,7 @@ class FrontendController extends Controller
         if(! Newsletter::isSubscribed($request->email)){
                 Newsletter::subscribePending($request->email);
                 if(Newsletter::lastActionSucceeded()){
-                    request()->session()->flash('success','Subscribed! Please check your email');
+                    session()->flash('success','Subscribed! Please check your email');
                     return redirect()->route('home');
                 }
                 else{
@@ -418,7 +418,7 @@ class FrontendController extends Controller
                 }
             }
             else{
-                request()->session()->flash('error','Already Subscribed');
+                session()->flash('error','Already Subscribed');
                 return back();
             }
     }

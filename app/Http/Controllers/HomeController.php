@@ -45,10 +45,10 @@ class HomeController extends Controller
         $data=$request->all();
         $status=$user->fill($data)->save();
         if($status){
-            request()->session()->flash('success','Successfully updated your profile');
+            session()->flash('success','Successfully updated your profile');
         }
         else{
-            request()->session()->flash('error','Please try again!');
+            session()->flash('error','Please try again!');
         }
         return redirect()->back();
     }
@@ -68,16 +68,16 @@ class HomeController extends Controller
            else{
                 $status=$order->delete();
                 if($status){
-                    request()->session()->flash('success','Order Successfully deleted');
+                    session()->flash('success','Order Successfully deleted');
                 }
                 else{
-                    request()->session()->flash('error','Order can not deleted');
+                    session()->flash('error','Order can not deleted');
                 }
                 return redirect()->route('user.order.index');
            }
         }
         else{
-            request()->session()->flash('error','Order can not found');
+            session()->flash('error','Order can not found');
             return redirect()->back();
         }
     }
@@ -115,14 +115,14 @@ class HomeController extends Controller
             $data=$request->all();
             $status=$review->fill($data)->update();
             if($status){
-                request()->session()->flash('success','Review Successfully updated');
+                session()->flash('success','Review Successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                session()->flash('error','Something went wrong! Please try again!!');
             }
         }
         else{
-            request()->session()->flash('error','Review not found!!');
+            session()->flash('error','Review not found!!');
         }
 
         return redirect()->route('user.productreview.index');
@@ -139,10 +139,10 @@ class HomeController extends Controller
         $review=ProductReview::find($id);
         $status=$review->delete();
         if($status){
-            request()->session()->flash('success','Successfully deleted review');
+            session()->flash('success','Successfully deleted review');
         }
         else{
-            request()->session()->flash('error','Something went wrong! Try again');
+            session()->flash('error','Something went wrong! Try again');
         }
         return redirect()->route('user.productreview.index');
     }
@@ -157,15 +157,15 @@ class HomeController extends Controller
         if($comment){
             $status=$comment->delete();
             if($status){
-                request()->session()->flash('success','Post Comment successfully deleted');
+                session()->flash('success','Post Comment successfully deleted');
             }
             else{
-                request()->session()->flash('error','Error occurred please try again');
+                session()->flash('error','Error occurred please try again');
             }
             return back();
         }
         else{
-            request()->session()->flash('error','Post Comment not found');
+            session()->flash('error','Post Comment not found');
             return redirect()->back();
         }
     }
@@ -176,7 +176,7 @@ class HomeController extends Controller
             return view('user.comment.edit')->with('comment',$comments);
         }
         else{
-            request()->session()->flash('error','Comment not found');
+            session()->flash('error','Comment not found');
             return redirect()->back();
         }
     }
@@ -196,15 +196,15 @@ class HomeController extends Controller
             // return $data;
             $status=$comment->fill($data)->update();
             if($status){
-                request()->session()->flash('success','Comment successfully updated');
+                session()->flash('success','Comment successfully updated');
             }
             else{
-                request()->session()->flash('error','Something went wrong! Please try again!!');
+                session()->flash('error','Something went wrong! Please try again!!');
             }
             return redirect()->route('user.post-comment.index');
         }
         else{
-            request()->session()->flash('error','Comment not found');
+            session()->flash('error','Comment not found');
             return redirect()->back();
         }
 
