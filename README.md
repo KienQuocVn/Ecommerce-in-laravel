@@ -62,7 +62,6 @@ Update `.env` with database credentials.
 ```sh
 php artisan migrate --seed
 ```
-Import `database/e-shop.sql` into your database manually (if needed).
 
 ### 🔹 **Step 5: Setup Storage**
 ```sh

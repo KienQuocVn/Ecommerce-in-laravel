@@ -24,8 +24,8 @@
 			<div class="col-12">
 				<div class="bread-inner">
 					<ul class="bread-list">
-						<li><a href="{{route('home')}}">Home<i class="ti-arrow-right"></i></a></li>
-						<li class="active"><a href="">Shop Details</a></li>
+						<li><a href="{{route('home')}}">Trang chủ<i class="ti-arrow-right"></i></a></li>
+						<li class="active"><a href="">Chi tiết sản phẩm </a></li>
 					</ul>
 				</div>
 			</div>
@@ -120,7 +120,7 @@
 								<form action="{{route('single-add-to-cart')}}" method="POST">
 									@csrf
 									<div class="quantity">
-										<h6>Quantity :</h6>
+										<h6>Số lượng :</h6>
 										<!-- Input Order -->
 										<div class="input-group">
 											<div class="button minus">
@@ -139,12 +139,12 @@
 										<!--/ End Input Order -->
 									</div>
 									<div class="add-to-cart mt-4">
-										<button type="submit" class="btn">Add to cart</button>
+										<button type="submit" class="btn">Thêm vào giỏ hàng</button>
 										<a href="{{route('add-to-wishlist',$product_detail->slug)}}" class="btn min"><i class="ti-heart"></i></a>
 									</div>
 								</form>
 
-								<p class="cat">Category :<a href="{{route('product-cat',$product_detail->cat_info['slug'])}}">{{$product_detail->cat_info['title']}}</a></p>
+								<p class="cat">Loại :<a href="{{route('product-cat',$product_detail->cat_info['slug'])}}">{{$product_detail->cat_info['title']}}</a></p>
 								@if($product_detail->sub_cat_info)
 								<p class="cat mt-1">Sub Category :<a href="{{route('product-sub-cat',[$product_detail->cat_info['slug'],$product_detail->sub_cat_info['slug']])}}">{{$product_detail->sub_cat_info['title']}}</a></p>
 								@endif
@@ -160,8 +160,8 @@
 							<div class="nav-main">
 								<!-- Tab Nav -->
 								<ul class="nav nav-tabs" id="myTab" role="tablist">
-									<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#description" role="tab">Description</a></li>
-									<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews</a></li>
+									<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#description" role="tab">Mô tả</a></li>
+									<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Đánh giá</a></li>
 								</ul>
 								<!--/ End Tab Nav -->
 							</div>
@@ -188,10 +188,9 @@
 												<!-- Review -->
 												<div class="comment-review">
 													<div class="add-review">
-														<h5>Add A Review</h5>
-														<p>Your email address will not be published. Required fields are marked</p>
-													</div>
-													<h4>Your Rating <span class="text-danger">*</span></h4>
+														<h5>Thêm đánh giá</h5>
+\													</div>
+													<h4>Đánh giá của bạn <span class="text-danger">*</span></h4>
 													<div class="review-inner">
 														<!-- Form -->
 														@auth
@@ -227,7 +226,7 @@
 																</div>
 																<div class="col-lg-12 col-12">
 																	<div class="form-group button5">
-																		<button type="submit" class="btn">Submit</button>
+																		<button type="submit" class="btn">Gửi</button>
 																	</div>
 																</div>
 															</div>
@@ -308,7 +307,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="section-title">
-					<h2>Related Products</h2>
+					<h2>Sản phẩm liên quan</h2>
 				</div>
 			</div>
 		</div>
@@ -419,7 +418,7 @@
 							<div class="size">
 								<div class="row">
 									<div class="col-lg-6 col-12">
-										<h5 class="title">Size</h5>
+										<h5 class="title">Kích cỡ</h5>
 										<select>
 											<option selected="selected">s</option>
 											<option>m</option>
