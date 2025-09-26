@@ -17,24 +17,24 @@
       <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
         <thead>
           <tr>
-            <th>S.N.</th>
-            <th>Author</th>
-            <th>Post Title</th>
-            <th>Message</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>ID</th>
+            <th>Tác giả</th>
+            <th>Tiêu đề bài viết</th>
+            <th>Tin nhắn</th>
+            <th>Ngày</th>
+            <th>Trạng thái</th>
+            <th>Hoạt động</th>
           </tr>
         </thead>
         <tfoot>
           <tr>
-            <th>S.N.</th>
-            <th>Author</th>
-            <th>Post Title</th>
-            <th>Message</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>ID</th>
+            <th>Tác giả</th>
+            <th>Tiêu đề bài viết</th>
+            <th>Tin nhắn</th>
+            <th>Ngày</th>
+            <th>Trạng thái</th>
+            <th>Hoạt động</th>
           </tr>
         </tfoot>
         <tbody>

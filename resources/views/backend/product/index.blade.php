@@ -18,36 +18,36 @@
         <table class="table table-bordered" id="product-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>S.N.</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Is Featured</th>
-              <th>Price</th>
-              <th>Discount</th>
-              <th>Size</th>
-              <th>Condition</th>
-              <th>Brand</th>
-              <th>Stock</th>
-              <th>Photo</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>ID</th>
+              <th>Tiêu đề</th>
+              <th>Loại</th>
+              <th>Được giới thiệu</th>
+              <th>Giá</th>
+              <th>Giảm giá</th>
+              <th>Kích cỡ</th>
+              <th>Tình trạng</th>
+              <th>Thương hiệu</th>
+              <th>Tồn kho</th>
+              <th>Hình ảnh</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-              <th>S.N.</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Is Featured</th>
-              <th>Price</th>
-              <th>Discount</th>
-              <th>Size</th>
-              <th>Condition</th>
-              <th>Brand</th>
-              <th>Stock</th>
-              <th>Photo</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th>ID</th>
+              <th>Tiêu đề</th>
+              <th>Loại</th>
+              <th>Được giới thiệu</th>
+              <th>Giá</th>
+              <th>Giảm giá</th>
+              <th>Kích cỡ</th>
+              <th>Tình trạng</th>
+              <th>Thương hiệu</th>
+              <th>Tồn kho</th>
+              <th>Hình ảnh</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </tfoot>
           <tbody>
@@ -120,15 +120,14 @@
 
 @push('styles')
   <link href="{{asset('backend/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert2.min.css" />
   <style>
-      div.dataTables_wrapper div.dataTables_paginate{
+      div.dataTables_wrapper div.dataTables_paginate {
           display: none;
       }
       .zoom {
         transition: transform .2s; /* Animation */
       }
-
       .zoom:hover {
         transform: scale(5);
       }
@@ -136,59 +135,95 @@
 @endpush
 
 @push('scripts')
-
   <!-- Page level plugins -->
   <script src="{{asset('backend/vendor/datatables/jquery.dataTables.min.js')}}"></script>
   <script src="{{asset('backend/vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert2.min.js"></script>
 
   <!-- Page level custom scripts -->
   <script src="{{asset('backend/js/demo/datatables-demo.js')}}"></script>
   <script>
+      $(document).ready(function() {
+          // Khởi tạo DataTable
+          $('#product-dataTable').DataTable({
+              scrollX: false,
+              columnDefs: [
+                  {
+                      orderable: false,
+                      targets: [10, 11, 12]
+                  }
+              ]
+          });
 
-      $('#product-dataTable').DataTable( {
-        "scrollX": false
-            "columnDefs":[
-                {
-                    "orderable":false,
-                    "targets":[10,11,12]
-                }
-            ]
-        } );
+          // Cấu hình CSRF token cho AJAX
+          $.ajaxSetup({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }
+          });
 
-        // Sweet alert
-
-        function deleteData(id){
-
-        }
-  </script>
-  <script>
-      $(document).ready(function(){
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-          $('.dltBtn').click(function(e){
-            var form=$(this).closest('form');
-              var dataID=$(this).data('id');
-              // alert(dataID);
+          // Xử lý sự kiện xóa sản phẩm
+          $('.dltBtn').click(function(e) {
               e.preventDefault();
-              swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this data!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                       form.submit();
-                    } else {
-                        swal("Your data is safe!");
-                    }
-                });
-          })
-      })
+              var form = $(this).closest('form');
+              var dataID = $(this).data('id');
+
+              Swal.fire({
+                  title: "Bạn có chắc chắn?",
+                  text: "Dữ liệu đã xóa sẽ không thể khôi phục!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Có, xóa nó!",
+                  cancelButtonText: "Hủy"
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      form.submit();
+                      Swal.fire(
+                          "Đã xóa!",
+                          "Sản phẩm đã được xóa thành công.",
+                          "success"
+                      );
+                  } else {
+                      Swal.fire(
+                          "Đã hủy!",
+                          "Dữ liệu của bạn vẫn an toàn.",
+                          "info"
+                      );
+                  }
+              });
+          });
+      });
+
+      // Hàm deleteData
+      function deleteData(id) {
+          var form = $(`form[action*="${id}"]`);
+          Swal.fire({
+              title: "Bạn có chắc chắn?",
+              text: "Dữ liệu đã xóa sẽ không thể khôi phục!",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Có, xóa nó!",
+              cancelButtonText: "Hủy"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  form.submit();
+                  Swal.fire(
+                      "Đã xóa!",
+                      "Sản phẩm đã được xóa thành công.",
+                      "success"
+                  );
+              } else {
+                  Swal.fire(
+                      "Đã hủy!",
+                      "Dữ liệu của bạn vẫn an toàn.",
+                      "info"
+                  );
+              }
+          });
+      }
   </script>
 @endpush
