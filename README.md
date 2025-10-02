@@ -72,7 +72,7 @@ php artisan storage:link
 ```sh
 php artisan serve
 ```
-🔗 Open `http://localhost:8000`
+🔗 Open `http://127.0.0.1:8000`
 
 ### **Admin Login Credentials:**
 📧 **Email:** `admin@gmail.com`  

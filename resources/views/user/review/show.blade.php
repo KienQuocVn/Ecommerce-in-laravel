@@ -60,38 +60,38 @@
         <div class="row">
           <div class="col-lg-6 col-lx-4">
             <div class="order-info">
-              <h4 class="text-center pb-4">ORDER INFORMATION</h4>
+              <h4 class="text-center pb-4">THÔNG TIN ĐẶT HÀNG</h4>
               <table class="table">
                     <tr class="">
-                        <td>Order Number</td>
+                        <td>Số đơn hàng</td>
                         <td> : {{$order->cart_id}}</td>
                     </tr>
                     <tr>
-                        <td>Order Date</td>
+                        <td>Ngày đặt hàng</td>
                         <td> : {{$order->created_at->diffForHumans()}}</td>
                     </tr>
                     <tr>
-                        <td>Quantity</td>
+                        <td>Số lượng</td>
                         <td> : {{$order->quantity}}</td>
                     </tr>
                     <tr>
-                        <td>Order Status</td>
+                        <td>Trạng thái đơn hàng</td>
                         <td> : {{$order->status}}</td>
                     </tr>
                     <tr>
-                        <td>Shipping Charge</td>
+                        <td>Phí vận chuyển</td>
                         <td> : $ {{number_format($order->delivery_charge,2)}}</td>
                     </tr>
                     <tr>
-                        <td>Total Amount</td>
+                        <td>Tổng số tiền</td>
                         <td> : $ {{number_format($order->total_amount,2)}}</td>
                     </tr>
                     <tr>
-                        <td>Payment Method</td>
+                        <td>Phương thức thanh toán</td>
                         <td> : </td>
                     </tr>
                     <tr>
-                        <td>Payment Status</td>
+                        <td>Trạng thái thanh toán</td>
                         <td> : </td>
                     </tr>
               </table>
@@ -100,10 +100,10 @@
 
           <div class="col-lg-6 col-lx-4">
             <div class="shipping-info">
-              <h4 class="text-center pb-4">SHIPPING INFORMATION</h4>
+              <h4 class="text-center pb-4">THÔNG TIN VẬN CHUYỂN</h4>
               <table class="table">
                     <tr class="">
-                        <td>Full Name</td>
+                        <td>Họ và tên</td>
                         <td> : {{$order->first_name}} {{$order->last_name}}</td>
                     </tr>
                     <tr>
@@ -111,19 +111,19 @@
                         <td> : {{$order->email}}</td>
                     </tr>
                     <tr>
-                        <td>Phone No.</td>
+                        <td>Số điện thoại</td>
                         <td> : {{$order->phone}}</td>
                     </tr>
                     <tr>
-                        <td>Address</td>
+                        <td>Đại chỉ</td>
                         <td> : {{$order->address1}}, {{$order->address2}}</td>
                     </tr>
                     <tr>
-                        <td>Country</td>
+                        <td>Quốc gia</td>
                         <td> : {{$order->country}}</td>
                     </tr>
                     <tr>
-                        <td>Post Code</td>
+                        <td>Mã bưu chính</td>
                         <td> : {{$order->post_code}}</td>
                     </tr>
               </table>
