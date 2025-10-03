@@ -70,13 +70,23 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group login-btn">
-                                    <button class="btn" type="submit">Đăng ký</button>
-                                    <a href="{{route('login.form')}}" class="btn">Đăng nhập</a>
-                                    OR
-                                    <a href="{{route('login.redirect','facebook')}}" class="btn btn-facebook"><i class="ti-facebook"></i></a>
-                                    <a href="{{route('login.redirect','github')}}" class="btn btn-github"><i class="ti-github"></i></a>
-                                    <a href="{{route('login.redirect','google')}}" class="btn btn-google"><i class="ti-google"></i></a>
+                                    <button class="btn btn-full-width" type="submit">Đăng ký</button>
+                                    <!-- <a href="{{route('login.form')}}" class="btn">Đăng nhập</a> -->
+                                    <p class="or-separator fw-bold">OR</p>
+                                    <div class="social-login-buttons"> 
+                                        <a href="{{route('login.redirect','facebook')}}" class="social-login-btn facebook">
+                                            <img src="{{ asset('storage/photos/1/facebook.png') }}" alt="Facebook" class="social-icon">
+                                            <span>Facebook</span>
+                                        </a>
+                                        <a href="{{route('login.redirect','google')}}" class="social-login-btn google">
+                                            <img src="{{ asset('storage/photos/1/google.png') }}" alt="Google" class="social-icon"> 
+                                            <span>Google</span>
+                                        </a>
+                                        
+                                    </div>
                                 </div>
+                                Bạn đã có tài khoản?
+                                <a href="{{route('login.form')}}" class="fw-bold" style="font-weight: bold;">Đăng nhập</a>
                             </div>
                         </div>
                     </form>
@@ -93,32 +103,56 @@
 <style>
     .shop.login .form .btn {
         margin-right: 0;
+        margin-bottom: 10px; 
     }
 
-    .btn-facebook {
-        background: #39579A;
+    .social-login-buttons {
+        display: flex; 
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap; 
+        margin-top: 15px; 
+        margin-bottom: 20px; 
     }
 
-    .btn-facebook:hover {
-        background: #073088 !important;
+    .social-login-btn {
+        display: flex; 
+        align-items: center; 
+        padding: 8px 15px;
+        border: 1px solid #ccc; 
+        border-radius: 5px;
+        background-color: #fff; 
+        color: #333; 
+        text-decoration: none; 
+        font-size: 14px; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
     }
 
-    .btn-github {
-        background: #444444;
-        color: white;
+    .social-login-btn:hover {
+        background-color: #f8f8f8; 
+        border-color: #999; 
+        color: #000;
     }
 
-    .btn-github:hover {
-        background: black !important;
+    .social-login-btn .social-icon {
+        height: 20px; 
+        width: 20px;
+        margin-right: 8px; 
+        vertical-align: middle; 
     }
 
-    .btn-google {
-        background: #ea4335;
-        color: white;
+    .btn-full-width {
+        width: 100%;
+        margin: 0 !important; 
+        border-radius: 0;
     }
 
-    .btn-google:hover {
-        background: rgb(243, 26, 26) !important;
+    .or-separator {
+        text-align: center;
+        font-weight: bold; 
+        margin: 15px 0; 
+        font-size: 14px;
     }
 </style>
 @endpush

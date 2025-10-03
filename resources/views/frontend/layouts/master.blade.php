@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
+	<link rel="icon" type="image/png" href="{{ asset('storage/photos/1/favicon.png') }}">
 	@include('frontend.layouts.head')	
 </head>
 <body class="js">

@@ -1,7 +1,7 @@
 @extends('backend.layouts.master')
 @section('main-content')
 <div class="card">
-  <h5 class="card-header">Message</h5>
+  <h5 class="card-header">Tin nhắn</h5>
   <div class="card-body">
     @if($message)
         @if($message->photo)
