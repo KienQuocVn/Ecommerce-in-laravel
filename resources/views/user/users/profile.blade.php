@@ -48,7 +48,7 @@
 
                     <div class="form-group">
                         <label for="inputEmail" class="col-form-label">Email</label>
-                        <input id="inputEmail" disabled type="email" name="email" placeholder="Enter email" value="{{$profile->email}}" class="form-control">
+                        <input id="inputEmail" disabled type="email" name="email" placeholder="Nhập email" value="{{$profile->email}}" class="form-control">
                         @error('email')
                         <span class="text-danger">{{$message}}</span>
                         @enderror

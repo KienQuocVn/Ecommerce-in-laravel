@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-@include('backend.layouts.head')
+  @include('backend.layouts.head')
 
 </head>
 
@@ -26,20 +26,20 @@
                     <h1 class="h4 text-gray-900 mb-2">Quên mật khẩu?</h1>
                     <p class="mb-4">Chúng tôi hiểu, chuyện gì cũng có thể xảy ra. Chỉ cần nhập địa chỉ email của bạn bên dưới và chúng tôi sẽ gửi cho bạn liên kết để đặt lại mật khẩu!</p>
                   </div>
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-                  <form class="user"  method="POST" action="{{ route('password.email') }}">
+                  @if (session('status'))
+                  <div class="alert alert-success" role="alert">
+                    {{ session('status') }}
+                  </div>
+                  @endif
+                  <form class="user" method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user @error('email') is-invalid @enderror" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                        @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
+                      <input type="email" class="form-control form-control-user @error('email') is-invalid @enderror" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Nhập email Address..." name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                      @error('email')
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                      </span>
+                      @enderror
                     </div>
                     <button type="submit" class="btn btn-primary btn-user btn-block">
                       Đặt lại mật khẩu

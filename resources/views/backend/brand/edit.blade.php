@@ -10,7 +10,7 @@
       @method('PATCH')
       <div class="form-group">
         <label for="inputTitle" class="col-form-label">Tiêu đề <span class="text-danger">*</span></label>
-        <input id="inputTitle" type="text" name="title" placeholder="Enter title" value="{{$brand->title}}" class="form-control">
+        <input id="inputTitle" type="text" name="title" placeholder="Nhập tiêu đề" value="{{$brand->title}}" class="form-control">
         @error('title')
         <span class="text-danger">{{$message}}</span>
         @enderror

@@ -9,13 +9,13 @@
         @else 
         <img src="{{asset('backend/img/avatar.png')}}" class="rounded-circle " style="margin-left:44%;">
         @endif
-        <div class="py-4">From: <br>
-           Name :{{$message->name}}<br>
+        <div class="py-4">Từ: <br>
+           Họ và tên :{{$message->name}}<br>
            Email :{{$message->email}}<br>
-           Phone :{{$message->phone}}
+           Số điện thoại :{{$message->phone}}
         </div>
         <hr/>
-  <h5 class="text-center" style="text-decoration:underline"><strong>Subject :</strong> {{$message->subject}}</h5>
+  <h5 class="text-center" style="text-decoration:underline"><strong>Chủ đề :</strong> {{$message->subject}}</h5>
         <p class="py-5">{{$message->message}}</p>
 
     @endif

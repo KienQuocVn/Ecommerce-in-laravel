@@ -140,7 +140,7 @@
                             <h4>Đăng ký và nhận tin tức <br> cập nhật mới nhất.</h4>
                             <form method="POST" action="{{route('subscribe')}}" class="form-inner">
                                 @csrf
-                                <input type="email" name="email" placeholder="Enter your email">
+                                <input type="email" name="email" placeholder="Nhập email của bạn">
                                 <button type="submit" class="btn " style="width: 100%">Gửi</button>
                             </form>
                         </div>

@@ -25,13 +25,13 @@
         <tr class="@if($notification->unread()) bg-light border-left-light @else border-left-success @endif">
           <td scope="row">{{$loop->index +1}}</td>
           <td>{{$notification->created_at->format('F d, Y h:i A')}}</td>
-          <td>{{$notification->data['title']}}</td>
+          {{-- <td>{{$notification->data['title']}}</td> --}}
           <td>
             <a href="{{route('admin.notification', $notification->id) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
             <form method="POST" action="{{ route('notification.delete', $notification->id) }}">
               @csrf
               @method('delete')
-              <button class="btn btn-danger btn-sm dltBtn" data-id={{$notification->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+              <button class="btn btn-danger btn-sm dltBtn" data-id="{{$notification-> id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
             </form>
           </td>
         </tr>
@@ -84,7 +84,7 @@
       // alert(dataID);
       e.preventDefault();
       swal({
-          title: "Are you sure?",
+          title: "Bạn có chắc không?",
           text: "Once deleted, you will not be able to recover this data!",
           icon: "warning",
           buttons: true,
@@ -94,7 +94,7 @@
           if (willDelete) {
             form.submit();
           } else {
-            swal("Your data is safe!");
+            swal("Dữ liệu của bạn được an toàn!");
           }
         });
     })

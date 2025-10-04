@@ -61,7 +61,7 @@
               <form method="POST" action="{{route('banner.destroy',[$banner->id])}}">
                 @csrf
                 @method('delete')
-                <button class="btn btn-danger btn-sm dltBtn" data-id={{$banner->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                <button class="btn btn-danger btn-sm dltBtn" data-id="{{$banner->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
             {{-- Delete Modal --}}
@@ -152,7 +152,7 @@
       // alert(dataID);
       e.preventDefault();
       swal({
-          title: "Are you sure?",
+          title: "Bạn có chắc không?",
           text: "Once deleted, you will not be able to recover this data!",
           icon: "warning",
           buttons: true,
@@ -162,7 +162,7 @@
           if (willDelete) {
             form.submit();
           } else {
-            swal("Your data is safe!");
+            swal("Dữ liệu của bạn được an toàn!");
           }
         });
     })

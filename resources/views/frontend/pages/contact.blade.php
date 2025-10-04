@@ -127,7 +127,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-success">Your message is successfully sent...</p>
+				<p class="text-success">Tin nhắn của bạn đã được gửi thành công...</p>
 			</div>
 		  </div>
 		</div>
@@ -144,7 +144,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p class="text-warning">Something went wrong.</p>
+				<p class="text-warning">Có gì đó không ổn.</p>
 			</div>
 		  </div>
 		</div>

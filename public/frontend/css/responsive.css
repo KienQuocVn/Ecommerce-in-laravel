@@ -1,10 +1,4 @@
-/* =====================================
-Template Name: Shopfy
-Author Name: Naimur Rahman
-Author URI: httShopfyp://www.wpthemesgrid.com/
-Description: Shopfy - eCommerce HTML5 Template.
-Version:1.0
-========================================*/
+
 /* Tablet Screen */
 @media only screen and (min-width: 768px) and (max-width: 991px) {
 .section{
@@ -1454,7 +1448,6 @@ Version:1.0
 }
 .shop .nice-select {
 	width: 100%;
-	display: ;
 	margin-top: 4px;
 }
 .shop .view-mode {
@@ -1473,7 +1466,6 @@ Version:1.0
 	width: 100%;
 	display: block;
 	display: inline-block;
-	display: ;
 }
 .shop .view-mode li a {
 	width: 80px;

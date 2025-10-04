@@ -8,13 +8,15 @@ use App\Models\Category;
 use App\Models\PostTag;
 use App\Models\PostCategory;
 use App\Models\Post;
+use App\Models\Cart;
 use App\Models\Brand;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Spatie\Newsletter\Newsletter;
-use Illuminate\Support\Facades\DB;
+use DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -359,10 +361,10 @@ class FrontendController extends Controller
         $data = $request->all();
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 'active'])) {
             Session::put('user', $data['email']);
-            session()->flash('success', 'Đăng nhập thành công');
+            session()->flash('success', 'Successfully login');
             return redirect()->route('home');
         } else {
-            session()->flash('error', 'Email và mật khẩu không hợp lệ, vui lòng thử lại!');
+            session()->flash('error', 'Invalid email and password pleas try again!');
             return redirect()->back();
         }
     }
@@ -371,7 +373,7 @@ class FrontendController extends Controller
     {
         Session::forget('user');
         Auth::logout();
-        session()->flash('success', 'Đăng xuất thành công');
+        session()->flash('success', 'Logout successfully');
         return back();
     }
 
@@ -392,10 +394,10 @@ class FrontendController extends Controller
         $check = $this->create($data);
         Session::put('user', $data['email']);
         if ($check) {
-            session()->flash('success', 'Đã đăng ký thành công');
+            session()->flash('success', 'Successfully registered');
             return redirect()->route('home');
         } else {
-            session()->flash('error', 'Vui lòng thử lại!');
+            session()->flash('error', 'Please try again!');
             return back();
         }
     }
@@ -419,14 +421,14 @@ class FrontendController extends Controller
         if (! Newsletter::isSubscribed($request->email)) {
             Newsletter::subscribePending($request->email);
             if (Newsletter::lastActionSucceeded()) {
-                session()->flash('success', 'Đã đăng ký! Vui lòng kiểm tra email của bạn');
+                session()->flash('success', 'Subscribed! Please check your email');
                 return redirect()->route('home');
             } else {
                 Newsletter::getLastError();
-                return back()->with('error', 'Có gì đó không ổn! Vui lòng thử lại');
+                return back()->with('error', 'Something went wrong! please try again');
             }
         } else {
-            session()->flash('error', 'Đã đăng ký');
+            session()->flash('error', 'Already Subscribed');
             return back();
         }
     }

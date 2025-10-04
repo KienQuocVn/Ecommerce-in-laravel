@@ -10,7 +10,7 @@
       @method('PATCH')
       <div class="form-group">
         <label for="inputTitle" class="col-form-label">Tiêu đề <span class="text-danger">*</span></label>
-        <input id="inputTitle" type="text" name="title" placeholder="Enter title" value="{{$product->title}}" class="form-control">
+        <input id="inputTitle" type="text" name="title" placeholder="Nhập tiêu đề" value="{{$product->title}}" class="form-control">
         @error('title')
         <span class="text-danger">{{$message}}</span>
         @enderror
@@ -64,7 +64,7 @@
 
       <div class="form-group">
         <label for="price" class="col-form-label">Giá(VNĐ) <span class="text-danger">*</span></label>
-        <input id="price" type="number" name="price" placeholder="Enter price" value="{{$product->price}}" class="form-control">
+        <input id="price" type="number" name="price" placeholder="Nhập giá tiền" value="{{$product->price}}" class="form-control">
         @error('price')
         <span class="text-danger">{{$message}}</span>
         @enderror
@@ -72,7 +72,7 @@
 
       <div class="form-group">
         <label for="discount" class="col-form-label">Giảm giá(%)</label>
-        <input id="discount" type="number" name="discount" min="0" max="100" placeholder="Enter discount" value="{{$product->discount}}" class="form-control">
+        <input id="discount" type="number" name="discount" min="0" max="100" placeholder="Nhập giảm giá" value="{{$product->discount}}" class="form-control">
         @error('discount')
         <span class="text-danger">{{$message}}</span>
         @enderror
@@ -115,7 +115,7 @@
 
       <div class="form-group">
         <label for="stock">Số lượng <span class="text-danger">*</span></label>
-        <input id="quantity" type="number" name="stock" min="0" placeholder="Enter quantity" value="{{$product->stock}}" class="form-control">
+        <input id="quantity" type="number" name="stock" min="0" placeholder="Nhập số lượng" value="{{$product->stock}}" class="form-control">
         @error('stock')
         <span class="text-danger">{{$message}}</span>
         @enderror

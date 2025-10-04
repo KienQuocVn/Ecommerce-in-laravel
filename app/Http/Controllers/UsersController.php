@@ -7,33 +7,17 @@ use Illuminate\Support\Facades\DB;
 use App\User;
 class UsersController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $users=User::orderBy('id','ASC')->paginate(10);
         return view('backend.users.index')->with('users',$users);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('backend.users.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $this->validate($request,
@@ -45,10 +29,8 @@ class UsersController extends Controller
             'status'=>'required|in:active,inactive',
             'photo'=>'nullable|string',
         ]);
-        // dd($request->all());
         $data=$request->all();
         $data['password']=Hash::make($request->password);
-        // dd($data);
         $status=User::create($data);
         // dd($status);
         if($status){
@@ -128,7 +110,7 @@ class UsersController extends Controller
         $delete=User::findorFail($id);
         $status=$delete->delete();
         if($status){
-            session()->flash('success','Người dùng đã xóa thành công');
+            session()->flash('success','Người dùng đã xóa thành công1');
         }
         else{
             session()->flash('error','Có lỗi khi xóa người dùng');

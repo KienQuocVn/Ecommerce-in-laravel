@@ -13,6 +13,8 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
     protected $redirectTo = RouteServiceProvider::HOME;
+
+
     public function credentials(Request $request){
         return ['email'=>$request->email,'password'=>$request->password,'status'=>'active','role'=>'admin'];
     }
@@ -23,6 +25,7 @@ class LoginController extends Controller
 
     public function redirect($provider)
     {
+        // dd($provider);
      return Socialite::driver($provider)->redirect();
     }
  

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class User
 {
@@ -15,11 +16,10 @@ class User
      */
     public function handle($request, Closure $next)
     {
-        if(empty(session('user'))){
-            return redirect()->route('login.form');
+        if (!Auth::check() || (Auth::check() && Auth::user()->status !== 'active')) {
+            Auth::logout();
+            return redirect()->route('login.form')->with('error', 'Tài khoản tạm khóa hoặc chưa đăng nhập. Vui lòng liên hệ quản trị viên!');
         }
-        else{
-            return $next($request);
-        }
+        return $next($request);
     }
 }
