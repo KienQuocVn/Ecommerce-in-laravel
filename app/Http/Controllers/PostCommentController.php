@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
-use Notification;
+use Illuminate\Support\Facades\Notification;
 use App\User;
 use App\Notifications\StatusNotification;
 use App\Models\PostComment;

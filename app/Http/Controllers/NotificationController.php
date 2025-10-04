@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Notification;
+
 class NotificationController extends Controller
 {
     public function index(){
@@ -21,16 +22,16 @@ class NotificationController extends Controller
         if($notification){
             $status=$notification->delete();
             if($status){
-                session()->flash('success','Notification successfully deleted');
+                session()->flash('success','Thông báo đã được xóa thành công');
                 return back();
             }
             else{
-                session()->flash('error','Error please try again');
+                session()->flash('error','Lỗi vui lòng thử lại');
                 return back();
             }
         }
         else{
-            session()->flash('error','Notification not found');
+            session()->flash('error','Không tìm thấy thông báo');
             return back();
         }
     }

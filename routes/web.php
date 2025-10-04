@@ -18,6 +18,7 @@
     use App\Http\Controllers\HomeController;
     use \UniSharp\LaravelFilemanager\Lfm;
     use App\Http\Controllers\Auth\ResetPasswordController;
+    use Illuminate\Support\Facades\Auth;
     /*
     |--------------------------------------------------------------------------
     | Web Routes

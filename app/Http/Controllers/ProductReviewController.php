@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use Notification;
+use Illuminate\Support\Facades\Notification;
 use App\Notifications\StatusNotification;
 use App\User;
 use App\Models\ProductReview;

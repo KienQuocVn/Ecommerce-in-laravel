@@ -8,7 +8,9 @@ use App\Models\Order;
 use App\Models\ProductReview;
 use App\Models\PostComment;
 use App\Rules\MatchOldPassword;
-use Hash;
+use Illuminate\Support\Facades\Hash;
+use App\Rules\NotSameAsOldPassword;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -210,20 +212,24 @@ class HomeController extends Controller
 
     }
 
-    public function changePassword(){
+    public function changePassword()
+    {
         return view('user.layouts.userPasswordChange');
     }
+
     public function changPasswordStore(Request $request)
     {
         $request->validate([
             'current_password' => ['required', new MatchOldPassword],
-            'new_password' => ['required'],
-            'new_confirm_password' => ['same:new_password'],
+            'new_password' => ['required', new NotSameAsOldPassword], // Thêm quy tắc mới
+            'new_confirm_password' => ['same:new_password'], // Kiểm tra xác nhận mật khẩu
         ]);
-   
-        User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-   
-        return redirect()->route('user')->with('success','Password successfully changed');
+
+        // Cập nhật mật khẩu mới
+        $user = Auth::user();
+        $user->update(['password' => Hash::make($request->new_password)]);
+
+        return redirect()->route('user')->with('success', 'Mật khẩu đã được thay đổi thành công');
     }
 
     

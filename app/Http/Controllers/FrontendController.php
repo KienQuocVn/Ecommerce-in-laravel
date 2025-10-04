@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\PostTag;
 use App\Models\PostCategory;
 use App\Models\Post;
-use App\Models\Cart;
 use App\Models\Brand;
 use App\User;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +15,6 @@ use Illuminate\Support\Facades\Session;
 use Spatie\Newsletter\Newsletter;
 use DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -364,7 +362,7 @@ class FrontendController extends Controller
             session()->flash('success', 'Successfully login');
             return redirect()->route('home');
         } else {
-            session()->flash('error', 'Invalid email and password pleas try again!');
+            session()->flash('error', 'Email và mật khẩu không hợp lệ, vui lòng thử lại!');
             return redirect()->back();
         }
     }

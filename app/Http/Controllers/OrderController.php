@@ -8,7 +8,7 @@ use App\Models\Order;
 use App\Models\Shipping;
 use App\User;
 use PDF;
-use Notification;
+use Illuminate\Support\Facades\Notification;
 use Helper;
 use Illuminate\Support\Str;
 use App\Notifications\StatusNotification;

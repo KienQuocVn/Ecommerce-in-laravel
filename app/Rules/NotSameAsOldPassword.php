@@ -4,7 +4,9 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-class MatchOldPassword implements Rule
+use Illuminate\Support\Facades\Auth;
+
+class NotSameAsOldPassword implements Rule
 {
     /**
      * Create a new rule instance.
@@ -25,7 +27,7 @@ class MatchOldPassword implements Rule
      */
     public function passes($attribute, $value)
     {
-        return Hash::check($value,auth()->user()->password);
+        return !Hash::check($value, Auth::user()->password);
     }
 
     /**
@@ -35,6 +37,6 @@ class MatchOldPassword implements Rule
      */
     public function message()
     {
-        return 'Current password must match with old password';
+        return 'Mật khẩu mới không được trùng với mật khẩu cũ.';
     }
 }

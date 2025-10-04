@@ -1,55 +1,17 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Documentation for this config :
-|--------------------------------------------------------------------------
-| online  => http://unisharp.github.io/laravel-filemanager/config
-| offline => vendor/unisharp/laravel-filemanager/docs/config.md
- */
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Routing
-    |--------------------------------------------------------------------------
-     */
-
     'use_package_routes'       => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Shared folder / Private folder
-    |--------------------------------------------------------------------------
-    |
-    | If both options are set to false, then shared folder will be activated.
-    |
-     */
-
     'allow_private_folder'     => true,
-
-    // Flexible way to customize client folders accessibility
-    // If you want to customize client folders, publish tag="lfm_handler"
-    // Then you can rewrite userField function in App\Handler\ConfigHandler class
-    // And set 'user_field' to App\Handler\ConfigHandler::class
-    // Ex: The private folder of user will be named as the user id.
     'private_folder_name'      => UniSharp\LaravelFilemanager\Handlers\ConfigHandler::class,
-
     'allow_shared_folder'      => false,
-
     'shared_folder_name'       => 'shares',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Folder Names
-    |--------------------------------------------------------------------------
-     */
-
     'folder_categories'        => [
         'file'  => [
             'folder_name'  => 'files',
             'startup_view' => 'grid',
-            'max_size'     => 50000, // size in KB
+            'max_size'     => 50000, 
             'valid_mime'   => [
                 'image/jpeg',
                 'image/pjpeg',
@@ -61,7 +23,7 @@ return [
         'image' => [
             'folder_name'  => 'photos',
             'startup_view' => 'list',
-            'max_size'     => 50000, // size in KB
+            'max_size'     => 50000, 
             'valid_mime'   => [
                 'image/jpeg',
                 'image/pjpeg',
