@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+
 class StatusNotification extends Notification
 {
     use Queueable;
@@ -18,7 +19,7 @@ class StatusNotification extends Notification
      */
     public function __construct($details)
     {
-        $this->details=$details;
+        $this->details = $details;
     }
 
     /**
@@ -29,7 +30,7 @@ class StatusNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database','broadcast'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -42,7 +43,7 @@ class StatusNotification extends Notification
     // {
     //     return (new MailMessage)
     //                 ->subject('Status Notification')
-    //                 ->from(env('MAIL_USERNAME','test@gmail.com'),'E-shop')
+    //                 ->from(env('MAIL_USERNAME','test@gmail.com'),'shopfy')
     //                 ->line($this->details['title'])
     //                 ->action('View Order', $this->details['actionURL'])
     //                 ->line('Thank you!');
@@ -65,14 +66,14 @@ class StatusNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'title'=>$this->details['title'],
-            'actionURL'=>$this->details['actionURL'],
-            'fas'=>$this->details['fas']
+            // 'title'=>$this->details['title'],
+            'actionURL' => $this->details['actionURL'],
+            'fas' => $this->details['fas']
         ];
     }
 
 
-    
+
     /**
      * Get the broadcastable representation of the notification.
      *
@@ -82,14 +83,11 @@ class StatusNotification extends Notification
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'title' => $this->details['title'],
+            // 'title' => $this->details['title'],
             'actionURL' => $this->details['actionURL'],
             'url' => route('admin.notification', $this->id),
             'fas' => $this->details['fas'],
             'time' => date('F d, Y h:i A')
         ]);
     }
-
-
-    
 }
