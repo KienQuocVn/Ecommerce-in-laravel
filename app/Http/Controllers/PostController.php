@@ -77,10 +77,10 @@ class PostController extends Controller
 
         $status=Post::create($data);
         if($status){
-            session()->flash('success','Post Successfully added');
+            session()->flash('success','Đã thêm bài viết thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!!');
         }
         return redirect()->route('post.index');
     }
@@ -147,10 +147,10 @@ class PostController extends Controller
 
         $status=$post->fill($data)->save();
         if($status){
-            session()->flash('success','Post Successfully updated');
+            session()->flash('success','Bài viết đã được cập nhật thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!!');
         }
         return redirect()->route('post.index');
     }
@@ -168,10 +168,10 @@ class PostController extends Controller
         $status=$post->delete();
         
         if($status){
-            session()->flash('success','Post successfully deleted');
+            session()->flash('success','Bài viết đã xóa thành công');
         }
         else{
-            session()->flash('error','Error while deleting post ');
+            session()->flash('error','Lỗi khi xóa bài đăng');
         }
         return redirect()->route('post.index');
     }

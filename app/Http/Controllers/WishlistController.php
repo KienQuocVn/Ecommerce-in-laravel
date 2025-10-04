@@ -19,20 +19,20 @@ class WishlistController extends Controller
     {
         // dd($request->all());
         if (empty($request->slug)) {
-            session()->flash('error', 'Invalid Products');
+            session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
         $product = Product::where('slug', $request->slug)->first();
         // return $product;
         if (empty($product)) {
-            session()->flash('error', 'Invalid Products');
+            session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
 
         $already_wishlist = Wishlist::where('user_id', auth()->user()->id)->where('cart_id', null)->where('product_id', $product->id)->first();
         // return $already_wishlist;
         if ($already_wishlist) {
-            session()->flash('error', 'You already placed in wishlist');
+            session()->flash('error', 'Bạn đã thêm vào danh sách yêu thích');
             return back();
         } else {
 
@@ -45,7 +45,7 @@ class WishlistController extends Controller
             if ($wishlist->product->stock < $wishlist->quantity || $wishlist->product->stock <= 0) return back()->with('error', 'Stock not sufficient!.');
             $wishlist->save();
         }
-        session()->flash('success', 'Product successfully added to wishlist');
+        session()->flash('success', 'Sản phẩm đã được thêm vào danh sách yêu thích thành công');
         return back();
     }
 
@@ -54,10 +54,10 @@ class WishlistController extends Controller
         $wishlist = Wishlist::find($request->id);
         if ($wishlist) {
             $wishlist->delete();
-            session()->flash('success', 'Wishlist successfully removed');
+            session()->flash('success', 'Danh sách yêu thích đã được xóa thành công');
             return back();
         }
-        session()->flash('error', 'Error please try again');
+        session()->flash('error', 'Lỗi vui lòng thử lại');
         return back();
     }
 }

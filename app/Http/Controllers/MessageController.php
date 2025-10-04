@@ -120,9 +120,9 @@ class MessageController extends Controller
         $message = Message::find($id);
         $status = $message->delete();
         if ($status) {
-            session()->flash('success', 'Successfully deleted message');
+            session()->flash('success', 'Đã xóa tin nhắn thành công');
         } else {
-            session()->flash('error', 'Error occurred please try again');
+            session()->flash('error', 'Đã xảy ra lỗi, vui lòng thử lại');
         }
         return back();
     }

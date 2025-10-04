@@ -79,12 +79,12 @@
 											@endif
 											@endfor
 									</ul>
-									<a href="#" class="total-review">({{$product_detail['getReview']->count()}}) Review</a>
+									<a href="#" class="total-review">({{$product_detail['getReview']->count()}}) Đánh giá</a>
 								</div>
 								@php
 								$after_discount=($product_detail->price-(($product_detail->price*$product_detail->discount)/100));
 								@endphp
-								<p class="price"><span class="discount">${{number_format($after_discount,2)}}</span><s>${{number_format($product_detail->price,2)}}</s> </p>
+								<p class="price"><span class="discount">{{number_format($after_discount,2)}} VNĐ</span><s>{{number_format($product_detail->price,2)}} VNĐ</s> </p>
 								<p class="description">{!!($product_detail->summary)!!}</p>
 							</div>
 							<!--/ End Description -->
@@ -189,7 +189,8 @@
 												<div class="comment-review">
 													<div class="add-review">
 														<h5>Thêm đánh giá</h5>
-\													</div>
+														\
+													</div>
 													<h4>Đánh giá của bạn <span class="text-danger">*</span></h4>
 													<div class="review-inner">
 														<!-- Form -->
@@ -233,7 +234,7 @@
 														</form>
 														@else
 														<p class="text-center p-5">
-															You need to <a href="{{route('login.form')}}" style="color:rgb(54, 54, 204)">Login</a> OR <a style="color:blue" href="{{route('register.form')}}">Register</a>
+															Bạn cần phải <a href="{{route('login.form')}}" style="color:rgb(54, 54, 204)">Đăng Nhập</a> hoặc <a style="color:blue" href="{{route('register.form')}}">Đăng Ký</a>
 
 														</p>
 														<!--/ End Form -->
@@ -250,7 +251,7 @@
 																			}
 																		@endphp --}}
 														<h4>{{ceil($product_detail->getReview->avg('rate'))}} <span>(Overall)</span></h4>
-														<span>Based on {{$product_detail->getReview->count()}} Comments</span>
+														<span>Dựa trên {{$product_detail->getReview->count()}} bình luận</span>
 													</div>
 													@foreach($product_detail['getReview'] as $data)
 													<!-- Single Rating -->
@@ -331,12 +332,12 @@
 							</a>
 							<div class="button-head">
 								<div class="product-action">
-									<a data-toggle="modal" data-target="#modelExample" title="Quick View" href="#"><i class=" ti-eye"></i><span>Quick Shop</span></a>
-									<a title="Wishlist" href="#"><i class=" ti-heart "></i><span>Add to Wishlist</span></a>
+									<a data-toggle="modal" data-target="#modelExample" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
+									<a title="Wishlist" href="#"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
 									<a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
 								</div>
 								<div class="product-action-2">
-									<a title="Add to cart" href="#">Add to cart</a>
+									<a title="Thêm vào giỏ hàng" href="#">Thêm vào giỏ hàng</a>
 								</div>
 							</div>
 						</div>
@@ -405,10 +406,10 @@
 										<i class="yellow fa fa-star"></i>
 										<i class="fa fa-star"></i>
 									</div>
-									<a href="#"> (1 customer review)</a>
+									<a href="#"> (1 đánh giá của khách hàng)</a>
 								</div>
 								<div class="quickview-stock">
-									<span><i class="fa fa-check-circle-o"></i> in stock</span>
+									<span><i class="fa fa-check-circle-o"></i> còn hàng</span>
 								</div>
 							</div>
 							<h3>$29.00</h3>
@@ -455,7 +456,7 @@
 								<!--/ End Input Order -->
 							</div>
 							<div class="add-to-cart">
-								<a href="#" class="btn">Add to cart</a>
+								<a href="#" class="btn">Thêm vào giỏ hàng</a>
 								<a href="#" class="btn min"><i class="ti-heart"></i></a>
 								<a href="#" class="btn min"><i class="fa fa-compress"></i></a>
 							</div>

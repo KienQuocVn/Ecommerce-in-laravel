@@ -19,21 +19,11 @@
     use \UniSharp\LaravelFilemanager\Lfm;
     use App\Http\Controllers\Auth\ResetPasswordController;
     use Illuminate\Support\Facades\Auth;
-    /*
-    |--------------------------------------------------------------------------
-    | Web Routes
-    |--------------------------------------------------------------------------
-    |
-    | Here is where you can register web routes for your application. These
-    | routes are loaded by the RouteServiceProvider within a group which
-    | contains the "web" middleware group. Now create something great!
-    |
-    */
 
     // CACHE CLEAR ROUTE
     Route::get('cache-clear', function () {
         Artisan::call('optimize:clear');
-        session()->flash('success', 'Successfully cache cleared.');
+        session()->flash('success', 'Đã xóa bộ nhớ đệm thành công.');
         return redirect()->back();
     })->name('cache.clear');
 

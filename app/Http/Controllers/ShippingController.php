@@ -46,10 +46,10 @@ class ShippingController extends Controller
         // return $data;
         $status=Shipping::create($data);
         if($status){
-            session()->flash('success','Shipping successfully created');
+            session()->flash('success','Đã tạo thành công vận chuyển');
         }
         else{
-            session()->flash('error','Error, Please try again');
+            session()->flash('error','Lỗi, vui lòng thử lại');
         }
         return redirect()->route('shipping.index');
     }
@@ -75,7 +75,7 @@ class ShippingController extends Controller
     {
         $shipping=Shipping::find($id);
         if(!$shipping){
-            session()->flash('error','Shipping not found');
+            session()->flash('error','Không tìm thấy vận chuyển');
         }
         return view('backend.shipping.edit')->with('shipping',$shipping);
     }
@@ -99,10 +99,10 @@ class ShippingController extends Controller
         // return $data;
         $status=$shipping->fill($data)->save();
         if($status){
-            session()->flash('success','Shipping successfully updated');
+            session()->flash('success','Đã cập nhật vận chuyển thành công');
         }
         else{
-            session()->flash('error','Error, Please try again');
+            session()->flash('error','Lỗi, vui lòng thử lại');
         }
         return redirect()->route('shipping.index');
     }
@@ -119,15 +119,15 @@ class ShippingController extends Controller
         if($shipping){
             $status=$shipping->delete();
             if($status){
-                session()->flash('success','Shipping successfully deleted');
+                session()->flash('success','Đã xóa thành công vận chuyển');
             }
             else{
-                session()->flash('error','Error, Please try again');
+                session()->flash('error','Lỗi, vui lòng thử lại');
             }
             return redirect()->route('shipping.index');
         }
         else{
-            session()->flash('error','Shipping not found');
+            session()->flash('error','Không tìm thấy vận chuyển');
             return redirect()->back();
         }
     }

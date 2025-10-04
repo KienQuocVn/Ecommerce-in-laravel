@@ -130,11 +130,11 @@
                                     </a>
                                     <div class="button-head">
                                         <div class="product-action">
-                                            <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Quick Shop</span></a>
-                                            <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Add to Wishlist</span></a>
+                                            <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
+                                            <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                         </div>
                                         <div class="product-action-2">
-                                            <a title="Add to cart" href="{{route('add-to-cart',$product->slug)}}">Add to cart</a>
+                                            <a title="Thêm vào giỏ hàng" href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
                                         </div>
                                     </div>
                                 </div>
@@ -224,11 +224,11 @@
                             </a>
                             <div class="button-head">
                                 <div class="product-action">
-                                    <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Quick Shop</span></a>
-                                    <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Add to Wishlist</span></a>
+                                    <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
+                                    <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                 </div>
                                 <div class="product-action-2">
-                                    <a href="{{route('add-to-cart',$product->slug)}}">Add to cart</a>
+                                    <a href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
                                 </div>
                             </div>
                         </div>
@@ -434,11 +434,11 @@
                                             @endif
                                             @endfor
                                     </div>
-                                    <a href="#"> ({{$rate_count}} customer review)</a>
+                                    <a href="#"> ({{$rate_count}} đánh giá của khách hàng)</a>
                                 </div>
                                 <div class="quickview-stock">
                                     @if($product->stock >0)
-                                    <span><i class="fa fa-check-circle-o"></i> {{$product->stock}} in stock</span>
+                                    <span><i class="fa fa-check-circle-o"></i> {{$product->stock}} còn hàng</span>
                                     @else
                                     <span><i class="fa fa-times-circle-o text-danger"></i> {{$product->stock}} out stock</span>
                                     @endif
@@ -499,7 +499,7 @@
                                     <!--/ End Input Order -->
                                 </div>
                                 <div class="add-to-cart">
-                                    <button type="submit" class="btn">Add to cart</button>
+                                    <button type="submit" class="btn">Thêm vào giỏ hàng</button>
                                     <a href="{{route('add-to-wishlist',$product->slug)}}" class="btn min"><i class="ti-heart"></i></a>
                                 </div>
                             </form>

@@ -56,10 +56,10 @@ class PostCommentController extends Controller
         ];
         Notification::send($user, new StatusNotification($details));
         if($status){
-            session()->flash('success','Thank you for your comment');
+            session()->flash('success','Cảm ơn bạn đã bình luận');
         }
         else{
-            session()->flash('error','Something went wrong! Please try again!!');
+            session()->flash('error','Có lỗi xảy ra! Vui lòng thử lại!!');
         }
         return redirect()->back();
     }
@@ -88,7 +88,7 @@ class PostCommentController extends Controller
             return view('backend.comment.edit')->with('comment',$comments);
         }
         else{
-            session()->flash('error','Comment not found');
+            session()->flash('error','Không tìm thấy bình luận');
             return redirect()->back();
         }
     }
@@ -108,15 +108,15 @@ class PostCommentController extends Controller
             // return $data;
             $status=$comment->fill($data)->update();
             if($status){
-                session()->flash('success','Comment successfully updated');
+                session()->flash('success','Bình luận đã được cập nhật thành công');
             }
             else{
-                session()->flash('error','Something went wrong! Please try again!!');
+                session()->flash('error','Có lỗi xảy ra! Vui lòng thử lại!!');
             }
             return redirect()->route('comment.index');
         }
         else{
-            session()->flash('error','Comment not found');
+            session()->flash('error','Không tìm thấy bình luận');
             return redirect()->back();
         }
 
@@ -134,15 +134,15 @@ class PostCommentController extends Controller
         if($comment){
             $status=$comment->delete();
             if($status){
-                session()->flash('success','Post Comment successfully deleted');
+                session()->flash('success','Đã xóa bình luận thành công');
             }
             else{
-                session()->flash('error','Error occurred please try again');
+                session()->flash('error','Đã xảy ra lỗi, vui lòng thử lại');
             }
             return back();
         }
         else{
-            session()->flash('error','Post Comment not found');
+            session()->flash('error','Không tìm thấy bình luận');
             return redirect()->back();
         }
     }

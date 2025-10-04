@@ -50,10 +50,10 @@ class PostCategoryController extends Controller
         $data['slug']=$slug;
         $status=PostCategory::create($data);
         if($status){
-            session()->flash('success','Post Category Successfully added');
+            session()->flash('success','Đã thêm danh mục bài viết thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!!');
         }
         return redirect()->route('post-category.index');
     }
@@ -99,10 +99,10 @@ class PostCategoryController extends Controller
         $data=$request->all();
         $status=$postCategory->fill($data)->save();
         if($status){
-            session()->flash('success','Post Category Successfully updated');
+            session()->flash('success','Danh mục bài viết đã được cập nhật thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!!');
         }
         return redirect()->route('post-category.index');
     }
@@ -120,10 +120,10 @@ class PostCategoryController extends Controller
         $status=$postCategory->delete();
         
         if($status){
-            session()->flash('success','Post Category successfully deleted');
+            session()->flash('success','Đã xóa danh mục bài viết thành công');
         }
         else{
-            session()->flash('error','Error while deleting post category');
+            session()->flash('error','Lỗi khi xóa danh mục bài viết');
         }
         return redirect()->route('post-category.index');
     }

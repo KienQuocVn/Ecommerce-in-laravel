@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
     public function index()
@@ -41,9 +42,9 @@ class AdminController extends Controller
         $data = $request->all();
         $status = $user->fill($data)->save();
         if ($status) {
-            session()->flash('success', 'Successfully updated your profile');
+            session()->flash('success', 'Đã cập nhật hồ sơ của bạn thành công');
         } else {
-            session()->flash('error', 'Please try again!');
+            session()->flash('error', 'Vui lòng thử lại!');
         }
         return redirect()->back();
     }
@@ -72,9 +73,9 @@ class AdminController extends Controller
         // return $settings;
         $status = $settings->fill($data)->save();
         if ($status) {
-            session()->flash('success', 'Setting successfully updated');
+            session()->flash('success', 'Cài đặt đã được cập nhật thành công');
         } else {
-            session()->flash('error', 'Please try again');
+            session()->flash('error', 'Vui lòng thử lại');
         }
         return redirect()->route('admin');
     }
@@ -129,7 +130,7 @@ class AdminController extends Controller
             //Regenerate the storage link folder
             try {
                 Artisan::call('storage:link');
-                session()->flash('success', 'Successfully storage linked.');
+                session()->flash('success', 'Đã liên kết lưu trữ thành công.');
                 return redirect()->back();
             } catch (\Exception $exception) {
                 session()->flash('error', $exception->getMessage());
@@ -138,7 +139,7 @@ class AdminController extends Controller
         } else {
             try {
                 Artisan::call('storage:link');
-                session()->flash('success', 'Successfully storage linked.');
+                session()->flash('success', 'Đã liên kết lưu trữ thành công.');
                 return redirect()->back();
             } catch (\Exception $exception) {
                 session()->flash('error', $exception->getMessage());

@@ -45,10 +45,10 @@ class CouponController extends Controller
         $data=$request->all();
         $status=Coupon::create($data);
         if($status){
-            session()->flash('success','Coupon Successfully added');
+            session()->flash('success','Đã thêm phiếu giảm giá thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!');
         }
         return redirect()->route('coupon.index');
     }
@@ -76,7 +76,7 @@ class CouponController extends Controller
             return view('backend.coupon.edit')->with('coupon',$coupon);
         }
         else{
-            return view('backend.coupon.index')->with('error','Coupon not found');
+            return view('backend.coupon.index')->with('error','Không tìm thấy phiếu giảm giá');
         }
     }
 
@@ -100,10 +100,10 @@ class CouponController extends Controller
         
         $status=$coupon->fill($data)->save();
         if($status){
-            session()->flash('success','Coupon Successfully updated');
+            session()->flash('success','Phiếu giảm giá đã được cập nhật thành công');
         }
         else{
-            session()->flash('error','Please try again!!');
+            session()->flash('error','Vui lòng thử lại!');
         }
         return redirect()->route('coupon.index');
         
@@ -121,15 +121,15 @@ class CouponController extends Controller
         if($coupon){
             $status=$coupon->delete();
             if($status){
-                session()->flash('success','Coupon successfully deleted');
+                session()->flash('success','Phiếu giảm giá đã được xóa thành công');
             }
             else{
-                session()->flash('error','Error, Please try again');
+                session()->flash('error','Lỗi, vui lòng thử lại');
             }
             return redirect()->route('coupon.index');
         }
         else{
-            session()->flash('error','Coupon not found');
+            session()->flash('error','Không tìm thấy phiếu giảm giá');
             return redirect()->back();
         }
     }
@@ -139,7 +139,7 @@ class CouponController extends Controller
         $coupon=Coupon::where('code',$request->code)->first();
         // dd($coupon);
         if(!$coupon){
-            session()->flash('error','Invalid coupon code, Please try again');
+            session()->flash('error','Mã giảm giá không hợp lệ, vui lòng thử lại');
             return back();
         }
         if($coupon){
@@ -150,7 +150,7 @@ class CouponController extends Controller
                 'code'=>$coupon->code,
                 'value'=>$coupon->discount($total_price)
             ]);
-            session()->flash('success','Coupon successfully applied');
+            session()->flash('success','Phiếu giảm giá đã được áp dụng thành công');
             return redirect()->back();
         }
     }
