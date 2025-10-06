@@ -67,8 +67,8 @@
                       </sub>
                     </td>
                     <td>{{(($product->is_featured==1)? 'Yes': 'No')}}</td>
-                    <td>Rs. {{$product->price}} /-</td>
-                    <td>  {{$product->discount}}% OFF</td>
+                    <td>{{number_format($product->price,0)}} </td>
+                    <td> {{$product->discount}}% OFF</td>
                     <td>{{$product->size}}</td>
                     <td>{{$product->condition}}</td>
                     <td> {{ucfirst($product->brand->title)}}</td>

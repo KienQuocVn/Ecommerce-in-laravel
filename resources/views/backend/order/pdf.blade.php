@@ -129,7 +129,7 @@
               @endforeach
             </span></td>
           <td>x{{$cart->quantity}}</td>
-          <td><span>${{number_format($cart->price,2)}}</span></td>
+          <td><span>{{number_format($cart->price,0)}} VNĐ</span></td>
         </tr>
       @endforeach
       </tbody>
@@ -137,7 +137,7 @@
         <tr>
           <th scope="col" class="empty"></th>
           <th scope="col" class="text-right">Tổng phụ:</th>
-          <th scope="col"> <span>${{number_format($order->sub_total,2)}}</span></th>
+          <th scope="col"> <span>{{number_format($order->sub_total,0)}} VNĐ</span></th>
         </tr>
       {{-- @if(!empty($order->coupon))
         <tr>
@@ -152,14 +152,14 @@
             $shipping_charge=DB::table('shippings')->where('id',$order->shipping_id)->pluck('price');
           @endphp
           <th scope="col" class="text-right ">Vận chuyển:</th>
-          <th><span>${{number_format($shipping_charge[0],2)}}</span></th>
+          <th><span>{{number_format($shipping_charge[0],0)}} VNĐ</span></th>
         </tr>
         <tr>
           <th scope="col" class="empty"></th>
           <th scope="col" class="text-right">Tổng cộng:</th>
           <th>
             <span>
-                ${{number_format($order->total_amount,2)}}
+                {{number_format($order->total_amount,0)}} VNĐ
             </span>
           </th>
         </tr>

@@ -361,7 +361,7 @@
                                     <h2>TỔNG CỘNG GIỎ HÀNG</h2>
                                     <div class="content">
                                         <ul>
-										    <li class="order_subtotal" data-price="{{Helper::totalCartPrice()}}">Tổng phụ giỏ hàng<span>${{number_format(Helper::totalCartPrice(),2)}}</span></li>
+										    <li class="order_subtotal" data-price="{{Helper::totalCartPrice()}}">Tổng phụ giỏ hàng<span>{{number_format(Helper::totalCartPrice(),0)}} VNĐ</span></li>
                                             <li class="shipping">
                                                 Chi phí vận chuyển
                                                 @if(count(Helper::shipping())>0 && Helper::cartCount()>0)
@@ -377,7 +377,7 @@
                                             </li>
                                             
                                             @if(session('coupon'))
-                                            <li class="coupon_price" data-price="{{session('coupon')['value']}}">Bạn tiết kiệm<span>${{number_format(session('coupon')['value'],2)}}</span></li>
+                                            <li class="coupon_price" data-price="{{session('coupon')['value']}}">Bạn tiết kiệm<span>{{number_format(session('coupon')['value'],0)}} VNĐ</span></li>
                                             @endif
                                             @php
                                                 $total_amount=Helper::totalCartPrice();
@@ -386,9 +386,9 @@
                                                 }
                                             @endphp
                                             @if(session('coupon'))
-                                                <li class="last"  id="order_total_price">Tổng cộng<span>{{number_format($total_amount,2)}} VNĐ</span></li>
+                                                <li class="last"  id="order_total_price">Tổng cộng<span>{{number_format($total_amount,0)}} VNĐ</span></li>
                                             @else
-                                                <li class="last"  id="order_total_price">Tổng cộng<span>{{number_format($total_amount,2)}} VNĐ</span></li>
+                                                <li class="last"  id="order_total_price">Tổng cộng<span>{{number_format($total_amount,0)}} VNĐ</span></li>
                                             @endif
                                         </ul>
                                     </div>

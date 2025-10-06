@@ -29,8 +29,8 @@
           <td>{{$order->first_name}} {{$order->last_name}}</td>
           <td>{{$order->email}}</td>
           <td>{{$order->quantity}}</td>
-          <td>${{$order->shipping->price}}</td>
-          <td>${{number_format($order->total_amount,2)}}</td>
+          <td>{{$order->shipping->price}} VNĐ</td>
+          <td>{{number_format($order->total_amount,0)}} VNĐ</td>
           <td>
             @if($order->status=='new')
             <span class="badge badge-primary">{{$order->status}}</span>
@@ -80,15 +80,15 @@
                 </tr>
                 <tr>
                   <td>Phí vận chuyển</td>
-                  <td> : $ {{$order->shipping->price}}</td>
+                  <td> : {{$order->shipping->price}} VNĐ</td>
                 </tr>
                 <tr>
                   <td>Phiếu giảm giá</td>
-                  <td> : $ {{number_format($order->coupon,2)}}</td>
+                  <td> : {{number_format($order->coupon,0)}} VNĐ</td>
                 </tr>
                 <tr>
                   <td>Tổng số tiền</td>
-                  <td> : $ {{number_format($order->total_amount,2)}}</td>
+                  <td> : {{number_format($order->total_amount,0)}} VNĐ</td>
                 </tr>
                 <tr>
                   <td>Phương thức thanh toán</td>

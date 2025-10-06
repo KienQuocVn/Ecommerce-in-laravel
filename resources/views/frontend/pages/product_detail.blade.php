@@ -84,7 +84,7 @@
 								@php
 								$after_discount=($product_detail->price-(($product_detail->price*$product_detail->discount)/100));
 								@endphp
-								<p class="price"><span class="discount">{{number_format($after_discount,2)}} VNĐ</span><s>{{number_format($product_detail->price,2)}} VNĐ</s> </p>
+								<p class="price"><span class="discount">{{number_format($after_discount,0)}} VNĐ</span><s>{{number_format($product_detail->price,0)}} VNĐ</s> </p>
 								<p class="description">{!!($product_detail->summary)!!}</p>
 							</div>
 							<!--/ End Description -->
@@ -347,8 +347,8 @@
 								@php
 								$after_discount=($data->price-(($data->discount*$data->price)/100));
 								@endphp
-								<span class="old">${{number_format($data->price,2)}}</span>
-								<span>${{number_format($after_discount,2)}}</span>
+								<span class="old">{{number_format($data->price,0)}} VNĐ</span>
+								<span>{{number_format($after_discount,0)}} VNĐ</span>
 							</div>
 
 						</div>
