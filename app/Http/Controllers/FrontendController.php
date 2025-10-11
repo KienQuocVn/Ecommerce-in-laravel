@@ -13,7 +13,7 @@ use App\Models\Brand;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Spatie\Newsletter\Newsletter;
+use Spatie\Newsletter\Facades\Newsletter;
 use DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

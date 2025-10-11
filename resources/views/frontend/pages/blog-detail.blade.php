@@ -194,10 +194,10 @@
                     </div>
                     <!--/ End Single Widget -->
                     <!-- Single Widget -->
-                    <div class="single-widget newsletter">
+                    <!-- <div class="single-widget newsletter">
                         <h3 class="title">Bản tin</h3>
                         <div class="letter-inner">
-                            <h4>Đăng ký và nhận tin tức <br> cập nhật mới nhất.</h4>
+                            <h4>Đăng ký và nhận tin tức mới nhất. </h4>
                             <form action="{{route('subscribe')}}" method="POST">
                                 @csrf
                                 <div class="form-inner">
@@ -206,7 +206,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
                     <!--/ End Single Widget -->
                 </div>
             </div>

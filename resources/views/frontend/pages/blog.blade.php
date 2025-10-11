@@ -134,17 +134,17 @@
                     </div>
                     <!--/ End Single Widget -->
                     <!-- Single Widget -->
-                    <div class="single-widget newsletter">
+                    <!-- <div class="single-widget newsletter">
                         <h3 class="title">Bản tin</h3>
                         <div class="letter-inner">
-                            <h4>Đăng ký và nhận tin tức <br> cập nhật mới nhất.</h4>
+                            <h4>Đăng ký và nhận tin tức mới nhất.</h4>
                             <form method="POST" action="{{route('subscribe')}}" class="form-inner">
                                 @csrf
                                 <input type="email" name="email" placeholder="Nhập email của bạn">
                                 <button type="submit" class="btn " style="width: 100%">Gửi</button>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
                     <!--/ End Single Widget -->
                 </div>
             </div>

@@ -368,7 +368,7 @@
                                                     <select name="shipping" class="nice-select">
                                                         <option value="">Chọn địa chỉ của bạn</option>
                                                         @foreach(Helper::shipping() as $shipping)
-                                                        <option value="{{$shipping->id}}" class="shippingOption" data-price="{{$shipping->price}}">{{$shipping->type}}: {{$shipping->price}} VNĐ</option>
+                                                        <option value="{{$shipping->id}}" class="shippingOption" data-price="{{$shipping->price}}">{{$shipping->type}}: {{number_format($shipping->price),2}} VNĐ</option>
                                                         @endforeach
                                                     </select>
                                                 @else 
@@ -571,8 +571,7 @@
 				let cost = parseFloat( $(this).find('option:selected').data('price') ) || 0;
 				let subtotal = parseFloat( $('.order_subtotal').data('price') ); 
 				let coupon = parseFloat( $('.coupon_price').data('price') ) || 0; 
-				// alert(coupon);
-				$('#order_total_price span').text('$'+(subtotal + cost-coupon).toFixed(2));
+				$('#order_total_price span').text((subtotal + cost-coupon).toFixed(0) + 'VNĐ');
 			});
 
 		});

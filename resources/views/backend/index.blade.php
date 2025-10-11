@@ -187,7 +187,7 @@
           data: {
             labels: data_keys, // ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             datasets: [{
-              label: "Earnings",
+              label: "Thu nhập",
               lineTension: 0.3,
               backgroundColor: "rgba(78, 115, 223, 0.05)",
               borderColor: "rgba(78, 115, 223, 1)",
@@ -231,7 +231,7 @@
                   padding: 10,
                   // Include a dollar sign in the ticks
                   callback: function(value, index, values) {
-                    return '$' + number_format(value);
+                    return  number_format(value) +' ' +'VNĐ';
                   }
                 },
                 gridLines: {
@@ -263,7 +263,7 @@
               callbacks: {
                 label: function(tooltipItem, chart) {
                   var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                  return datasetLabel + ': $' + number_format(tooltipItem.yLabel);
+                  return datasetLabel +':' + number_format(tooltipItem.yLabel)+ ' VNĐ';
                 }
               }
             }
