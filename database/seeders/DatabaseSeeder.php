@@ -11,14 +11,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Dữ liệu thực tế cho tên người dùng
         $realNames = [
             'Nguyễn Văn An', 'Trần Thị Bình', 'Lê Hoàng Cường', 'Phạm Minh Đức', 'Hoàng Thị Hương',
             'Vũ Văn Hùng', 'Đặng Thị Lan', 'Bùi Minh Nam', 'Ngô Thị Oanh', 'Lý Văn Phong',
-            // Thêm đủ 50 tên thực tế
         ];
-
-        // Seeding bảng users
         $adminId = DB::table('users')->insertGetId([
             'name' => 'Quản trị viên',
             'email' => 'admin@example.com',
@@ -28,7 +24,6 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
         $userIds = [];
         foreach ($realNames as $index => $name) {
             $userIds[] = DB::table('users')->insertGetId([
@@ -41,8 +36,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng brands
         $brands = [
             'Nike', 'Adidas', 'Puma', 'Gucci', 'Zara', 'H&M', 'Levis', 'Uniqlo', 'Balenciaga', 'Vans'
         ];
@@ -56,8 +49,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng banners
         $banners = [
             ['title' => 'Khuyến mãi mùa hè', 'description' => 'Giảm giá 30% cho tất cả sản phẩm mùa hè'],
             ['title' => 'Sản phẩm mới', 'description' => 'Khám phá bộ sưu tập mới nhất 2023'],
@@ -76,8 +67,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng categories
         $parentCategories = [
             ['title' => 'Quần áo nam', 'summary' => 'Bộ sưu tập quần áo dành cho nam'],
             ['title' => 'Quần áo nữ', 'summary' => 'Bộ sưu tập quần áo dành cho nữ'],
@@ -99,13 +88,12 @@ class DatabaseSeeder extends Seeder
                 'photo' => '/photos/category' . ($index + 1) . '.jpg',
                 'is_parent' => 1,
                 'parent_id' => null,
-                'added_by' => $adminId, // Gán admin là người tạo
+                'added_by' => $adminId, 
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
-
         $childCategories = [
             ['title' => 'Áo thun nam', 'parent_id' => $parentCategoryIds[0], 'summary' => 'Áo thun nam đa dạng phong cách'],
             ['title' => 'Quần jeans nam', 'parent_id' => $parentCategoryIds[0], 'summary' => 'Quần jeans nam thời trang'],
@@ -143,13 +131,10 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng products
         $products = [
             ['title' => 'Áo thun nam Nike', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[0], 'brand_id' => $brandIds[0], 'price' => 350000.00, 'discount' => 10.00, 'stock' => 100, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Quần jeans nam Levis', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[1], 'brand_id' => $brandIds[6], 'price' => 1200000.00, 'discount' => 15.00, 'stock' => 80, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Áo sơ mi nam Zara', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[2], 'brand_id' => $brandIds[4], 'price' => 850000.00, 'discount' => null, 'stock' => 60, 'condition' => 'default', 'is_featured' => true],
-            // Thêm đủ 50 sản phẩm với dữ liệu thực tế
         ];
         $productIds = [];
         foreach ($products as $index => $product) {
@@ -173,8 +158,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng post_categories
         $postCategories = [
             'Thời trang', 'Công nghệ', 'Sức khỏe', 'Du lịch', 'Ẩm thực',
             'Giáo dục', 'Phong cách sống', 'Kinh doanh', 'Thể thao', 'Văn hóa'
@@ -189,8 +172,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
-        // Seeding bảng post_tags
         $postTags = [
             'thời trang nam', 'thời trang nữ', 'giày dép', 'phụ kiện', 'xu hướng',
             'sức khỏe', 'du lịch', 'ẩm thực', 'công nghệ', 'giáo dục'
@@ -206,11 +187,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng posts
         $posts = [
             ['title' => 'Top 10 xu hướng thời trang 2023', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[0]],
             ['title' => 'Cách chăm sóc sức khỏe mùa đông', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[5], 'added_by' => $userIds[1]],
-            // Thêm đủ 20 bài viết
         ];
         foreach ($posts as $index => $post) {
             DB::table('posts')->insert([
@@ -220,7 +199,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Nội dung chi tiết bài viết ' . $post['title'] . '.',
                 'quote' => 'Trích dẫn từ bài viết ' . $post['title'],
                 'photo' => '/photos/post' . ($index + 1) . '.jpg',
-                'tags' => implode(',', array_slice($postTags, 0, 2)), // Gán 2 thẻ đầu tiên
+                'tags' => implode(',', array_slice($postTags, 0, 2)), 
                 'post_cat_id' => $post['post_cat_id'],
                 'post_tag_id' => $post['post_tag_id'],
                 'added_by' => $post['added_by'],
@@ -230,10 +209,8 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng messages
         $messages = [
             ['name' => 'Nguyễn Văn An', 'subject' => 'Hỏi về sản phẩm', 'email' => 'an@example.com', 'phone' => '0901234567', 'message' => 'Tôi muốn hỏi về sản phẩm áo thun nam.'],
-            // Thêm đủ 10 tin nhắn
         ];
         foreach ($messages as $index => $message) {
             DB::table('messages')->insert([
@@ -249,7 +226,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng shippings
         $shippings = [
             ['type' => 'Giao hàng tiêu chuẩn', 'price' => 50000.00],
             ['type' => 'Giao hàng nhanh', 'price' => 100000.00],
@@ -266,7 +242,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng coupons
         $coupons = [
             ['code' => 'SUMMER2023', 'type' => 'percent', 'value' => 10.00],
             ['code' => 'FREESHIP', 'type' => 'fixed', 'value' => 50000.00],
@@ -286,16 +261,14 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng orders và carts
         $orderIds = [];
         foreach ($userIds as $index => $userId) {
             $subTotal = 0.00;
             $quantity = 0;
             $shippingId = $shippingIds[$index % count($shippingIds)];
-            $couponId = $index % 2 ? $couponIds[$index % count($couponIds)] : null; // Áp dụng coupon cho 50% đơn hàng
+            $couponId = $index % 2 ? $couponIds[$index % count($couponIds)] : null; 
             $couponValue = 0.00;
 
-            // Tạo giỏ hàng
             $cartItems = [];
             $cartItems[] = [
                 'product_id' => $productIds[$index % count($productIds)],
@@ -319,11 +292,9 @@ class DatabaseSeeder extends Seeder
                 $couponValue = number_format($couponValue, 2, '.', '');
             }
 
-            // Tính total_amount
             $shippingPrice = DB::table('shippings')->where('id', $shippingId)->value('price');
             $totalAmount = number_format(max(0, $subTotal + $shippingPrice - $couponValue), 2, '.', '');
 
-            // Tạo đơn hàng
             $orderId = DB::table('orders')->insertGetId([
                 'order_number' => 'ORD-' . str_pad($index + 1, 5, '0', STR_PAD_LEFT),
                 'user_id' => $userId,
@@ -346,8 +317,6 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
-            // Thêm order_id vào cart và insert
             foreach ($cartItems as $cart) {
                 DB::table('carts')->insert(array_merge($cart, ['order_id' => $orderId]));
             }
@@ -355,11 +324,9 @@ class DatabaseSeeder extends Seeder
             $orderIds[] = $orderId;
         }
 
-        // Seeding bảng product_reviews
         $reviews = [
             ['user_id' => $userIds[0], 'product_id' => $productIds[0], 'rate' => 5, 'review' => 'Sản phẩm chất lượng, rất đáng tiền!'],
             ['user_id' => $userIds[1], 'product_id' => $productIds[1], 'rate' => 4, 'review' => 'Quần jeans đẹp, nhưng hơi chật.'],
-            // Thêm đủ 20 đánh giá
         ];
         foreach ($reviews as $index => $review) {
             DB::table('product_reviews')->insert([
@@ -373,11 +340,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng post_comments
         $comments = [
             ['user_id' => $userIds[0], 'post_id' => 1, 'comment' => 'Bài viết rất hữu ích, cảm ơn tác giả!'],
             ['user_id' => $userIds[1], 'post_id' => 2, 'comment' => 'Tôi rất thích nội dung này.'],
-            // Thêm đủ 20 bình luận
         ];
         foreach ($comments as $index => $comment) {
             DB::table('post_comments')->insert([
@@ -392,10 +357,8 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng wishlists
         $wishlists = [
             ['user_id' => $userIds[0], 'product_id' => $productIds[0], 'quantity' => 1, 'price' => $products[0]['price'], 'amount' => $products[0]['price'] * 1],
-            // Thêm đủ 20 danh sách yêu thích
         ];
         foreach ($wishlists as $index => $wishlist) {
             DB::table('wishlists')->insert([
@@ -410,7 +373,6 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seeding bảng settings
         DB::table('settings')->insert([
             'description' => 'Cửa hàng thời trang trực tuyến hàng đầu Việt Nam',
             'short_des' => 'Cung cấp quần áo và phụ kiện thời trang chất lượng cao',
@@ -423,19 +385,16 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // Seeding bảng password_resets
         foreach (array_slice($userIds, 0, 5) as $index => $userId) {
             DB::table('password_resets')->insert([
-                'email' => 'user' . ($index + 1) . '@example.com', // Khớp với email trong users
+                'email' => 'user' . ($index + 1) . '@example.com', 
                 'token' => Str::random(60),
                 'created_at' => now(),
             ]);
         }
 
-        // Seeding bảng failed_jobs
         $failedJobs = [
             ['payload' => ['data' => 'Gửi email thất bại'], 'exception' => 'Lỗi kết nối SMTP'],
-            // Thêm đủ 5 công việc thất bại
         ];
         foreach ($failedJobs as $index => $job) {
             DB::table('failed_jobs')->insert([
@@ -446,11 +405,8 @@ class DatabaseSeeder extends Seeder
                 'failed_at' => now(),
             ]);
         }
-
-        // Seeding bảng jobs
         $jobs = [
             ['payload' => ['data' => 'Gửi email chào mừng']],
-            // Thêm đủ 5 công việc
         ];
         foreach ($jobs as $index => $job) {
             DB::table('jobs')->insert([
@@ -462,11 +418,8 @@ class DatabaseSeeder extends Seeder
                 'created_at' => time(),
             ]);
         }
-
-        // Seeding bảng notifications
         $notifications = [
             ['user_id' => $userIds[0], 'message' => 'Đơn hàng của bạn đã được xác nhận'],
-            // Thêm đủ 20 thông báo
         ];
         foreach ($notifications as $index => $notification) {
             DB::table('notifications')->insert([
