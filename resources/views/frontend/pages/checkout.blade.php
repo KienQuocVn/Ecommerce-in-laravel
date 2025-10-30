@@ -354,6 +354,11 @@
                                 <!--/ End Form -->
                             </div>
                         </div>
+
+
+
+
+
                         <div class="col-lg-4 col-12">
                             <div class="order-details">
                                 <!-- Order Widget -->
@@ -368,7 +373,9 @@
                                                     <select name="shipping" class="nice-select">
                                                         <option value="">Chọn địa chỉ của bạn</option>
                                                         @foreach(Helper::shipping() as $shipping)
-                                                        <option value="{{$shipping->id}}" class="shippingOption" data-price="{{$shipping->price}}">{{$shipping->type}}: {{number_format($shipping->price),2}} VNĐ</option>
+                                                            <option value="{{$shipping->id}}" class="shippingOption" data-price="{{$shipping->price}}">
+                                                                {{$shipping->type}}: {{number_format($shipping->price, 2)}} VNĐ
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 @else 
@@ -399,12 +406,12 @@
                                     <h2>Thanh toán</h2>
                                     <div class="content">
                                         <div class="checkbox">
-                                            {{-- <label class="checkbox-inline" for="1"><input name="updates" id="1" type="checkbox"> Kiểm tra thanh toán</label> --}}
                                             <form-group>
                                                 <input name="payment_method"  type="radio" value="cod"> <label> Thanh toán khi nhận hàng</label><br>
                                                 <input name="payment_method"  type="radio" value="paypal"> <label> PayPal</label> 
+                                                <input name="payment_method"  type="radio" value="momo"> <label> Momo</label>
+                                                <input name="payment_method"  type="radio" value="stripe"> <label> Stripe</label>
                                             </form-group>
-                                            
                                         </div>
                                     </div>
                                 </div>
@@ -427,6 +434,8 @@
                                 <!--/ End Button Widget -->
                             </div>
                         </div>
+
+                        
                     </div>
                 </form>
         </div>

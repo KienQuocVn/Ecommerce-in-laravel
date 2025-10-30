@@ -112,14 +112,37 @@
     Route::resource('/comment', 'PostCommentController');
 // Coupon
     Route::post('/coupon-store', [CouponController::class, 'couponStore'])->name('coupon-store');
-// Payment
-    Route::get('payment', [PayPalController::class, 'payment'])->name('payment');
-    Route::get('cancel', [PayPalController::class, 'cancel'])->name('payment.cancel');
-    Route::get('payment/success', [PayPalController::class, 'success'])->name('payment.success');
+use App\Http\Controllers\PaymentStartController;
+use App\Http\Controllers\PaymentReturnController;
+use App\Http\Controllers\PaymentWebhookController;
+
+// Payment routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payments/{provider}/start', [PaymentStartController::class, 'start'])
+        ->name('payments.start');
+});
+
+// Gateway return routes (không cần auth vì có thể từ bên ngoài)
+Route::get('/payments/{provider}/return', [PaymentReturnController::class, 'handle'])
+    ->name('payments.return');
+
+// Webhook routes (không cần auth và CSRF)
+Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe'])
+    ->name('webhooks.stripe')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+Route::post('/webhooks/paypal', [PaymentWebhookController::class, 'paypalWebhook'])
+    ->name('webhooks.paypal')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+//MOMO
+// Sửa lại route webhook MoMo
+Route::post('/webhooks/momo/ipn', [PaymentWebhookController::class, 'momo'])
+    ->name('payments.momo.ipn')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 
 // Backend section start
-
     Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin');
         Route::get('/file-manager', function () {
