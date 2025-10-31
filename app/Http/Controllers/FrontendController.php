@@ -206,16 +206,30 @@ class FrontendController extends Controller
     }
     public function productSearch(Request $request)
     {
-        $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        $products = Product::orwhere('title', 'like', '%' . $request->search . '%')
-            ->orwhere('slug', 'like', '%' . $request->search . '%')
-            ->orwhere('description', 'like', '%' . $request->search . '%')
-            ->orwhere('summary', 'like', '%' . $request->search . '%')
-            ->orwhere('price', 'like', '%' . $request->search . '%')
+        $search = $request->search;
+
+        $recent_products = Product::where('status', 'active')
             ->orderBy('id', 'DESC')
-            ->paginate('9');
-        return view('frontend.pages.product-grids')->with('products', $products)->with('recent_products', $recent_products);
+            ->limit(3)
+            ->get();
+
+        $products = Product::where('status', 'active')
+            ->where(function($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('price', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(9);
+
+        return view('frontend.pages.product-grids', [
+            'products' => $products,
+            'recent_products' => $recent_products
+        ]);
     }
+
 
     public function productBrand(Request $request)
     {

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             // Update payment_method enum to include momo and vnpay
-            $table->enum('payment_method', ['cod', 'paypal', 'momo', 'vnpay'])->default('cod')->change();
+            $table->enum('payment_method', ['cod', 'paypal', 'momo', 'vnpay', 'stripe'])->default('cod')->change();
 
             // Update payment_status enum to include pending
             $table->enum('payment_status', ['paid', 'unpaid', 'pending'])->default('unpaid')->change();
@@ -30,13 +30,13 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             // Revert payment_method enum
-            $table->enum('payment_method', ['cod', 'paypal'])->default('cod')->change();
+            $table->enum('payment_method', ['cod', 'paypal', 'momo', 'vnpay', 'stripe'])->default('cod')->change();
 
             // Revert payment_status enum
-            $table->enum('payment_status', ['paid', 'unpaid'])->default('unpaid')->change();
+            $table->enum('payment_status', ['paid', 'unpaid', 'pending'])->default('unpaid')->change();
 
             // Revert status enum
-            $table->enum('status', ['new', 'progress', 'delivered', 'cancel'])->default('new')->change();
+            $table->enum('status', ['new', 'progress', 'process', 'delivered', 'cancel'])->default('new')->change();
         });
     }
 };

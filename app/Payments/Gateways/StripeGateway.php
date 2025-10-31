@@ -16,30 +16,57 @@ class StripeGateway implements PaymentGateway
 
     public function createPayment(Order $order): string
     {
+        $order->load(['items.product']); // đảm bảo có dữ liệu
+
         $lineItems = $order->items->map(function ($item) {
-            $amountCents = (int) round($item->unit_price * 100);
+            $productName = $item->product->name ?? 'Sản phẩm không xác định';
+            $unitPrice   = (float) ($item->unit_price ?? 0);
+            // Chuyển đổi VNĐ sang USD (tỷ giá 1 USD ~ 24000 VND, bạn có thể điều chỉnh)
+            $exchangeRate = 24000; 
+            $priceInUsd = $item->unit_price / $exchangeRate;
+            $amountCents = (int) round($priceInUsd * 100);
+
+            if ($amountCents <= 0) {
+                throw new \RuntimeException("Sản phẩm {$productName} có giá không hợp lệ ({$item->unit_price})");
+            }
+
+
+            if ($amountCents <= 0) {
+                throw new \RuntimeException("Sản phẩm {$productName} có giá không hợp lệ ({$unitPrice})");
+            }
 
             return [
                 'price_data' => [
                     'currency'     => 'usd',
-                    'product_data' => ['name' => $item->product->name],
+                    'product_data' => ['name' => $productName],
                     'unit_amount'  => $amountCents,
                 ],
+
                 'quantity' => (int) $item->quantity,
             ];
         })->values()->toArray();
 
         $session = $this->stripe->checkout->sessions->create([
-            'mode'                  => 'payment',
-            'success_url'           => url('/payments/stripe/return?status=success&order_id=' . $order->id . '&session_id={CHECKOUT_SESSION_ID}'),
-            'cancel_url'            => url('/payments/stripe/return?status=cancel&order_id=' . $order->id),
-            'payment_method_types'  => ['card'],
-            'line_items'            => $lineItems,
-            'metadata'              => ['order_id' => (string) $order->id],
+            'mode'                 => 'payment',
+            'success_url'          => url('/payments/stripe/return?status=success&order_id=' . $order->id . '&session_id={CHECKOUT_SESSION_ID}'),
+            'cancel_url'           => url('/payments/stripe/return?status=cancel&order_id=' . $order->id),
+            'payment_method_types' => ['card'],
+            'line_items'           => $lineItems,
+            'metadata'             => ['order_id' => (string) $order->id],
         ]);
+
+        // Cập nhật Payment DB
+        Payment::where('order_id', $order->id)
+            ->where('provider', 'stripe')
+            ->update([
+                'amount'   => $order->total_amount,
+                'currency' => 'VND',
+                'status'   => 'pending',
+            ]);
 
         return $session->url;
     }
+
 
     public function handleReturn(array $payload): array
     {
