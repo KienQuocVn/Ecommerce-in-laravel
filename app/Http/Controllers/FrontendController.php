@@ -10,7 +10,7 @@ use App\Models\PostCategory;
 use App\Models\Post;
 use App\Models\Cart;
 use App\Models\Brand;
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Spatie\Newsletter\Facades\Newsletter;
@@ -34,7 +34,7 @@ class FrontendController extends Controller
         $banners = Banner::where('status', 'active')->limit(3)->orderBy('id', 'DESC')->get();
         $products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(8)->get();
         $category = Category::where('status', 'active')->where('is_parent', 1)->orderBy('title', 'ASC')->get();
-        
+
         return view('frontend.index')
             ->with('featured', $featured)
             ->with('posts', $posts)
@@ -62,36 +62,36 @@ class FrontendController extends Controller
     public function productGrids()
     {
         $products = Product::where('status', 'active');
-        
+
         // Lọc theo category
         if (!empty($_GET['category'])) {
             $slug = explode(',', $_GET['category']);
             $cat_ids = Category::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
             $products->whereIn('cat_id', $cat_ids);
         }
-        
+
         // Lọc theo brand
         if (!empty($_GET['brand'])) {
             $slugs = explode(',', $_GET['brand']);
             $brand_ids = Brand::select('id')->whereIn('slug', $slugs)->pluck('id')->toArray();
             $products->whereIn('brand_id', $brand_ids);
         }
-        
+
         // Lọc theo size
         if (!empty($_GET['size'])) {
             $sizes = explode(',', $_GET['size']);
-            $products->where(function($query) use ($sizes) {
+            $products->where(function ($query) use ($sizes) {
                 foreach ($sizes as $size) {
                     $query->orWhere('size', 'like', "%{$size}%");
                 }
             });
         }
-        
+
         // Lọc theo condition
         if (!empty($_GET['condition'])) {
             $products->where('condition', $_GET['condition']);
         }
-        
+
         // Lọc theo đánh giá
         if (!empty($_GET['rating'])) {
             $rating = (int)$_GET['rating'];
@@ -103,13 +103,13 @@ class FrontendController extends Controller
                 ->toArray();
             $products->whereIn('id', $product_ids);
         }
-        
+
         // Lọc theo giá
         if (!empty($_GET['price'])) {
             $price = explode('-', $_GET['price']);
             $products->whereBetween('price', $price);
         }
-        
+
         // Sắp xếp
         if (!empty($_GET['sortBy'])) {
             switch ($_GET['sortBy']) {
@@ -143,20 +143,20 @@ class FrontendController extends Controller
         }
 
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        
+
         // Phân trang - Mặc định 30 sản phẩm
         $per_page = !empty($_GET['show']) ? (int)$_GET['show'] : 30;
         $products = $products->paginate($per_page);
-        
+
         // Lấy danh sách sizes
         $available_sizes = Product::where('status', 'active')
             ->whereNotNull('size')
             ->get()
             ->pluck('size')
-            ->flatMap(function($size) {
+            ->flatMap(function ($size) {
                 return explode(',', $size);
             })
-            ->map(function($size) {
+            ->map(function ($size) {
                 return trim($size);
             })
             ->unique()
@@ -168,40 +168,40 @@ class FrontendController extends Controller
             ->with('recent_products', $recent_products)
             ->with('available_sizes', $available_sizes);
     }
-    
+
     public function productLists()
     {
         $products = Product::where('status', 'active');
-        
+
         // Lọc theo category
         if (!empty($_GET['category'])) {
             $slug = explode(',', $_GET['category']);
             $cat_ids = Category::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
             $products->whereIn('cat_id', $cat_ids);
         }
-        
+
         // Lọc theo brand
         if (!empty($_GET['brand'])) {
             $slugs = explode(',', $_GET['brand']);
             $brand_ids = Brand::select('id')->whereIn('slug', $slugs)->pluck('id')->toArray();
             $products->whereIn('brand_id', $brand_ids);
         }
-        
+
         // Lọc theo size
         if (!empty($_GET['size'])) {
             $sizes = explode(',', $_GET['size']);
-            $products->where(function($query) use ($sizes) {
+            $products->where(function ($query) use ($sizes) {
                 foreach ($sizes as $size) {
                     $query->orWhere('size', 'like', "%{$size}%");
                 }
             });
         }
-        
+
         // Lọc theo condition
         if (!empty($_GET['condition'])) {
             $products->where('condition', $_GET['condition']);
         }
-        
+
         // Lọc theo đánh giá
         if (!empty($_GET['rating'])) {
             $rating = (int)$_GET['rating'];
@@ -213,13 +213,13 @@ class FrontendController extends Controller
                 ->toArray();
             $products->whereIn('id', $product_ids);
         }
-        
+
         // Lọc theo giá
         if (!empty($_GET['price'])) {
             $price = explode('-', $_GET['price']);
             $products->whereBetween('price', $price);
         }
-        
+
         // Sắp xếp
         if (!empty($_GET['sortBy'])) {
             switch ($_GET['sortBy']) {
@@ -254,20 +254,20 @@ class FrontendController extends Controller
         }
 
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        
+
         // Phân trang
         $per_page = !empty($_GET['show']) ? (int)$_GET['show'] : 12;
         $products = $products->paginate($per_page);
-        
+
         // Lấy danh sách sizes
         $available_sizes = Product::where('status', 'active')
             ->whereNotNull('size')
             ->get()
             ->pluck('size')
-            ->flatMap(function($size) {
+            ->flatMap(function ($size) {
                 return explode(',', $size);
             })
-            ->map(function($size) {
+            ->map(function ($size) {
                 return trim($size);
             })
             ->unique()
@@ -279,57 +279,57 @@ class FrontendController extends Controller
             ->with('recent_products', $recent_products)
             ->with('available_sizes', $available_sizes);
     }
-    
+
     // FIX: Giữ nguyên trang hiện tại khi filter
     public function productFilter(Request $request)
     {
         $data = $request->all();
-        
+
         // Build URL parameters
         $params = [];
-        
+
         if (!empty($data['show'])) {
             $params['show'] = $data['show'];
         }
-        
+
         if (!empty($data['sortBy'])) {
             $params['sortBy'] = $data['sortBy'];
         }
-        
+
         if (!empty($data['category'])) {
             $params['category'] = implode(',', $data['category']);
         }
-        
+
         if (!empty($data['brand'])) {
             $params['brand'] = implode(',', $data['brand']);
         }
-        
+
         if (!empty($data['size'])) {
             $params['size'] = implode(',', $data['size']);
         }
-        
+
         if (!empty($data['condition'])) {
             $params['condition'] = $data['condition'];
         }
-        
+
         if (!empty($data['rating'])) {
             $params['rating'] = $data['rating'];
         }
-        
+
         if (!empty($data['price_range'])) {
             $params['price'] = $data['price_range'];
         }
-        
+
         // Xác định trang hiện tại dựa trên URL referrer
         $referer = $request->headers->get('referer');
-        
+
         if (strpos($referer, 'product-lists') !== false) {
             return redirect()->route('product-lists', $params);
         } else {
             return redirect()->route('product-grids', $params);
         }
     }
-    
+
     public function productSearch(Request $request)
     {
         $search = $request->search;
@@ -340,69 +340,112 @@ class FrontendController extends Controller
             ->get();
 
         $products = Product::where('status', 'active')
-            ->where(function($query) use ($search) {
+            ->where(function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
                     ->orWhere('slug', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('summary', 'like', "%{$search}%")
-                    ->orWhere('price', 'like', "%{$search}%");
+                    ->orWhere('summary', 'like', "%{$search}%");
             })
             ->orderBy('id', 'DESC')
-            ->paginate(9);
+            ->paginate(12);
+
+        // Lấy sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function ($size) {
+                return explode(',', $size);
+            })
+            ->map(function ($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
         return view('frontend.pages.product-grids', [
             'products' => $products,
-            'recent_products' => $recent_products
+            'recent_products' => $recent_products,
+            'available_sizes' => $available_sizes
         ]);
     }
 
     public function productBrand(Request $request)
     {
-        $products = Brand::getProductByBrand($request->slug);
-        $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        
+        $brand = Brand::where('slug', $request->slug)->first();
+
+        if (!$brand) {
+            abort(404);
+        }
+
+        // Lấy products theo brand và phân trang
+        $products = Product::where('status', 'active')
+            ->where('brand_id', $brand->id)
+            ->orderBy('id', 'DESC')
+            ->paginate(12); // ← PHÂN TRANG
+
+        $recent_products = Product::where('status', 'active')
+            ->orderBy('id', 'DESC')
+            ->limit(3)
+            ->get();
+
         // Lấy sizes
         $available_sizes = Product::where('status', 'active')
             ->whereNotNull('size')
             ->get()
             ->pluck('size')
-            ->flatMap(function($size) {
+            ->flatMap(function ($size) {
                 return explode(',', $size);
             })
-            ->map(function($size) {
+            ->map(function ($size) {
                 return trim($size);
             })
             ->unique()
             ->sort()
             ->values();
-        
+
         if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')
-                ->with('products', $products->products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         } else {
             return view('frontend.pages.product-lists')
-                ->with('products', $products->products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         }
     }
-    
+
     public function productCat(Request $request)
     {
-        $products = Category::getProductByCat($request->slug);
-        $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        
+        $category = Category::getProductByCat($request->slug);
+
+        if (!$category) {
+            abort(404);
+        }
+
+        // Lấy products và phân trang
+        $products = Product::where('status', 'active')
+            ->where('cat_id', $category->id)
+            ->orderBy('id', 'DESC')
+            ->paginate(12); // ← PHÂN TRANG
+
+        $recent_products = Product::where('status', 'active')
+            ->orderBy('id', 'DESC')
+            ->limit(3)
+            ->get();
+
         // Lấy sizes
         $available_sizes = Product::where('status', 'active')
             ->whereNotNull('size')
             ->get()
             ->pluck('size')
-            ->flatMap(function($size) {
+            ->flatMap(function ($size) {
                 return explode(',', $size);
             })
-            ->map(function($size) {
+            ->map(function ($size) {
                 return trim($size);
             })
             ->unique()
@@ -411,31 +454,45 @@ class FrontendController extends Controller
 
         if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')
-                ->with('products', $products->products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         } else {
             return view('frontend.pages.product-lists')
-                ->with('products', $products->products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         }
     }
-    
+
     public function productSubCat(Request $request)
     {
-        $products = Category::getProductBySubCat($request->sub_slug);
-        $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        
+        $category = Category::where('slug', $request->sub_slug)->first();
+
+        if (!$category) {
+            abort(404);
+        }
+
+        // Lấy products theo sub category và phân trang
+        $products = Product::where('status', 'active')
+            ->where('child_cat_id', $category->id)
+            ->orderBy('id', 'DESC')
+            ->paginate(12); // ← PHÂN TRANG
+
+        $recent_products = Product::where('status', 'active')
+            ->orderBy('id', 'DESC')
+            ->limit(3)
+            ->get();
+
         // Lấy sizes
         $available_sizes = Product::where('status', 'active')
             ->whereNotNull('size')
             ->get()
             ->pluck('size')
-            ->flatMap(function($size) {
+            ->flatMap(function ($size) {
                 return explode(',', $size);
             })
-            ->map(function($size) {
+            ->map(function ($size) {
                 return trim($size);
             })
             ->unique()
@@ -444,12 +501,12 @@ class FrontendController extends Controller
 
         if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')
-                ->with('products', $products->sub_products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         } else {
             return view('frontend.pages.product-lists')
-                ->with('products', $products->sub_products)
+                ->with('products', $products)
                 ->with('recent_products', $recent_products)
                 ->with('available_sizes', $available_sizes);
         }
@@ -466,7 +523,7 @@ class FrontendController extends Controller
             // XÓA DÒNG NÀY: return $cat_ids;  // <- Đây là debug code, phải xóa đi!
             $post->whereIn('post_cat_id', $cat_ids);
         }
-        
+
         if (!empty($_GET['tag'])) {
             $slug = explode(',', $_GET['tag']);
             $tag_ids = PostTag::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
@@ -478,7 +535,7 @@ class FrontendController extends Controller
         } else {
             $posts = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate(9);
         }
-        
+
         $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
         return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
@@ -532,18 +589,23 @@ class FrontendController extends Controller
     }
 
     public function blogByCategory(Request $request)
-{
-    $category = PostCategory::getBlogByCategory($request->slug);
-    $posts = $category->post;
-    $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-    return view('frontend.pages.blog', compact('posts', 'recent_posts'));
-}
+    {
+        $category = PostCategory::getBlogByCategory($request->slug);
+        $posts = $category->post;
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        return view('frontend.pages.blog', compact('posts', 'recent_posts'));
+    }
 
     public function blogByTag($slug)
     {
+        // Lấy posts theo tag slug
         $posts = Post::getBlogByTag($slug);
-        $recent_posts = Post::where('status', 'active')->orderBy('id','DESC')->limit(3)->get();
-        return view('frontend.pages.blog', compact('posts', 'recent_posts'));
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+
+        // Lấy thông tin tag để hiển thị title (nếu cần)
+        $tag = PostTag::where('slug', $slug)->first();
+
+        return view('frontend.pages.blog', compact('posts', 'recent_posts', 'tag'));
     }
 
     // Login
@@ -556,10 +618,10 @@ class FrontendController extends Controller
         $data = $request->all();
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 'active'])) {
             Session::put('user', $data['email']);
-            session()->flash('success', 'Successfully login');
+            session()->flash('success', 'Đăng nhập thành công');
             return redirect()->route('home');
         } else {
-            session()->flash('error', 'Invalid email and password pleas try again!');
+            session()->flash('error', 'Email và mật khẩu không hợp lệ, vui lòng thử lại!');
             return redirect()->back();
         }
     }
@@ -568,7 +630,7 @@ class FrontendController extends Controller
     {
         Session::forget('user');
         Auth::logout();
-        session()->flash('success', 'Logout successfully');
+        session()->flash('success', 'Đăng xuất thành công');
         return back();
     }
 
@@ -589,10 +651,10 @@ class FrontendController extends Controller
         $check = $this->create($data);
         Session::put('user', $data['email']);
         if ($check) {
-            session()->flash('success', 'Successfully registered');
+            session()->flash('success', 'Đã đăng ký thành công');
             return redirect()->route('home');
         } else {
-            session()->flash('error', 'Please try again!');
+            session()->flash('error', 'Vui lòng thử lại!');
             return back();
         }
     }
@@ -616,14 +678,14 @@ class FrontendController extends Controller
         if (! Newsletter::isSubscribed($request->email)) {
             Newsletter::subscribePending($request->email);
             if (Newsletter::lastActionSucceeded()) {
-                session()->flash('success', 'Subscribed! Please check your email');
+                session()->flash('success', 'Đã đăng ký! Vui lòng kiểm tra email của bạn');
                 return redirect()->route('home');
             } else {
                 Newsletter::getLastError();
-                return back()->with('error', 'Something went wrong! please try again');
+                return back()->with('error', 'Có gì đó không ổn! Vui lòng thử lại');
             }
         } else {
-            session()->flash('error', 'Already Subscribed');
+            session()->flash('error', 'Đã đăng ký');
             return back();
         }
     }

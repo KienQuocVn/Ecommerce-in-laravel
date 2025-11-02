@@ -34,7 +34,7 @@ class Helper
 ?>
 
             <li>
-                <a href="javascript:void(0);">Category<i class="ti-angle-down"></i></a>
+                <a href="javascript:void(0);">Loại<i class="ti-angle-down"></i></a>
                 <ul class="dropdown border-0 shadow">
                     <?php
                     foreach ($menu as $cat_info) {
@@ -99,7 +99,6 @@ class Helper
             return 0;
         }
     }
-    // relationship cart with product
     public function product()
     {
         return $this->hasOne('App\Models\Product', 'id', 'product_id');

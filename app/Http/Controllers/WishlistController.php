@@ -17,20 +17,17 @@ class WishlistController extends Controller
 
     public function wishlist(Request $request)
     {
-        // dd($request->all());
         if (empty($request->slug)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
         $product = Product::where('slug', $request->slug)->first();
-        // return $product;
         if (empty($product)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
 
         $already_wishlist = Wishlist::where('user_id', auth()->user()->id)->where('cart_id', null)->where('product_id', $product->id)->first();
-        // return $already_wishlist;
         if ($already_wishlist) {
             session()->flash('error', 'Bạn đã thêm vào danh sách yêu thích');
             return back();

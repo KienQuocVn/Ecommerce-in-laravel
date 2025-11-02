@@ -20,39 +20,61 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-        // dd($request->all());
         if (empty($request->slug)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
+        
         $product = Product::where('slug', $request->slug)->first();
-        // return $product;
+        
         if (empty($product)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
 
-        $already_cart = Cart::where('user_id', auth()->user()->id)->where('order_id', null)->where('product_id', $product->id)->first();
-        // return $already_cart;
+        $already_cart = Cart::where('user_id', auth()->user()->id)
+            ->where('order_id', null)
+            ->where('product_id', $product->id)
+            ->first();
+
         if ($already_cart) {
-            // dd($already_cart);
+            // Sản phẩm đã có trong giỏ, tăng số lượng
             $already_cart->quantity = $already_cart->quantity + 1;
             $already_cart->amount = $product->price + $already_cart->amount;
-            // return $already_cart->quantity;
-            if ($already_cart->product->stock < $already_cart->quantity || $already_cart->product->stock <= 0) return back()->with('error', 'Không đủ hàng!');
+            
+            if ($already_cart->product->stock < $already_cart->quantity || $already_cart->product->stock <= 0) {
+                return back()->with('error', 'Không đủ hàng!');
+            }
+            
             $already_cart->save();
+            
+            // ⭐ XÓA SẢN PHẨM NÀY KHỎI WISHLIST (nếu có)
+            Wishlist::where('user_id', auth()->user()->id)
+                ->where('product_id', $product->id)
+                ->where('cart_id', null)
+                ->delete();
+                
         } else {
-
+            // Thêm sản phẩm mới vào giỏ
             $cart = new Cart;
             $cart->user_id = auth()->user()->id;
             $cart->product_id = $product->id;
             $cart->price = ($product->price - ($product->price * $product->discount) / 100);
             $cart->quantity = 1;
             $cart->amount = $cart->price * $cart->quantity;
-            if ($cart->product->stock < $cart->quantity || $cart->product->stock <= 0) return back()->with('error', 'Không đủ hàng!');
+            
+            if ($cart->product->stock < $cart->quantity || $cart->product->stock <= 0) {
+                return back()->with('error', 'Không đủ hàng!');
+            }
+            
             $cart->save();
-            $wishlist = Wishlist::where('user_id', auth()->user()->id)->where('cart_id', null)->update(['cart_id' => $cart->id]);
+            
+            Wishlist::where('user_id', auth()->user()->id)
+                ->where('product_id', $product->id)  
+                ->where('cart_id', null)
+                ->delete();
         }
+        
         session()->flash('success', 'Sản phẩm đã được thêm vào giỏ hàng thành công');
         return back();
     }

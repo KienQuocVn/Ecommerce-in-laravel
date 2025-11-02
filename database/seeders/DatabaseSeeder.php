@@ -24,16 +24,56 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $userNames = [
-            'Nguyễn Văn Hoàng', 'Trần Thị Lan Anh', 'Lê Minh Tuấn', 'Phạm Thị Hương', 'Hoàng Văn Nam',
-            'Vũ Thị Mai', 'Đặng Quốc Bảo', 'Bùi Thị Ngọc', 'Ngô Văn Thắng', 'Lý Thị Thanh',
-            'Phan Minh Đức', 'Trịnh Thị Hà', 'Hồ Văn Phong', 'Dương Thị Linh', 'Cao Văn Khoa',
-            'Lâm Thị Xuân', 'Tạ Văn Hải', 'Phùng Thị Yến', 'Đỗ Văn Long', 'Nguyễn Thị Thảo',
-            'Trần Văn Tùng', 'Lê Thị Hồng', 'Phạm Văn Đạt', 'Hoàng Thị Kim', 'Vũ Văn Hiếu',
-            'Đặng Thị Phương', 'Bùi Văn Tân', 'Ngô Thị Nga', 'Lý Văn Sơn', 'Phan Thị Dung',
-            'Trịnh Văn Hùng', 'Hồ Thị Vân', 'Dương Văn Quý', 'Cao Thị Nhung', 'Lâm Văn Thịnh',
-            'Tạ Thị Thu', 'Phùng Văn Thành', 'Đỗ Thị Loan', 'Nguyễn Văn Bình', 'Trần Thị Oanh',
-            'Lê Văn Duy', 'Phạm Thị Hạnh', 'Hoàng Văn Lộc', 'Vũ Thị Mỹ', 'Đặng Văn Tài',
-            'Bùi Thị Hằng', 'Ngô Văn Toàn', 'Lý Thị Quỳnh', 'Phan Văn Kiên', 'Trịnh Thị Huyền'
+            'Nguyễn Văn Hoàng',
+            'Trần Thị Lan Anh',
+            'Lê Minh Tuấn',
+            'Phạm Thị Hương',
+            'Hoàng Văn Nam',
+            'Vũ Thị Mai',
+            'Đặng Quốc Bảo',
+            'Bùi Thị Ngọc',
+            'Ngô Văn Thắng',
+            'Lý Thị Thanh',
+            'Phan Minh Đức',
+            'Trịnh Thị Hà',
+            'Hồ Văn Phong',
+            'Dương Thị Linh',
+            'Cao Văn Khoa',
+            'Lâm Thị Xuân',
+            'Tạ Văn Hải',
+            'Phùng Thị Yến',
+            'Đỗ Văn Long',
+            'Nguyễn Thị Thảo',
+            'Trần Văn Tùng',
+            'Lê Thị Hồng',
+            'Phạm Văn Đạt',
+            'Hoàng Thị Kim',
+            'Vũ Văn Hiếu',
+            'Đặng Thị Phương',
+            'Bùi Văn Tân',
+            'Ngô Thị Nga',
+            'Lý Văn Sơn',
+            'Phan Thị Dung',
+            'Trịnh Văn Hùng',
+            'Hồ Thị Vân',
+            'Dương Văn Quý',
+            'Cao Thị Nhung',
+            'Lâm Văn Thịnh',
+            'Tạ Thị Thu',
+            'Phùng Văn Thành',
+            'Đỗ Thị Loan',
+            'Nguyễn Văn Bình',
+            'Trần Thị Oanh',
+            'Lê Văn Duy',
+            'Phạm Thị Hạnh',
+            'Hoàng Văn Lộc',
+            'Vũ Thị Mỹ',
+            'Đặng Văn Tài',
+            'Bùi Thị Hằng',
+            'Ngô Văn Toàn',
+            'Lý Thị Quỳnh',
+            'Phan Văn Kiên',
+            'Trịnh Thị Huyền'
         ];
 
         $userIds = [];
@@ -51,16 +91,56 @@ class DatabaseSeeder extends Seeder
 
         // ==================== BRANDS (50 bản ghi) ====================
         $brands = [
-            'Owen', 'Aristino', 'Pierre Cardin', 'The Suit', 'Routine',
-            'Blue Exchange', 'Mon Amie', 'Canifa Office', 'Mango Man', 'Massimo Dutti',
-            'Hugo Boss', 'Armani Exchange', 'Calvin Klein', 'Tommy Hilfiger', 'Ralph Lauren',
-            'Brooks Brothers', 'Charles Tyrwhitt', 'TM Lewin', 'Reiss', 'Ted Baker',
-            'Banana Republic', 'J.Crew', 'Club Monaco', 'COS', 'Sandro',
-            'The Kooples', 'AllSaints', 'Topman', 'River Island', 'Next',
-            'Marks & Spencer', 'H&M Premium', 'Zara Man', 'Uniqlo Business', 'Muji',
-            'Everlane', 'Bonobos', 'Frank & Oak', 'Ministry of Supply', 'Suitsupply',
-            'Indochino', 'Black Lapel', 'Spier & Mackay', 'Proper Cloth', 'Ratio Clothing',
-            'Alton Lane', 'Oliver Wicks', 'Hockerty', 'Lanieri', 'Ermenegildo Zegna'
+            'Owen',
+            'Aristino',
+            'Pierre Cardin',
+            'The Suit',
+            'Routine',
+            'Blue Exchange',
+            'Mon Amie',
+            'Canifa Office',
+            'Mango Man',
+            'Massimo Dutti',
+            'Hugo Boss',
+            'Armani Exchange',
+            'Calvin Klein',
+            'Tommy Hilfiger',
+            'Ralph Lauren',
+            'Brooks Brothers',
+            'Charles Tyrwhitt',
+            'TM Lewin',
+            'Reiss',
+            'Ted Baker',
+            'Banana Republic',
+            'J.Crew',
+            'Club Monaco',
+            'COS',
+            'Sandro',
+            'The Kooples',
+            'AllSaints',
+            'Topman',
+            'River Island',
+            'Next',
+            'Marks & Spencer',
+            'H&M Premium',
+            'Zara Man',
+            'Uniqlo Business',
+            'Muji',
+            'Everlane',
+            'Bonobos',
+            'Frank & Oak',
+            'Ministry of Supply',
+            'Suitsupply',
+            'Indochino',
+            'Black Lapel',
+            'Spier & Mackay',
+            'Proper Cloth',
+            'Ratio Clothing',
+            'Alton Lane',
+            'Oliver Wicks',
+            'Hockerty',
+            'Lanieri',
+            'Ermenegildo Zegna'
         ];
 
         $brandIds = [];
@@ -173,63 +253,63 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Vest Pierre Cardin Xám VN003', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[1], 'brand_id' => $brandIds[2], 'price' => 6800000, 'discount' => 10, 'stock' => 25, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Vest The Suit Navy VN004', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[1], 'brand_id' => $brandIds[3], 'price' => 5500000, 'discount' => 18, 'stock' => 32, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Vest Routine Đen VN005', 'cat_id' => $parentCategoryIds[0], 'child_cat_id' => $childCategoryIds[0], 'brand_id' => $brandIds[4], 'price' => 4200000, 'discount' => null, 'stock' => 50, 'condition' => 'default', 'is_featured' => false],
-            
+
             // Áo Sơ Mi Nam
             ['title' => 'Áo Sơ Mi Trắng Owen SM001', 'cat_id' => $parentCategoryIds[1], 'child_cat_id' => $childCategoryIds[2], 'brand_id' => $brandIds[0], 'price' => 850000, 'discount' => 10, 'stock' => 120, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Áo Sơ Mi Xanh Navy Aristino SM002', 'cat_id' => $parentCategoryIds[1], 'child_cat_id' => $childCategoryIds[2], 'brand_id' => $brandIds[1], 'price' => 920000, 'discount' => 15, 'stock' => 95, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Áo Sơ Mi Kẻ Sọc Pierre SM003', 'cat_id' => $parentCategoryIds[1], 'child_cat_id' => $childCategoryIds[3], 'brand_id' => $brandIds[2], 'price' => 1150000, 'discount' => 12, 'stock' => 78, 'condition' => 'new', 'is_featured' => false],
             ['title' => 'Áo Sơ Mi Hồng Routine SM004', 'cat_id' => $parentCategoryIds[1], 'child_cat_id' => $childCategoryIds[2], 'brand_id' => $brandIds[4], 'price' => 780000, 'discount' => null, 'stock' => 110, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Áo Sơ Mi Kẻ Ca Rô Blue Exchange SM005', 'cat_id' => $parentCategoryIds[1], 'child_cat_id' => $childCategoryIds[3], 'brand_id' => $brandIds[5], 'price' => 890000, 'discount' => 8, 'stock' => 88, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Quần Âu Nam
             ['title' => 'Quần Âu Xám Owen QA001', 'cat_id' => $parentCategoryIds[2], 'child_cat_id' => $childCategoryIds[4], 'brand_id' => $brandIds[0], 'price' => 1200000, 'discount' => 15, 'stock' => 85, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Quần Âu Navy Aristino QA002', 'cat_id' => $parentCategoryIds[2], 'child_cat_id' => $childCategoryIds[4], 'brand_id' => $brandIds[1], 'price' => 1350000, 'discount' => 10, 'stock' => 72, 'condition' => 'new', 'is_featured' => false],
             ['title' => 'Quần Âu Đen Pierre QA003', 'cat_id' => $parentCategoryIds[2], 'child_cat_id' => $childCategoryIds[5], 'brand_id' => $brandIds[2], 'price' => 1580000, 'discount' => 18, 'stock' => 64, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Quần Âu Ống Côn The Suit QA004', 'cat_id' => $parentCategoryIds[2], 'child_cat_id' => $childCategoryIds[5], 'brand_id' => $brandIds[3], 'price' => 1450000, 'discount' => null, 'stock' => 90, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Quần Âu Be Routine QA005', 'cat_id' => $parentCategoryIds[2], 'child_cat_id' => $childCategoryIds[4], 'brand_id' => $brandIds[4], 'price' => 1180000, 'discount' => 12, 'stock' => 75, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Áo Khoác Nam
             ['title' => 'Áo Blazer Xanh Owen AK001', 'cat_id' => $parentCategoryIds[3], 'child_cat_id' => $childCategoryIds[6], 'brand_id' => $brandIds[0], 'price' => 2800000, 'discount' => 20, 'stock' => 42, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Áo Blazer Xám Aristino AK002', 'cat_id' => $parentCategoryIds[3], 'child_cat_id' => $childCategoryIds[6], 'brand_id' => $brandIds[1], 'price' => 3200000, 'discount' => 15, 'stock' => 35, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Áo Cardigan Pierre AK003', 'cat_id' => $parentCategoryIds[3], 'child_cat_id' => $childCategoryIds[7], 'brand_id' => $brandIds[2], 'price' => 1980000, 'discount' => null, 'stock' => 58, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Áo Blazer Đen The Suit AK004', 'cat_id' => $parentCategoryIds[3], 'child_cat_id' => $childCategoryIds[6], 'brand_id' => $brandIds[3], 'price' => 2950000, 'discount' => 18, 'stock' => 48, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Áo Cardigan Xám Routine AK005', 'cat_id' => $parentCategoryIds[3], 'child_cat_id' => $childCategoryIds[7], 'brand_id' => $brandIds[4], 'price' => 1750000, 'discount' => 10, 'stock' => 62, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Giày Da Nam
             ['title' => 'Giày Oxford Đen Owen GD001', 'cat_id' => $parentCategoryIds[4], 'child_cat_id' => $childCategoryIds[8], 'brand_id' => $brandIds[0], 'price' => 2200000, 'discount' => 25, 'stock' => 55, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Giày Oxford Nâu Aristino GD002', 'cat_id' => $parentCategoryIds[4], 'child_cat_id' => $childCategoryIds[8], 'brand_id' => $brandIds[1], 'price' => 2450000, 'discount' => 20, 'stock' => 48, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Giày Derby Đen Pierre GD003', 'cat_id' => $parentCategoryIds[4], 'child_cat_id' => $childCategoryIds[9], 'brand_id' => $brandIds[2], 'price' => 2850000, 'discount' => 15, 'stock' => 38, 'condition' => 'new', 'is_featured' => false],
             ['title' => 'Giày Derby Nâu The Suit GD004', 'cat_id' => $parentCategoryIds[4], 'child_cat_id' => $childCategoryIds[9], 'brand_id' => $brandIds[3], 'price' => 2650000, 'discount' => null, 'stock' => 52, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Giày Oxford Xám Routine GD005', 'cat_id' => $parentCategoryIds[4], 'child_cat_id' => $childCategoryIds[8], 'brand_id' => $brandIds[4], 'price' => 2100000, 'discount' => 18, 'stock' => 60, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Phụ Kiện Nam
             ['title' => 'Cà Vạt Lụa Đỏ Owen CV001', 'cat_id' => $parentCategoryIds[5], 'child_cat_id' => $childCategoryIds[10], 'brand_id' => $brandIds[0], 'price' => 450000, 'discount' => 10, 'stock' => 150, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Cà Vạt Lụa Xanh Aristino CV002', 'cat_id' => $parentCategoryIds[5], 'child_cat_id' => $childCategoryIds[10], 'brand_id' => $brandIds[1], 'price' => 520000, 'discount' => 15, 'stock' => 135, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Thắt Lưng Da Đen Pierre TL001', 'cat_id' => $parentCategoryIds[5], 'child_cat_id' => $childCategoryIds[11], 'brand_id' => $brandIds[2], 'price' => 980000, 'discount' => 20, 'stock' => 92, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Thắt Lưng Da Nâu The Suit TL002', 'cat_id' => $parentCategoryIds[5], 'child_cat_id' => $childCategoryIds[11], 'brand_id' => $brandIds[3], 'price' => 850000, 'discount' => null, 'stock' => 108, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Ví Da Nam Đen Routine VI001', 'cat_id' => $parentCategoryIds[5], 'child_cat_id' => $childCategoryIds[11], 'brand_id' => $brandIds[4], 'price' => 680000, 'discount' => 12, 'stock' => 125, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Váy Công Sở Nữ
             ['title' => 'Váy Bút Chì Đen Mon Amie VCS001', 'cat_id' => $parentCategoryIds[6], 'child_cat_id' => $childCategoryIds[12], 'brand_id' => $brandIds[6], 'price' => 1350000, 'discount' => 18, 'stock' => 68, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Váy Bút Chì Navy Canifa VCS002', 'cat_id' => $parentCategoryIds[6], 'child_cat_id' => $childCategoryIds[12], 'brand_id' => $brandIds[7], 'price' => 1150000, 'discount' => 15, 'stock' => 82, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Váy Xòe Xám Mango VCS003', 'cat_id' => $parentCategoryIds[6], 'child_cat_id' => $childCategoryIds[13], 'brand_id' => $brandIds[8], 'price' => 1580000, 'discount' => 20, 'stock' => 55, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Váy Xòe Be Massimo VCS004', 'cat_id' => $parentCategoryIds[6], 'child_cat_id' => $childCategoryIds[13], 'brand_id' => $brandIds[9], 'price' => 1720000, 'discount' => null, 'stock' => 48, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Váy Bút Chì Xanh Mon Amie VCS005', 'cat_id' => $parentCategoryIds[6], 'child_cat_id' => $childCategoryIds[12], 'brand_id' => $brandIds[6], 'price' => 1280000, 'discount' => 10, 'stock' => 72, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Áo Kiểu Nữ
             ['title' => 'Áo Sơ Mi Nữ Trắng Mon Amie AK001', 'cat_id' => $parentCategoryIds[7], 'child_cat_id' => $childCategoryIds[14], 'brand_id' => $brandIds[6], 'price' => 880000, 'discount' => 12, 'stock' => 98, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Áo Kiểu Lụa Hồng Canifa AK002', 'cat_id' => $parentCategoryIds[7], 'child_cat_id' => $childCategoryIds[15], 'brand_id' => $brandIds[7], 'price' => 1120000, 'discount' => 18, 'stock' => 75, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Áo Sơ Mi Nữ Navy Mango AK003', 'cat_id' => $parentCategoryIds[7], 'child_cat_id' => $childCategoryIds[14], 'brand_id' => $brandIds[8], 'price' => 1050000, 'discount' => 15, 'stock' => 85, 'condition' => 'new', 'is_featured' => false],
             ['title' => 'Áo Kiểu Lụa Xanh Massimo AK004', 'cat_id' => $parentCategoryIds[7], 'child_cat_id' => $childCategoryIds[15], 'brand_id' => $brandIds[9], 'price' => 1280000, 'discount' => null, 'stock' => 68, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Áo Sơ Mi Nữ Kẻ Sọc Mon Amie AK005', 'cat_id' => $parentCategoryIds[7], 'child_cat_id' => $childCategoryIds[14], 'brand_id' => $brandIds[6], 'price' => 920000, 'discount' => 10, 'stock' => 92, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Giày Cao Gót Nữ
             ['title' => 'Giày Cao Gót 5cm Đen Mon Amie GN001', 'cat_id' => $parentCategoryIds[8], 'child_cat_id' => $childCategoryIds[16], 'brand_id' => $brandIds[6], 'price' => 1450000, 'discount' => 20, 'stock' => 62, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Giày Cao Gót 7cm Nude Canifa GN002', 'cat_id' => $parentCategoryIds[8], 'child_cat_id' => $childCategoryIds[17], 'brand_id' => $brandIds[7], 'price' => 1680000, 'discount' => 15, 'stock' => 54, 'condition' => 'new', 'is_featured' => true],
             ['title' => 'Giày Cao Gót 5cm Nâu Mango GN003', 'cat_id' => $parentCategoryIds[8], 'child_cat_id' => $childCategoryIds[16], 'brand_id' => $brandIds[8], 'price' => 1580000, 'discount' => 18, 'stock' => 58, 'condition' => 'hot', 'is_featured' => false],
             ['title' => 'Giày Cao Gót 7cm Đen Massimo GN004', 'cat_id' => $parentCategoryIds[8], 'child_cat_id' => $childCategoryIds[17], 'brand_id' => $brandIds[9], 'price' => 1850000, 'discount' => null, 'stock' => 45, 'condition' => 'default', 'is_featured' => false],
             ['title' => 'Giày Cao Gót 5cm Xám Mon Amie GN005', 'cat_id' => $parentCategoryIds[8], 'child_cat_id' => $childCategoryIds[16], 'brand_id' => $brandIds[6], 'price' => 1380000, 'discount' => 12, 'stock' => 70, 'condition' => 'new', 'is_featured' => false],
-            
+
             // Túi Xách Công Sở
             ['title' => 'Túi Xách Tay Da Đen Mon Amie TX001', 'cat_id' => $parentCategoryIds[9], 'child_cat_id' => $childCategoryIds[18], 'brand_id' => $brandIds[6], 'price' => 2850000, 'discount' => 25, 'stock' => 38, 'condition' => 'hot', 'is_featured' => true],
             ['title' => 'Cặp Laptop Da Nâu Canifa TX002', 'cat_id' => $parentCategoryIds[9], 'child_cat_id' => $childCategoryIds[19], 'brand_id' => $brandIds[7], 'price' => 3200000, 'discount' => 20, 'stock' => 32, 'condition' => 'hot', 'is_featured' => true],
@@ -263,9 +343,16 @@ class DatabaseSeeder extends Seeder
 
         // ==================== POST_CATEGORIES (10 bản ghi) ====================
         $postCategories = [
-            'Xu Hướng Thời Trang', 'Bí Quyết Phối Đồ', 'Chăm Sóc Trang Phục', 'Phong Cách Công Sở',
-            'Thời Trang Bền Vững', 'Tin Tức Ngành', 'Review Sản Phẩm', 'Tips Mua Sắm',
-            'Sự Kiện Thời Trang', 'Thương Hiệu Nổi Bật'
+            'Xu Hướng Thời Trang',
+            'Bí Quyết Phối Đồ',
+            'Chăm Sóc Trang Phục',
+            'Phong Cách Công Sở',
+            'Thời Trang Bền Vững',
+            'Tin Tức Ngành',
+            'Review Sản Phẩm',
+            'Tips Mua Sắm',
+            'Sự Kiện Thời Trang',
+            'Thương Hiệu Nổi Bật'
         ];
 
         $postCategoryIds = [];
@@ -281,8 +368,16 @@ class DatabaseSeeder extends Seeder
 
         // ==================== POST_TAGS (10 bản ghi) ====================
         $postTags = [
-            'vest công sở', 'áo sơ mi', 'phối đồ nam', 'phối đồ nữ', 'giày da',
-            'phụ kiện', 'xu hướng 2025', 'thời trang bền vững', 'tips mặc đẹp', 'chăm sóc quần áo'
+            'vest công sở',
+            'áo sơ mi',
+            'phối đồ nam',
+            'phối đồ nữ',
+            'giày da',
+            'phụ kiện',
+            'xu hướng 2025',
+            'thời trang bền vững',
+            'tips mặc đẹp',
+            'chăm sóc quần áo'
         ];
 
         $postTagIds = [];
@@ -307,14 +402,14 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Review Vest Owen - Có Đáng Đồng Tiền?', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[6], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
             ['title' => 'Cách Phối Phụ Kiện Nam Đẳng Cấp', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[5], 'added_by' => $userIds[7], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
             ['title' => 'Thời Trang Bền Vững - Xu Hướng Tương Lai', 'post_cat_id' => $postCategoryIds[4], 'post_tag_id' => $postTagIds[7], 'added_by' => $userIds[8], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
-            ['title' => '5 Lỗi Thường Gặp Khi Mặc Vest', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[9], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']],
+            ['title' => '5 Lỗi Thường Gặp Khi Mặc Vest', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[9], 'tag_slugs' => ['giay-da', 'phu-kien', 'tips-mac-dep']],
             ['title' => 'Hướng Dẫn Chọn Size Áo Sơ Mi Chuẩn', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[1], 'added_by' => $userIds[10], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
             ['title' => 'Sự Kiện Fashion Week 2025 Highlights', 'post_cat_id' => $postCategoryIds[8], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[11], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
             ['title' => 'Quần Âu Nam: Ống Đứng Hay Ống Côn?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[2], 'added_by' => $userIds[12], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
             ['title' => 'Cách Làm Sạch Giày Da Hiệu Quả', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[9], 'added_by' => $userIds[13], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
             ['title' => 'Aristino vs Pierre Cardin - So Sánh Chi Tiết', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[14], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']],
-            ['title' => 'Phối Đồ Công Sở Với Màu Be', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[15], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
-            ['title' => 'Tips Mua Vest Giảm Giá Mùa Sale', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[16], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
+            ['title' => 'Phối Đồ Công Sở Với Màu Be', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[15], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'tips-mac-dep']],
+            ['title' => 'Tips Mua Vest Giảm Giá Mùa Sale', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[16], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'tips-mac-dep']],
             ['title' => 'Túi Xách Công Sở Nữ - Chọn Sao Cho Đúng?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[3], 'added_by' => $userIds[17], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
             ['title' => 'Lịch Sử Phát Triển Của Vest Nam', 'post_cat_id' => $postCategoryIds[5], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[18], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
             ['title' => 'Xu Hướng Màu Sắc Thời Trang 2025', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[19], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']]
@@ -428,7 +523,7 @@ class DatabaseSeeder extends Seeder
             $userId = $userIds[$i];
             $shippingId = $shippingIds[$i % count($shippingIds)];
             $couponId = $i % 3 == 0 ? $couponIds[$i % count($couponIds)] : null;
-            
+
             // Tạo 2-4 sản phẩm cho mỗi đơn hàng
             $numProducts = rand(2, 4);
             $subTotal = 0;
@@ -440,7 +535,7 @@ class DatabaseSeeder extends Seeder
                 $productId = $productIds[$productIndex];
                 $productPrice = (float)$products[$productIndex]['price'];
                 $quantity = rand(1, 3);
-                
+
                 $itemAmount = $productPrice * $quantity;
                 $subTotal += $itemAmount;
                 $totalQuantity += $quantity;
@@ -575,7 +670,7 @@ class DatabaseSeeder extends Seeder
         $commentIds = [];
         foreach ($comments as $index => $comment) {
             $parentCommentId = $comment['parent_id'] ? $commentIds[$comment['parent_id'] - 1] : null;
-            
+
             $commentIds[] = DB::table('post_comments')->insertGetId([
                 'user_id' => $comment['user_id'],
                 'post_id' => $comment['post_id'],

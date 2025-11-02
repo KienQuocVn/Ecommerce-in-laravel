@@ -49,7 +49,7 @@
                     @endforeach
                     <div class="col-12">
                         <!-- Pagination -->
-                        {{-- {{$posts->appends($_GET)->links()}} --}}
+                        {{ $posts->appends($_GET)->links() }}
                         <!--/ End Pagination -->
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                             @endforeach
                         </ul>
                     </div>
-                    
+
                 </div>
             </div>
         </div>

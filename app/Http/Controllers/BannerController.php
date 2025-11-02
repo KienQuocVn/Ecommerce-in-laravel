@@ -8,33 +8,18 @@ use Illuminate\Support\Str;
 
 class BannerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $banners = Banner::latest('id')->paginate(10);
         return view('backend.banner.index', compact('banners'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
         return view('backend.banner.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -50,8 +35,8 @@ class BannerController extends Controller
         $banner = Banner::create($validatedData);
 
         $message = $banner
-            ? 'Banner successfully added'
-            : 'Error occurred while adding banner';
+            ? 'Đã thêm biểu ngữ thành công'
+            : 'Đã xảy ra lỗi khi thêm biểu ngữ';
 
         return redirect()->route('banner.index')->with(
             $banner ? 'success' : 'error',
@@ -59,36 +44,19 @@ class BannerController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
         // Implement if needed
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $banner = Banner::findOrFail($id);
         return view('backend.banner.edit', compact('banner'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
         $banner = Banner::findOrFail($id);
@@ -103,8 +71,8 @@ class BannerController extends Controller
         $status = $banner->update($validatedData);
 
         $message = $status
-            ? 'Banner successfully updated'
-            : 'Error occurred while updating banner';
+            ? 'Banner đã được cập nhật thành công'
+            : 'Đã xảy ra lỗi khi cập nhật biểu ngữ';
 
         return redirect()->route('banner.index')->with(
             $status ? 'success' : 'error',
@@ -112,20 +80,14 @@ class BannerController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $banner = Banner::findOrFail($id);
         $status = $banner->delete();
 
         $message = $status
-            ? 'Banner successfully deleted'
-            : 'Error occurred while deleting banner';
+            ? 'Biểu ngữ đã được xóa thành công'
+            : 'Đã xảy ra lỗi khi xóa biểu ngữ';
 
         return redirect()->route('banner.index')->with(
             $status ? 'success' : 'error',
@@ -133,12 +95,7 @@ class BannerController extends Controller
         );
     }
 
-    /**
-     * Generate a unique slug for the banner.
-     *
-     * @param  string  $title
-     * @return string
-     */
+
     private function generateUniqueSlug($title)
     {
         $slug = Str::slug($title);

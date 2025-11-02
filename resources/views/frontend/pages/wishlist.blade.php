@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title','Wishlist Page')
+@section('title','Trang danh sách yêu thích')
 @section('main-content')
 <!-- Breadcrumbs -->
 <div class="breadcrumbs">
@@ -54,7 +54,7 @@
 						@else
 						<tr>
 							<td class="text-center">
-								There are no any wishlist available. <a href="{{route('product-grids')}}" style="color:blue;">Continue shopping</a>
+								Không có danh sách mong muốn nào có sẵn. <a href="{{route('product-grids')}}" style="color:blue;">Tiếp tục mua sắm</a>
 
 							</td>
 						</tr>

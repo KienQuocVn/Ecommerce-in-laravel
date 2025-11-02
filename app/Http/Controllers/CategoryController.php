@@ -53,8 +53,8 @@ class CategoryController extends Controller
         $category = Category::create($validatedData);
 
         $message = $category
-            ? 'Category successfully added'
-            : 'Error occurred, Please try again!';
+            ? 'Đã thêm danh mục thành công'
+            : 'Đã xảy ra lỗi. Vui lòng thử lại!';
 
         return redirect()->route('category.index')->with(
             $category ? 'success' : 'error',
@@ -111,8 +111,8 @@ class CategoryController extends Controller
         $status = $category->update($validatedData);
 
         $message = $status
-            ? 'Category successfully updated'
-            : 'Error occurred, Please try again!';
+            ? 'Danh mục đã được cập nhật thành công'
+            : 'Đã xảy ra lỗi. Vui lòng thử lại!';
 
         return redirect()->route('category.index')->with(
             $status ? 'success' : 'error',
@@ -138,8 +138,8 @@ class CategoryController extends Controller
         }
 
         $message = $status
-            ? 'Category successfully deleted'
-            : 'Error while deleting category';
+            ? 'Danh mục đã được xóa thành công'
+            : 'Lỗi khi xóa danh mục';
 
         return redirect()->route('category.index')->with(
             $status ? 'success' : 'error',

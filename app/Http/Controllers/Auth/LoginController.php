@@ -7,16 +7,18 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
     protected $redirectTo = RouteServiceProvider::HOME;
 
 
-    public function credentials(Request $request){
-        return ['email'=>$request->email,'password'=>$request->password,'status'=>'active','role'=>'admin'];
+    public function credentials(Request $request)
+    {
+        return ['email' => $request->email, 'password' => $request->password, 'status' => 'active', 'role' => 'admin'];
     }
     public function __construct()
     {
@@ -26,28 +28,28 @@ class LoginController extends Controller
     public function redirect($provider)
     {
         // dd($provider);
-     return Socialite::driver($provider)->redirect();
+        return Socialite::driver($provider)->redirect();
     }
- 
+
     public function Callback($provider)
     {
         $userSocial =   Socialite::driver($provider)->stateless()->user();
         $users      =   User::where(['email' => $userSocial->getEmail()])->first();
         // dd($users);
-        if($users){
+        if ($users) {
             Auth::login($users);
-            return redirect('/')->with('success','You are login from '.$provider);
-        }else{
+            return redirect('/')->with('success', 'You are login from ' . $provider);
+        } else {
             $user = User::create([
                 'name'          => $userSocial->getName(),
                 'email'         => $userSocial->getEmail(),
                 'image'         => $userSocial->getAvatar(),
                 'provider_id'   => $userSocial->getId(),
                 'provider'      => $provider,
-                'email_verified_at' => now(), 
+                'email_verified_at' => now(),
             ]);
-            Auth::login($user); 
-            return redirect('/')->with('success','You are registered and logged in with '.$provider);
+            Auth::login($user);
+            return redirect('/')->with('success', 'You are registered and logged in with ' . $provider);
         }
     }
 }

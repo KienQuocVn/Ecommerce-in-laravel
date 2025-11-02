@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 class ChatController extends Controller
 {
     private const MAX_RETRIES = 3;
-    private const RETRY_DELAY = 2000000; // 2 seconds in microseconds
-    private const TIMEOUT = 120; // 2 minutes
+    private const RETRY_DELAY = 2000000; 
+    private const TIMEOUT = 120; 
 
     public function chat(Request $req)
     {

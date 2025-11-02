@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
-use App\User; 
+use App\Models\User;
 
 class ResetPasswordController extends Controller
 {
@@ -31,7 +31,7 @@ class ResetPasswordController extends Controller
     {
         Validator::extend('not_same_as_old_password', function ($attribute, $value, $parameters, $validator) {
             $email = $validator->getData()['email'];
-            $user = User::where('email', $email)->first(); // Sử dụng App\User
+            $user = User::where('email', $email)->first(); // Sử dụng App\Models\User
 
             if ($user && Hash::check($value, $user->password)) {
                 return false; // Mật khẩu mới trùng với mật khẩu cũ

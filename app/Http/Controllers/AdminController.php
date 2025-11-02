@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Settings;
-use App\User;
+use App\Models\User;
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -24,20 +24,17 @@ class AdminController extends Controller
         foreach ($data as $key => $value) {
             $array[++$key] = [$value->day_name, $value->count];
         }
-        //  return $data;
         return view('backend.index')->with('users', json_encode($array));
     }
 
     public function profile()
     {
         $profile = Auth()->user();
-        // return $profile;
         return view('backend.users.profile')->with('profile', $profile);
     }
 
     public function profileUpdate(Request $request, $id)
     {
-        // return $request->all();
         $user = User::findOrFail($id);
         $data = $request->all();
         $status = $user->fill($data)->save();
@@ -57,7 +54,6 @@ class AdminController extends Controller
 
     public function settingsUpdate(Request $request)
     {
-        // return $request->all();
         $this->validate($request, [
             'short_des' => 'required|string',
             'description' => 'required|string',
@@ -68,9 +64,7 @@ class AdminController extends Controller
             'phone' => 'required|string',
         ]);
         $data = $request->all();
-        // return $data;
         $settings = Settings::first();
-        // return $settings;
         $status = $settings->fill($data)->save();
         if ($status) {
             session()->flash('success', 'Cài đặt đã được cập nhật thành công');
@@ -84,6 +78,7 @@ class AdminController extends Controller
     {
         return view('backend.layouts.changePassword');
     }
+    
     public function changPasswordStore(Request $request)
     {
         $request->validate([
@@ -94,13 +89,11 @@ class AdminController extends Controller
 
         User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
 
-        return redirect()->route('admin')->with('success', 'Password successfully changed');
+        return redirect()->route('admin')->with('success', 'Mật khẩu đã được thay đổi thành công');
     }
 
-    // Pie chart
     public function userPieChart(Request $request)
     {
-        // dd($request->all());
         $data = User::select(DB::raw("COUNT(*) as count"), DB::raw("DAYNAME(created_at) as day_name"), DB::raw("DAY(created_at) as day"))
             ->where('created_at', '>', Carbon::today()->subDay(6))
             ->groupBy('day_name', 'day')
@@ -110,24 +103,15 @@ class AdminController extends Controller
         foreach ($data as $key => $value) {
             $array[++$key] = [$value->day_name, $value->count];
         }
-        //  return $data;
         return view('backend.index')->with('course', json_encode($array));
     }
 
-    // public function activity(){
-    //     return Activity::all();
-    //     $activity= Activity::all();
-    //     return view('backend.layouts.activity')->with('activities',$activity);
-    // }
 
     public function storageLink()
     {
-        // check if the storage folder already linked;
         if (File::exists(public_path('storage'))) {
-            // removed the existing symbolic link
             File::delete(public_path('storage'));
 
-            //Regenerate the storage link folder
             try {
                 Artisan::call('storage:link');
                 session()->flash('success', 'Đã liên kết lưu trữ thành công.');

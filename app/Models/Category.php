@@ -34,11 +34,13 @@ class Category extends Model
     public function sub_products(){
         return $this->hasMany('App\Models\Product','child_cat_id','id')->where('status','active');
     }
-    public static function getProductByCat($slug){
-        return Category::with('products')->where('slug',$slug)->first();
+    public static function getProductByCat($slug)
+    {
+        return Category::with('products')->where('slug', $slug)->first();
     }
-    public static function getProductBySubCat($slug){
-        return Category::with('sub_products')->where('slug',$slug)->first();
+    public static function getProductBySubCat($slug)
+    {
+        return Category::with('products')->where('slug', $slug)->first();
     }
     public static function countActiveCategory(){
         $data=Category::where('status','active')->count();

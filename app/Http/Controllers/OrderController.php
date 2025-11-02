@@ -7,7 +7,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Shipping;
-use App\User;
+use App\Models\User;
 use PDF;
 use Illuminate\Support\Facades\Notification;
 use Helper;
@@ -47,15 +47,15 @@ class OrderController extends Controller
         $order_data['order_number'] = 'ORD-' . strtoupper(Str::random(10));
         $order_data['user_id'] = $request->user()->id;
         $order_data['shipping_id'] = $request->shipping;
-        
+
         $shipping = Shipping::where('id', $order_data['shipping_id'])->pluck('price');
         $order_data['sub_total'] = Helper::totalCartPrice();
         $order_data['quantity'] = Helper::cartCount();
-        
+
         if (session('coupon')) {
             $order_data['coupon'] = session('coupon')['value'];
         }
-        
+
         // Tính tổng tiền
         if ($request->shipping) {
             if (session('coupon')) {
@@ -70,10 +70,10 @@ class OrderController extends Controller
                 $order_data['total_amount'] = Helper::totalCartPrice();
             }
         }
-        
+
         $order_data['status'] = "new";
         $method = (string) $request->input('payment_method', 'cod');
-        
+
         if (in_array($method, ['paypal', 'stripe', 'momo', 'vnpay'])) {
             $order_data['payment_method'] = $method;
             $order_data['payment_status'] = 'unpaid';
@@ -81,10 +81,10 @@ class OrderController extends Controller
             $order_data['payment_method'] = 'cod';
             $order_data['payment_status'] = 'unpaid';
         }
-        
+
         $order->fill($order_data);
         $status = $order->save();
-        
+
         if ($status) {
             // **TẠO PAYMENT RECORD**
             Payment::create([
