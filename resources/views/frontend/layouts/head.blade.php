@@ -1,5 +1,7 @@
 <!-- Meta Tag -->
 @yield('meta')
+<!-- CSRF Token -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Title Tag  -->
 <title>@yield('title')</title>
 <!-- Favicon -->
@@ -38,23 +40,23 @@
 <style>
     /* Multilevel dropdown */
     .dropdown-submenu {
-    position: relative;
+        position: relative;
     }
 
     .dropdown-submenu>a:after {
-    content: "\f0da";
-    float: right;
-    border: none;
-    font-family: 'FontAwesome';
+        content: "\f0da";
+        float: right;
+        border: none;
+        font-family: 'FontAwesome';
     }
 
     .dropdown-submenu>.dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: 0px;
-    margin-left: 0px;
+        top: 0;
+        left: 100%;
+        margin-top: 0px;
+        margin-left: 0px;
     }
 
-    /*
+    
 </style>
 @stack('styles')

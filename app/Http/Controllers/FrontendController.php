@@ -198,7 +198,7 @@ class FrontendController extends Controller
         if (!empty($data['price_range'])) {
             $priceRangeURL .= '&price=' . $data['price_range'];
         }
-        if (is('shopfy.loc/product-grids')) {
+        if (request()->is('product-grids')) {
             return redirect()->route('product-grids', $catURL . $brandURL . $priceRangeURL . $showURL . $sortByURL);
         } else {
             return redirect()->route('product-lists', $catURL . $brandURL . $priceRangeURL . $showURL . $sortByURL);
@@ -235,7 +235,7 @@ class FrontendController extends Controller
     {
         $products = Brand::getProductByBrand($request->slug);
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        if (is('shopfy.loc/product-grids')) {
+        if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')->with('products', $products->products)->with('recent_products', $recent_products);
         } else {
             return view('frontend.pages.product-lists')->with('products', $products->products)->with('recent_products', $recent_products);
@@ -247,7 +247,7 @@ class FrontendController extends Controller
         // return $request->slug;
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
 
-        if (is('shopfy.loc/product-grids')) {
+        if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')->with('products', $products->products)->with('recent_products', $recent_products);
         } else {
             return view('frontend.pages.product-lists')->with('products', $products->products)->with('recent_products', $recent_products);
@@ -259,7 +259,7 @@ class FrontendController extends Controller
         // return $products;
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
 
-        if (is('shopfy.loc/product-grids')) {
+        if (request()->is('product-grids')) {
             return view('frontend.pages.product-grids')->with('products', $products->sub_products)->with('recent_products', $recent_products);
         } else {
             return view('frontend.pages.product-lists')->with('products', $products->sub_products)->with('recent_products', $recent_products);

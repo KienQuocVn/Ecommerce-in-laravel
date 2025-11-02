@@ -63,4 +63,8 @@ return [
         'payment_url' => env('VNP_PAYMENT_URL'),
         'return_url' => env('VNP_RETURN_URL'),
     ],
+
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY'),
+    ],
 ];

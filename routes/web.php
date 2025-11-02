@@ -19,7 +19,9 @@
     use \UniSharp\LaravelFilemanager\Lfm;
     use App\Http\Controllers\Auth\ResetPasswordController;
     use Illuminate\Support\Facades\Auth;
-
+    use App\Http\Controllers\PaymentStartController;
+    use App\Http\Controllers\PaymentReturnController;
+    use App\Http\Controllers\PaymentWebhookController;
     // CACHE CLEAR ROUTE
     Route::get('cache-clear', function () {
         Artisan::call('optimize:clear');
@@ -56,7 +58,7 @@
 
     Route::get('/', [FrontendController::class, 'home'])->name('home');
 
-// Frontend Routes
+    // Frontend Routes
     Route::get('/home', [FrontendController::class, 'index']);
     Route::get('/about-us', [FrontendController::class, 'aboutUs'])->name('about-us');
     Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
@@ -66,7 +68,8 @@
     Route::get('/product-cat/{slug}', [FrontendController::class, 'productCat'])->name('product-cat');
     Route::get('/product-sub-cat/{slug}/{sub_slug}', [FrontendController::class, 'productSubCat'])->name('product-sub-cat');
     Route::get('/product-brand/{slug}', [FrontendController::class, 'productBrand'])->name('product-brand');
-// Cart section
+
+    // Cart section
     Route::get('/add-to-cart/{slug}', [CartController::class, 'addToCart'])->name('add-to-cart')->middleware('user');
     Route::post('/add-to-cart', [CartController::class, 'singleAddToCart'])->name('single-add-to-cart')->middleware('user');
     Route::get('cart-delete/{id}', [CartController::class, 'cartDelete'])->name('cart-delete');
@@ -76,7 +79,7 @@
         return view('frontend.pages.cart');
     })->name('cart');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout')->middleware('user');
-// Wishlist
+    // Wishlist
     Route::get('/wishlist', function () {
         return view('frontend.pages.wishlist');
     })->name('wishlist');
@@ -85,14 +88,14 @@
     Route::post('cart/order', [OrderController::class, 'store'])->name('cart.order');
     Route::get('order/pdf/{id}', [OrderController::class, 'pdf'])->name('order.pdf');
     Route::get('/income', [OrderController::class, 'incomeChart'])->name('product.order.income');
-// Route::get('/user/chart',[AdminController::class, 'userPieChart'])->name('user.piechart');
+    // Route::get('/user/chart',[AdminController::class, 'userPieChart'])->name('user.piechart');
     Route::get('/product-grids', [FrontendController::class, 'productGrids'])->name('product-grids');
     Route::get('/product-lists', [FrontendController::class, 'productLists'])->name('product-lists');
     Route::match(['get', 'post'], '/filter', [FrontendController::class, 'productFilter'])->name('shop.filter');
-// Order Track
+    // Order Track
     Route::get('/product/track', [OrderController::class, 'orderTrack'])->name('order.track');
     Route::post('product/track/order', [OrderController::class, 'productTrackOrder'])->name('product.track.order');
-// Blog
+    // Blog
     Route::get('/blog', [FrontendController::class, 'blog'])->name('blog');
     Route::get('/blog-detail/{slug}', [FrontendController::class, 'blogDetail'])->name('blog.detail');
     Route::get('/blog/search', [FrontendController::class, 'blogSearch'])->name('blog.search');
@@ -100,49 +103,46 @@
     Route::get('blog-cat/{slug}', [FrontendController::class, 'blogByCategory'])->name('blog.category');
     Route::get('blog-tag/{slug}', [FrontendController::class, 'blogByTag'])->name('blog.tag');
 
-// NewsLetter
+    // NewsLetter
     Route::post('/subscribe', [FrontendController::class, 'subscribe'])->name('subscribe');
 
-// Product Review
+    // Product Review
     Route::resource('/review', 'ProductReviewController');
     Route::post('product/{slug}/review', [ProductReviewController::class, 'store'])->name('review.store');
 
-// Post Comment
+    // Post Comment
     Route::post('post/{slug}/comment', [PostCommentController::class, 'store'])->name('post-comment.store');
     Route::resource('/comment', 'PostCommentController');
-// Coupon
+    // Coupon
     Route::post('/coupon-store', [CouponController::class, 'couponStore'])->name('coupon-store');
-use App\Http\Controllers\PaymentStartController;
-use App\Http\Controllers\PaymentReturnController;
-use App\Http\Controllers\PaymentWebhookController;
-
-// Payment routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/payments/{provider}/start', [PaymentStartController::class, 'start'])
-        ->name('payments.start');
-});
-
-// Gateway return routes (không cần auth vì có thể từ bên ngoài)
-Route::get('/payments/{provider}/return', [PaymentReturnController::class, 'handle'])
-    ->name('payments.return');
-
-// Webhook routes (không cần auth và CSRF)
-Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe'])
-    ->name('webhooks.stripe')
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-
-Route::post('/webhooks/paypal', [PaymentWebhookController::class, 'paypalWebhook'])
-    ->name('webhooks.paypal')
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-
-//MOMO
-// Sửa lại route webhook MoMo
-Route::post('/webhooks/momo/ipn', [PaymentWebhookController::class, 'momo'])
-    ->name('payments.momo.ipn')
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 
-// Backend section start
+    // Payment routes
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/payments/{provider}/start', [PaymentStartController::class, 'start'])
+            ->name('payments.start');
+    });
+
+    // Gateway return routes (không cần auth vì có thể từ bên ngoài)
+    Route::get('/payments/{provider}/return', [PaymentReturnController::class, 'handle'])
+        ->name('payments.return');
+
+    // Webhook routes (không cần auth và CSRF)
+    Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe'])
+        ->name('webhooks.stripe')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+    Route::post('/webhooks/paypal', [PaymentWebhookController::class, 'paypalWebhook'])
+        ->name('webhooks.paypal')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+    //MOMO
+    Route::post('/webhooks/momo/ipn', [PaymentWebhookController::class, 'momo'])
+        ->name('payments.momo.ipn')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+
+    // Backend section start
     Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin');
         Route::get('/file-manager', function () {
@@ -193,7 +193,7 @@ Route::post('/webhooks/momo/ipn', [PaymentWebhookController::class, 'momo'])
     });
 
 
-// User section start
+    // User section start
     Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
         Route::get('/', [HomeController::class, 'index'])->name('user');
         // Profile

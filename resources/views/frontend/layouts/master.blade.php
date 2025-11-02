@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zxx">
+
 <head>
 	<link rel="icon" type="image/png" href="{{ asset('storage/photos/1/favicon.png') }}">
-	@include('frontend.layouts.head')	
+	@include('frontend.layouts.head')
 </head>
+
 <body class="js">
-	
+
 	<!-- Preloader -->
 	<div class="preloader">
 		<div class="preloader-inner">
@@ -16,14 +18,18 @@
 		</div>
 	</div>
 	<!-- End Preloader -->
-	
+
 	@include('frontend.layouts.notification')
 	<!-- Header -->
 	@include('frontend.layouts.header')
 	<!--/ End Header -->
 	@yield('main-content')
-	
+
 	@include('frontend.layouts.footer')
 
+	<!-- AI Chatbot Widget -->
+	@include('frontend.components.chatbot')
+
 </body>
+
 </html>
