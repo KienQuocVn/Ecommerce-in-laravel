@@ -3,27 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
 class PaymentReturnController extends Controller
 {
     public function handle(Request $req, string $provider)
-{
-    try {
-        $gateway = PaymentService::make($provider);
-        $result = $gateway->handleReturn($req->all());
+    {
+        try {
+            $gateway = PaymentService::make($provider);
+            $result = $gateway->handleReturn($req->all());
 
-        // Lấy orderId từ nhiều nguồn
-        $orderId = $req->query('orderId')
-            ?? $req->input('orderId')
-            ?? $req->input('order_id')
-            ?? $req->input('vnp_TxnRef');
+            // Lấy orderId từ nhiều nguồn
+            $momoOrderId = $req->query('orderId')
+                ?? $req->input('orderId')
+                ?? $req->input('order_id')
+                ?? $req->input('vnp_TxnRef');
 
-        $order = null;
-        if ($orderId) {
-            $order = Order::find($orderId);
-            
+            $order = null;
+            if ($momoOrderId && $provider === 'momo') {
+                // Với MoMo, orderId không phải là database ID
+                // Cần tìm qua Payment record
+                $payment = Payment::where('provider', 'momo')
+                    ->whereJsonContains('raw_payload->momo_order_id', $momoOrderId)
+                    ->first();
+
+                if ($payment) {
+                    $order = Order::find($payment->order_id);
+                }
+            } elseif ($momoOrderId) {
+                // Các provider khác dùng trực tiếp order ID
+                $order = Order::find($momoOrderId);
+            }
+
             if ($order && $order->payment) {
                 // Cập nhật payment record
                 $order->payment->update([
@@ -36,33 +49,32 @@ class PaymentReturnController extends Controller
                 if ($result['status'] === 'succeeded') {
                     $order->update([
                         'payment_status' => 'paid',
-                        'status' => 'delivered' 
+                        'status' => 'delivered'
                     ]);
                 }
             }
+
+            // Xóa session cart nếu thanh toán thành công
+            if ($result['status'] === 'succeeded') {
+                session()->forget('cart');
+                session()->forget('coupon');
+            }
+
+            return view('frontend.pages.payment-result', [
+                'provider' => $provider,
+                'status' => $result['status'],
+                'message' => $result['message'] ?? '',
+                'order' => $order,
+            ]);
+        } catch (\Exception $e) {
+
+
+            return view('frontend.pages.payment-result', [
+                'provider' => $provider,
+                'status' => 'failed',
+                'message' => 'Lỗi xử lý thanh toán: ' . $e->getMessage(),
+                'order' => null,
+            ]);
         }
-
-        // Xóa session cart nếu thanh toán thành công
-        if ($result['status'] === 'succeeded') {
-            session()->forget('cart');
-            session()->forget('coupon');
-        }
-
-        return view('frontend.pages.payment-result', [
-            'provider' => $provider,
-            'status' => $result['status'],
-            'message' => $result['message'] ?? '',
-            'order' => $order,
-        ]);
-    } catch (\Exception $e) {
-        
-
-        return view('frontend.pages.payment-result', [
-            'provider' => $provider,
-            'status' => 'failed',
-            'message' => 'Lỗi xử lý thanh toán: ' . $e->getMessage(),
-            'order' => null,
-        ]);
     }
-}
 }

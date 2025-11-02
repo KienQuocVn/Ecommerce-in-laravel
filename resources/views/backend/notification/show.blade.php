@@ -23,7 +23,7 @@
                 </div>
                 <div>
                     <div class="small text-gray-500">{{$notification->created_at->format('F d, Y h:i A')}}</div>
-                    <!-- <span class="@if($notification->unread()) font-weight-bold @else small text-gray-500 @endif">{{$notification->data['title']}}</span> -->
+                    {{-- <span class="@if($notification->unread()) font-weight-bold @else small text-gray-500 @endif">{{$notification->data['title']}}</span> --}}
                 </div>
             </a>
             @if($loop->index+1==5)

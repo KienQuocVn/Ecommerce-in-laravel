@@ -33,7 +33,7 @@ class MomoGateway implements PaymentGateway
     {
         // Lấy số tiền VNĐ từ Order
         $amountVnd = (float) ($order->total_amount ?? $order->sub_total ?? 0);
-        
+
         Log::info('MoMo Payment Init:', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
@@ -41,14 +41,14 @@ class MomoGateway implements PaymentGateway
             'sub_total' => $order->sub_total,
             'amount_vnd' => $amountVnd
         ]);
-        
+
         // Validate số tiền
         if ($amountVnd < 1000) {
             throw new \RuntimeException(
                 "Số tiền phải >= 1,000 VNĐ. Hiện tại: " . number_format($amountVnd, 0) . " VNĐ"
             );
         }
-        
+
         if ($amountVnd > 50000000) {
             throw new \RuntimeException("Số tiền không được vượt quá 50,000,000 VNĐ");
         }
@@ -56,9 +56,15 @@ class MomoGateway implements PaymentGateway
         $amountVnd = (int) round($amountVnd);
 
         $requestId = (string) now()->timestamp . rand(1000, 9999);
-        $orderId = $order->id . '-' . time();
+        // MoMo yêu cầu orderId là số duy nhất, không có ký tự đặc biệt
+        // Format: timestamp + order_id (đảm bảo unique, tối đa 50 ký tự theo MoMo docs)
+        // Sử dụng format đơn giản: timestamp + order_id để đảm bảo unique
+        // Format: timestamp + 5 số order_id (ví dụ: 176209102723)
+        $timestamp = now()->timestamp;
+        $orderId = (string) ($timestamp . str_pad((string)$order->id, 5, '0', STR_PAD_LEFT));
         $orderInfo = 'Thanh toan don hang #' . ($order->order_number ?? $orderId);
-        $extraData = ''; 
+        // Lưu orderId gửi cho MoMo vào extraData để dễ dàng lookup sau
+        $extraData = base64_encode(json_encode(['db_order_id' => $order->id]));
 
         $payload = [
             'partnerCode' => $this->partnerCode,
@@ -68,7 +74,7 @@ class MomoGateway implements PaymentGateway
             'ipnUrl'      => $this->ipnUrl,
             'redirectUrl' => $this->redirectUrl,
             'orderId'     => $orderId,
-            'amount'      => (string) $amountVnd, 
+            'amount'      => (string) $amountVnd,
             'lang'        => 'vi',
             'orderInfo'   => $orderInfo,
             'requestId'   => $requestId,
@@ -82,16 +88,20 @@ class MomoGateway implements PaymentGateway
             'endpoint' => $this->endpoint,
             'amount' => $amountVnd,
             'orderId' => $orderId,
-            'requestId' => $requestId
+            'requestId' => $requestId,
+            'ipnUrl' => $this->ipnUrl,
+            'redirectUrl' => $this->redirectUrl,
+            'partnerCode' => $this->partnerCode
         ]);
 
         $res = Http::timeout(15)->acceptJson()->asJson()->post($this->endpoint, $payload);
-        
+
         $responseData = $res->json();
         Log::info('MoMo Response:', [
             'status' => $res->status(),
             'resultCode' => $responseData['resultCode'] ?? null,
-            'message' => $responseData['message'] ?? null
+            'message' => $responseData['message'] ?? null,
+            'full_response' => $responseData
         ]);
 
         if (!$res->successful()) {
@@ -102,11 +112,13 @@ class MomoGateway implements PaymentGateway
             throw new \RuntimeException('MoMo rejected: ' . json_encode($responseData));
         }
 
+        // Lưu orderId từ MoMo vào Payment để có thể lookup sau
         Payment::where('order_id', $order->id)
             ->where('provider', 'momo')
             ->update([
                 'transaction_id' => $requestId,
                 'status'         => 'pending',
+                'raw_payload'    => ['momo_order_id' => $orderId], // Lưu để lookup
             ]);
 
         return $responseData['payUrl'];
@@ -123,18 +135,19 @@ class MomoGateway implements PaymentGateway
             'resultCode' => $resultCode,
             'orderId' => $orderId,
             'transId' => $transId,
-            'message' => $message
+            'message' => $message,
+            'full_payload' => $payload
         ]);
 
         if ($resultCode === 0) {
             // Thanh toán thành công
             return [
-                'status' => 'succeeded', 
+                'status' => 'succeeded',
                 'transaction_id' => $transId,
                 'message' => $message ?: 'Thanh toán thành công qua MoMo'
             ];
         }
-        
+
         if ($resultCode === 49) {
             return [
                 'status' => 'canceled',
@@ -142,7 +155,7 @@ class MomoGateway implements PaymentGateway
                 'message' => 'Bạn đã hủy thanh toán'
             ];
         }
-        
+
         return [
             'status' => 'failed',
             'transaction_id' => null,
@@ -173,7 +186,7 @@ class MomoGateway implements PaymentGateway
                 'orderId' => $orderId,
                 'resultCode' => $resultCode
             ]);
-            
+
             return [
                 'status' => 'failed',
                 'transaction_id' => $transId ?: null,
@@ -182,20 +195,53 @@ class MomoGateway implements PaymentGateway
         }
 
         DB::transaction(function () use ($orderId, $transId, $payload) {
-            $order = Order::lockForUpdate()->findOrFail($orderId);
+            // Tìm order bằng cách lookup trong Payment records
+            // vì orderId từ MoMo không phải là ID trong database
+            $payment = Payment::where('provider', 'momo')
+                ->whereJsonContains('raw_payload->momo_order_id', $orderId)
+                ->first();
+
+            if (!$payment) {
+                // Fallback: thử extract từ extraData nếu có
+                $extraData = $payload['extraData'] ?? '';
+                if ($extraData) {
+                    try {
+                        $decoded = json_decode(base64_decode($extraData), true);
+                        $dbOrderId = $decoded['db_order_id'] ?? null;
+                        if ($dbOrderId) {
+                            $payment = Payment::where('order_id', $dbOrderId)
+                                ->where('provider', 'momo')
+                                ->first();
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('MoMo IPN: Failed to decode extraData', ['error' => $e->getMessage()]);
+                    }
+                }
+            }
+
+            if (!$payment) {
+                Log::error('MoMo IPN: Cannot find payment record', ['momo_order_id' => $orderId]);
+                throw new \RuntimeException('Cannot find payment record for orderId: ' . $orderId);
+            }
+
+            $order = Order::lockForUpdate()->findOrFail($payment->order_id);
+
+            if ($order->payment_status === 'paid') {
+                Log::info('MoMo IPN: Order already paid', ['order_id' => $order->id]);
+                return;
+            }
+
             $order->update([
                 'payment_status' => 'paid',
                 'status' => 'delivered'
             ]);
 
-            Payment::where('order_id', $order->id)
-                ->where('provider', 'momo')
-                ->update([
-                    'status'           => 'succeeded',
-                    'transaction_id'   => $transId ?: ($payload['requestId'] ?? null),
-                    'gateway_event_id' => $payload['requestId'] ?? null,
-                    'raw_payload'      => $payload,
-                ]);
+            $payment->update([
+                'status'           => 'succeeded',
+                'transaction_id'   => $transId ?: ($payload['requestId'] ?? $payment->transaction_id),
+                'gateway_event_id' => $payload['requestId'] ?? null,
+                'raw_payload'      => array_merge($payment->raw_payload ?? [], ['ipn_payload' => $payload]),
+            ]);
         });
 
         Log::info('MoMo IPN: Payment succeeded', ['orderId' => $orderId]);
@@ -240,15 +286,15 @@ class MomoGateway implements PaymentGateway
             'resultCode',
             'transId'
         ];
-        
+
         $kv = [];
         foreach ($keys as $k) {
             $kv[] = $k . '=' . ($p[$k] ?? '');
         }
-        
+
         $raw = implode('&', $kv);
         $sig = hash_hmac('sha256', $raw, $this->secretKey);
-        
+
         return hash_equals($sig, (string) ($p['signature'] ?? ''));
     }
 }
