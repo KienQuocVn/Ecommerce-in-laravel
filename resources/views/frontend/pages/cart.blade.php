@@ -140,7 +140,7 @@
 									@endif
 								</ul>
 								<div class="button5">
-									<a href="#" class="btn">Thanh toán</a>
+									<a href="{{route('checkout')}}" class="btn">Thanh toán</a>
 									<a href="{{route('product-grids')}}" class="btn">Tiếp tục mua sắm</a>
 								</div>
 							</div>

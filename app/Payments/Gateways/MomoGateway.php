@@ -53,13 +53,12 @@ class MomoGateway implements PaymentGateway
             throw new \RuntimeException("Số tiền không được vượt quá 50,000,000 VNĐ");
         }
 
-        // Convert sang integer (MoMo không nhận số thập phân)
         $amountVnd = (int) round($amountVnd);
 
         $requestId = (string) now()->timestamp . rand(1000, 9999);
         $orderId = $order->id . '-' . time();
         $orderInfo = 'Thanh toan don hang #' . ($order->order_number ?? $orderId);
-        $extraData = ''; // Để trống cho test
+        $extraData = ''; 
 
         $payload = [
             'partnerCode' => $this->partnerCode,
@@ -69,14 +68,13 @@ class MomoGateway implements PaymentGateway
             'ipnUrl'      => $this->ipnUrl,
             'redirectUrl' => $this->redirectUrl,
             'orderId'     => $orderId,
-            'amount'      => (string) $amountVnd, // MoMo yêu cầu string
+            'amount'      => (string) $amountVnd, 
             'lang'        => 'vi',
             'orderInfo'   => $orderInfo,
             'requestId'   => $requestId,
             'extraData'   => $extraData,
         ];
 
-        // Tạo signature
         $signature = $this->signCreate($payload);
         $payload['signature'] = $signature;
 
@@ -131,7 +129,7 @@ class MomoGateway implements PaymentGateway
         if ($resultCode === 0) {
             // Thanh toán thành công
             return [
-                'status' => 'succeeded', // ← SỬA TỪ 'processing' THÀNH 'succeeded'
+                'status' => 'succeeded', 
                 'transaction_id' => $transId,
                 'message' => $message ?: 'Thanh toán thành công qua MoMo'
             ];
@@ -211,7 +209,6 @@ class MomoGateway implements PaymentGateway
 
     private function signCreate(array $p): string
     {
-        // accessKey lấy từ config, KHÔNG từ payload
         $raw = "accessKey=" . $this->accessKey
             . "&amount=" . $p['amount']
             . "&extraData=" . $p['extraData']

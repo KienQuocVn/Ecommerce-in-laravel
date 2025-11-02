@@ -14,7 +14,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Spatie\Newsletter\Facades\Newsletter;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -32,10 +32,9 @@ class FrontendController extends Controller
         $featured = Product::where('status', 'active')->where('is_featured', 1)->orderBy('price', 'DESC')->limit(2)->get();
         $posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
         $banners = Banner::where('status', 'active')->limit(3)->orderBy('id', 'DESC')->get();
-        // return $banner;
         $products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(8)->get();
         $category = Category::where('status', 'active')->where('is_parent', 1)->orderBy('title', 'ASC')->get();
-        // return $category;
+        
         return view('frontend.index')
             ->with('featured', $featured)
             ->with('posts', $posts)
@@ -57,153 +56,280 @@ class FrontendController extends Controller
     public function productDetail($slug)
     {
         $product_detail = Product::getProductBySlug($slug);
-        // dd($product_detail);
         return view('frontend.pages.product_detail')->with('product_detail', $product_detail);
     }
 
     public function productGrids()
     {
-        $products = Product::query();
-
+        $products = Product::where('status', 'active');
+        
+        // Lọc theo category
         if (!empty($_GET['category'])) {
             $slug = explode(',', $_GET['category']);
-            // dd($slug);
             $cat_ids = Category::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
-            // dd($cat_ids);
             $products->whereIn('cat_id', $cat_ids);
-            // return $products;
         }
+        
+        // Lọc theo brand
         if (!empty($_GET['brand'])) {
             $slugs = explode(',', $_GET['brand']);
             $brand_ids = Brand::select('id')->whereIn('slug', $slugs)->pluck('id')->toArray();
-            return $brand_ids;
             $products->whereIn('brand_id', $brand_ids);
         }
-        if (!empty($_GET['sortBy'])) {
-            if ($_GET['sortBy'] == 'title') {
-                $products = $products->where('status', 'active')->orderBy('title', 'ASC');
-            }
-            if ($_GET['sortBy'] == 'price') {
-                $products = $products->orderBy('price', 'ASC');
-            }
+        
+        // Lọc theo size
+        if (!empty($_GET['size'])) {
+            $sizes = explode(',', $_GET['size']);
+            $products->where(function($query) use ($sizes) {
+                foreach ($sizes as $size) {
+                    $query->orWhere('size', 'like', "%{$size}%");
+                }
+            });
         }
-
+        
+        // Lọc theo condition
+        if (!empty($_GET['condition'])) {
+            $products->where('condition', $_GET['condition']);
+        }
+        
+        // Lọc theo đánh giá
+        if (!empty($_GET['rating'])) {
+            $rating = (int)$_GET['rating'];
+            $product_ids = DB::table('product_reviews')
+                ->select('product_id')
+                ->groupBy('product_id')
+                ->havingRaw('AVG(rate) >= ?', [$rating])
+                ->pluck('product_id')
+                ->toArray();
+            $products->whereIn('id', $product_ids);
+        }
+        
+        // Lọc theo giá
         if (!empty($_GET['price'])) {
             $price = explode('-', $_GET['price']);
-            // return $price;
-            // if(isset($price[0]) && is_numeric($price[0])) $price[0]=floor(Helper::base_amount($price[0]));
-            // if(isset($price[1]) && is_numeric($price[1])) $price[1]=ceil(Helper::base_amount($price[1]));
-
             $products->whereBetween('price', $price);
+        }
+        
+        // Sắp xếp
+        if (!empty($_GET['sortBy'])) {
+            switch ($_GET['sortBy']) {
+                case 'title':
+                    $products->orderBy('title', 'ASC');
+                    break;
+                case 'title_desc':
+                    $products->orderBy('title', 'DESC');
+                    break;
+                case 'price':
+                case 'price_asc':
+                    $products->orderBy('price', 'ASC');
+                    break;
+                case 'price_desc':
+                    $products->orderBy('price', 'DESC');
+                    break;
+                case 'discount':
+                    $products->orderBy('discount', 'DESC');
+                    break;
+                case 'newest':
+                    $products->orderBy('id', 'DESC');
+                    break;
+                case 'popular':
+                    $products->withCount('carts')->orderBy('carts_count', 'DESC');
+                    break;
+                default:
+                    $products->orderBy('id', 'DESC');
+            }
+        } else {
+            $products->orderBy('id', 'DESC');
         }
 
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        // Sort by number
-        if (!empty($_GET['show'])) {
-            $products = $products->where('status', 'active')->paginate($_GET['show']);
-        } else {
-            $products = $products->where('status', 'active')->paginate(9);
-        }
-        // Sort by name , price, category
+        
+        // Phân trang - Mặc định 30 sản phẩm
+        $per_page = !empty($_GET['show']) ? (int)$_GET['show'] : 30;
+        $products = $products->paginate($per_page);
+        
+        // Lấy danh sách sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function($size) {
+                return explode(',', $size);
+            })
+            ->map(function($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
-
-        return view('frontend.pages.product-grids')->with('products', $products)->with('recent_products', $recent_products);
+        return view('frontend.pages.product-grids')
+            ->with('products', $products)
+            ->with('recent_products', $recent_products)
+            ->with('available_sizes', $available_sizes);
     }
+    
     public function productLists()
     {
-        $products = Product::query();
-
+        $products = Product::where('status', 'active');
+        
+        // Lọc theo category
         if (!empty($_GET['category'])) {
             $slug = explode(',', $_GET['category']);
-            // dd($slug);
             $cat_ids = Category::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
-            // dd($cat_ids);
-            $products->whereIn('cat_id', $cat_ids)->paginate;
-            // return $products;
+            $products->whereIn('cat_id', $cat_ids);
         }
+        
+        // Lọc theo brand
         if (!empty($_GET['brand'])) {
             $slugs = explode(',', $_GET['brand']);
             $brand_ids = Brand::select('id')->whereIn('slug', $slugs)->pluck('id')->toArray();
-            return $brand_ids;
             $products->whereIn('brand_id', $brand_ids);
         }
-        if (!empty($_GET['sortBy'])) {
-            if ($_GET['sortBy'] == 'title') {
-                $products = $products->where('status', 'active')->orderBy('title', 'ASC');
-            }
-            if ($_GET['sortBy'] == 'price') {
-                $products = $products->orderBy('price', 'ASC');
-            }
+        
+        // Lọc theo size
+        if (!empty($_GET['size'])) {
+            $sizes = explode(',', $_GET['size']);
+            $products->where(function($query) use ($sizes) {
+                foreach ($sizes as $size) {
+                    $query->orWhere('size', 'like', "%{$size}%");
+                }
+            });
         }
-
+        
+        // Lọc theo condition
+        if (!empty($_GET['condition'])) {
+            $products->where('condition', $_GET['condition']);
+        }
+        
+        // Lọc theo đánh giá
+        if (!empty($_GET['rating'])) {
+            $rating = (int)$_GET['rating'];
+            $product_ids = DB::table('product_reviews')
+                ->select('product_id')
+                ->groupBy('product_id')
+                ->havingRaw('AVG(rate) >= ?', [$rating])
+                ->pluck('product_id')
+                ->toArray();
+            $products->whereIn('id', $product_ids);
+        }
+        
+        // Lọc theo giá
         if (!empty($_GET['price'])) {
             $price = explode('-', $_GET['price']);
-            // return $price;
-            // if(isset($price[0]) && is_numeric($price[0])) $price[0]=floor(Helper::base_amount($price[0]));
-            // if(isset($price[1]) && is_numeric($price[1])) $price[1]=ceil(Helper::base_amount($price[1]));
-
             $products->whereBetween('price', $price);
+        }
+        
+        // Sắp xếp
+        if (!empty($_GET['sortBy'])) {
+            switch ($_GET['sortBy']) {
+                case 'title':
+                case 'title_asc':
+                    $products->orderBy('title', 'ASC');
+                    break;
+                case 'title_desc':
+                    $products->orderBy('title', 'DESC');
+                    break;
+                case 'price':
+                case 'price_asc':
+                    $products->orderBy('price', 'ASC');
+                    break;
+                case 'price_desc':
+                    $products->orderBy('price', 'DESC');
+                    break;
+                case 'discount':
+                    $products->orderBy('discount', 'DESC');
+                    break;
+                case 'newest':
+                    $products->orderBy('id', 'DESC');
+                    break;
+                case 'popular':
+                    $products->withCount('carts')->orderBy('carts_count', 'DESC');
+                    break;
+                default:
+                    $products->orderBy('id', 'DESC');
+            }
+        } else {
+            $products->orderBy('id', 'DESC');
         }
 
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        // Sort by number
-        if (!empty($_GET['show'])) {
-            $products = $products->where('status', 'active')->paginate($_GET['show']);
-        } else {
-            $products = $products->where('status', 'active')->paginate(6);
-        }
-        // Sort by name , price, category
+        
+        // Phân trang
+        $per_page = !empty($_GET['show']) ? (int)$_GET['show'] : 12;
+        $products = $products->paginate($per_page);
+        
+        // Lấy danh sách sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function($size) {
+                return explode(',', $size);
+            })
+            ->map(function($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
-
-        return view('frontend.pages.product-lists')->with('products', $products)->with('recent_products', $recent_products);
+        return view('frontend.pages.product-lists')
+            ->with('products', $products)
+            ->with('recent_products', $recent_products)
+            ->with('available_sizes', $available_sizes);
     }
+    
+    // FIX: Giữ nguyên trang hiện tại khi filter
     public function productFilter(Request $request)
     {
         $data = $request->all();
-        // return $data;
-        $showURL = "";
+        
+        // Build URL parameters
+        $params = [];
+        
         if (!empty($data['show'])) {
-            $showURL .= '&show=' . $data['show'];
+            $params['show'] = $data['show'];
         }
-
-        $sortByURL = '';
+        
         if (!empty($data['sortBy'])) {
-            $sortByURL .= '&sortBy=' . $data['sortBy'];
+            $params['sortBy'] = $data['sortBy'];
         }
-
-        $catURL = "";
+        
         if (!empty($data['category'])) {
-            foreach ($data['category'] as $category) {
-                if (empty($catURL)) {
-                    $catURL .= '&category=' . $category;
-                } else {
-                    $catURL .= ',' . $category;
-                }
-            }
+            $params['category'] = implode(',', $data['category']);
         }
-
-        $brandURL = "";
+        
         if (!empty($data['brand'])) {
-            foreach ($data['brand'] as $brand) {
-                if (empty($brandURL)) {
-                    $brandURL .= '&brand=' . $brand;
-                } else {
-                    $brandURL .= ',' . $brand;
-                }
-            }
+            $params['brand'] = implode(',', $data['brand']);
         }
-        // return $brandURL;
-
-        $priceRangeURL = "";
+        
+        if (!empty($data['size'])) {
+            $params['size'] = implode(',', $data['size']);
+        }
+        
+        if (!empty($data['condition'])) {
+            $params['condition'] = $data['condition'];
+        }
+        
+        if (!empty($data['rating'])) {
+            $params['rating'] = $data['rating'];
+        }
+        
         if (!empty($data['price_range'])) {
-            $priceRangeURL .= '&price=' . $data['price_range'];
+            $params['price'] = $data['price_range'];
         }
-        if (request()->is('product-grids')) {
-            return redirect()->route('product-grids', $catURL . $brandURL . $priceRangeURL . $showURL . $sortByURL);
+        
+        // Xác định trang hiện tại dựa trên URL referrer
+        $referer = $request->headers->get('referer');
+        
+        if (strpos($referer, 'product-lists') !== false) {
+            return redirect()->route('product-lists', $params);
         } else {
-            return redirect()->route('product-lists', $catURL . $brandURL . $priceRangeURL . $showURL . $sortByURL);
+            return redirect()->route('product-grids', $params);
         }
     }
+    
     public function productSearch(Request $request)
     {
         $search = $request->search;
@@ -230,41 +356,105 @@ class FrontendController extends Controller
         ]);
     }
 
-
     public function productBrand(Request $request)
     {
         $products = Brand::getProductByBrand($request->slug);
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        
+        // Lấy sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function($size) {
+                return explode(',', $size);
+            })
+            ->map(function($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
+        
         if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')->with('products', $products->products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-grids')
+                ->with('products', $products->products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         } else {
-            return view('frontend.pages.product-lists')->with('products', $products->products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-lists')
+                ->with('products', $products->products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         }
     }
+    
     public function productCat(Request $request)
     {
         $products = Category::getProductByCat($request->slug);
-        // return $request->slug;
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        
+        // Lấy sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function($size) {
+                return explode(',', $size);
+            })
+            ->map(function($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
         if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')->with('products', $products->products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-grids')
+                ->with('products', $products->products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         } else {
-            return view('frontend.pages.product-lists')->with('products', $products->products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-lists')
+                ->with('products', $products->products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         }
     }
+    
     public function productSubCat(Request $request)
     {
         $products = Category::getProductBySubCat($request->sub_slug);
-        // return $products;
         $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        
+        // Lấy sizes
+        $available_sizes = Product::where('status', 'active')
+            ->whereNotNull('size')
+            ->get()
+            ->pluck('size')
+            ->flatMap(function($size) {
+                return explode(',', $size);
+            })
+            ->map(function($size) {
+                return trim($size);
+            })
+            ->unique()
+            ->sort()
+            ->values();
 
         if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')->with('products', $products->sub_products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-grids')
+                ->with('products', $products->sub_products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         } else {
-            return view('frontend.pages.product-lists')->with('products', $products->sub_products)->with('recent_products', $recent_products);
+            return view('frontend.pages.product-lists')
+                ->with('products', $products->sub_products)
+                ->with('recent_products', $recent_products)
+                ->with('available_sizes', $available_sizes);
         }
     }
+
 
     public function blog()
     {
@@ -272,57 +462,51 @@ class FrontendController extends Controller
 
         if (!empty($_GET['category'])) {
             $slug = explode(',', $_GET['category']);
-            // dd($slug);
             $cat_ids = PostCategory::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
-            return $cat_ids;
+            // XÓA DÒNG NÀY: return $cat_ids;  // <- Đây là debug code, phải xóa đi!
             $post->whereIn('post_cat_id', $cat_ids);
-            // return $post;
         }
+        
         if (!empty($_GET['tag'])) {
             $slug = explode(',', $_GET['tag']);
-            // dd($slug);
             $tag_ids = PostTag::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
-            // return $tag_ids;
             $post->where('post_tag_id', $tag_ids);
-            // return $post;
         }
 
         if (!empty($_GET['show'])) {
-            $post = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate($_GET['show']);
+            $posts = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate($_GET['show']);
         } else {
-            $post = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate(9);
+            $posts = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate(9);
         }
-        // $post=Post::where('status','active')->paginate(8);
-        $rcnt_post = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        return view('frontend.pages.blog')->with('posts', $post)->with('recent_posts', $rcnt_post);
+        
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
 
     public function blogDetail($slug)
     {
         $post = Post::getPostBySlug($slug);
-        $rcnt_post = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        // return $post;
-        return view('frontend.pages.blog-detail')->with('post', $post)->with('recent_posts', $rcnt_post);
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        return view('frontend.pages.blog-detail', compact('post', 'recent_posts'));
     }
 
     public function blogSearch(Request $request)
     {
-        // return $request->all();
-        $rcnt_post = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        $posts = Post::orwhere('title', 'like', '%' . $request->search . '%')
-            ->orwhere('quote', 'like', '%' . $request->search . '%')
-            ->orwhere('summary', 'like', '%' . $request->search . '%')
-            ->orwhere('description', 'like', '%' . $request->search . '%')
-            ->orwhere('slug', 'like', '%' . $request->search . '%')
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        $posts = Post::where('title', 'like', '%' . $request->search . '%')
+            ->orWhere('quote', 'like', '%' . $request->search . '%')
+            ->orWhere('summary', 'like', '%' . $request->search . '%')
+            ->orWhere('description', 'like', '%' . $request->search . '%')
+            ->orWhere('slug', 'like', '%' . $request->search . '%')
+            ->where('status', 'active') // Thêm điều kiện này
             ->orderBy('id', 'DESC')
             ->paginate(8);
-        return view('frontend.pages.blog')->with('posts', $posts)->with('recent_posts', $rcnt_post);
+        return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
 
     public function blogFilter(Request $request)
     {
         $data = $request->all();
-        // return $data;
         $catURL = "";
         if (!empty($data['category'])) {
             foreach ($data['category'] as $category) {
@@ -344,25 +528,22 @@ class FrontendController extends Controller
                 }
             }
         }
-        // return $tagURL;
-        // return $catURL;
         return redirect()->route('blog', $catURL . $tagURL);
     }
 
     public function blogByCategory(Request $request)
-    {
-        $post = PostCategory::getBlogByCategory($request->slug);
-        $rcnt_post = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        return view('frontend.pages.blog')->with('posts', $post->post)->with('recent_posts', $rcnt_post);
-    }
+{
+    $category = PostCategory::getBlogByCategory($request->slug);
+    $posts = $category->post;
+    $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+    return view('frontend.pages.blog', compact('posts', 'recent_posts'));
+}
 
-    public function blogByTag(Request $request)
+    public function blogByTag($slug)
     {
-        // dd($request->slug);
-        $post = Post::getBlogByTag($request->slug);
-        // return $post;
-        $rcnt_post = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-        return view('frontend.pages.blog')->with('posts', $post)->with('recent_posts', $rcnt_post);
+        $posts = Post::getBlogByTag($slug);
+        $recent_posts = Post::where('status', 'active')->orderBy('id','DESC')->limit(3)->get();
+        return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
 
     // Login

@@ -1,6 +1,5 @@
 @if ($paginator->hasPages())
 <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center space-x-2">
-    {{-- Previous Page Link --}}
     @if ($paginator->onFirstPage())
         <span class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
             {!! __('pagination.previous') !!}
@@ -11,7 +10,6 @@
         </a>
     @endif
 
-    {{-- Pagination Elements --}}
     <span class="relative z-0 inline-flex items-center space-x-2">
         @foreach ($elements as $element)
             @if (is_string($element))
@@ -36,7 +34,6 @@
         @endforeach
     </span>
 
-    {{-- Next Page Link --}}
     @if ($paginator->hasMorePages())
         <a href="{{ $paginator->nextPageUrl() }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 hover:text-gray-500 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150" aria-label="{{ __('pagination.next') }}">
             {!! __('pagination.next') !!}

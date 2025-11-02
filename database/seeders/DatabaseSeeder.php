@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
                 'title' => $banner['title'],
                 'slug' => Str::slug($banner['title']),
                 'description' => $banner['description'],
-                'photo' => '/storage/banners/banner_' . ($index + 1) . '.jpg',
+                'photo' => '/storage/photos/1/Banner/banner-0' . ($index + 1) . '.jpg',
                 'status' => 'active',
                 'created_at' => now()->subDays(rand(10, 60)),
                 'updated_at' => now()->subDays(rand(0, 10)),
@@ -115,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 'title' => $category['title'],
                 'slug' => Str::slug($category['title']),
                 'summary' => $category['summary'],
-                'photo' => '/storage/categories/cat_' . ($index + 1) . '.jpg',
+                'photo' => '/storage/photos/1/Category/mini-banner' . ($index + 1) . '.jpg',
                 'is_parent' => 1,
                 'parent_id' => null,
                 'added_by' => $adminId,
@@ -155,7 +155,7 @@ class DatabaseSeeder extends Seeder
                 'title' => $category['title'],
                 'slug' => Str::slug($category['title']),
                 'summary' => 'Sản phẩm ' . $category['title'] . ' chất lượng cao',
-                'photo' => '/storage/categories/subcat_' . ($index + 1) . '.jpg',
+                'photo' => '/storage/photos/1/Category/subcat_' . ($index + 1) . '.jpg',
                 'is_parent' => 0,
                 'parent_id' => $category['parent_id'],
                 'added_by' => $adminId,
@@ -245,7 +245,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => Str::slug($product['title']),
                 'summary' => 'Sản phẩm ' . $product['title'] . ' chất lượng cao, thiết kế hiện đại, phù hợp văn phòng.',
                 'description' => 'Mô tả chi tiết: ' . $product['title'] . ' được làm từ chất liệu cao cấp, đảm bảo độ bền và thoải mái khi sử dụng. Thiết kế thanh lịch, sang trọng, phù hợp cho môi trường công sở chuyên nghiệp.',
-                'photo' => '/storage/products/product_' . ($index + 1) . '.jpg',
+                'photo' => '/storage/photos/1/Products/product' . ($index + 1) . '.jpg',
                 'stock' => $product['stock'],
                 'size' => in_array($product['cat_id'], [$parentCategoryIds[0], $parentCategoryIds[1], $parentCategoryIds[2], $parentCategoryIds[3]]) ? 'S,M,L,XL,XXL' : (in_array($product['cat_id'], [$parentCategoryIds[4], $parentCategoryIds[8]]) ? '38,39,40,41,42,43' : 'One Size'),
                 'condition' => $product['condition'],
@@ -296,28 +296,28 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // ==================== POSTS (20 bản ghi) ====================
+        // ==================== POSTS (20 bản ghi) - FIXED VERSION ====================
         $posts = [
-            ['title' => '10 Cách Phối Vest Nam Đẹp Nhất 2025', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[0]],
-            ['title' => 'Bí Quyết Chọn Áo Sơ Mi Phù Hợp Dáng Người', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[1], 'added_by' => $userIds[1]],
-            ['title' => 'Xu Hướng Thời Trang Công Sở Nam 2025', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[2]],
-            ['title' => 'Cách Bảo Quản Vest Da Đúng Cách', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[9], 'added_by' => $userIds[3]],
-            ['title' => 'Top 5 Thương Hiệu Giày Da Nam Uy Tín', 'post_cat_id' => $postCategoryIds[9], 'post_tag_id' => $postTagIds[4], 'added_by' => $userIds[4]],
-            ['title' => 'Phong Cách Công Sở Nữ Thanh Lịch', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[3], 'added_by' => $userIds[5]],
-            ['title' => 'Review Vest Owen - Có Đáng Đồng Tiền?', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[6]],
-            ['title' => 'Cách Phối Phụ Kiện Nam Đẳng Cấp', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[5], 'added_by' => $userIds[7]],
-            ['title' => 'Thời Trang Bền Vững - Xu Hướng Tương Lai', 'post_cat_id' => $postCategoryIds[4], 'post_tag_id' => $postTagIds[7], 'added_by' => $userIds[8]],
-            ['title' => '5 Lỗi Thường Gặp Khi Mặc Vest', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[9]],
-            ['title' => 'Hướng Dẫn Chọn Size Áo Sơ Mi Chuẩn', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[1], 'added_by' => $userIds[10]],
-            ['title' => 'Sự Kiện Fashion Week 2025 Highlights', 'post_cat_id' => $postCategoryIds[8], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[11]],
-            ['title' => 'Quần Âu Nam: Ống Đứng Hay Ống Côn?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[2], 'added_by' => $userIds[12]],
-            ['title' => 'Cách Làm Sạch Giày Da Hiệu Quả', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[9], 'added_by' => $userIds[13]],
-            ['title' => 'Aristino vs Pierre Cardin - So Sánh Chi Tiết', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[14]],
-            ['title' => 'Phối Đồ Công Sở Với Màu Be', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[15]],
-            ['title' => 'Tips Mua Vest Giảm Giá Mùa Sale', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[16]],
-            ['title' => 'Túi Xách Công Sở Nữ - Chọn Sao Cho Đúng?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[3], 'added_by' => $userIds[17]],
-            ['title' => 'Lịch Sử Phát Triển Của Vest Nam', 'post_cat_id' => $postCategoryIds[5], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[18]],
-            ['title' => 'Xu Hướng Màu Sắc Thời Trang 2025', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[19]]
+            ['title' => '10 Cách Phối Vest Nam Đẹp Nhất 2025', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[0], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
+            ['title' => 'Bí Quyết Chọn Áo Sơ Mi Phù Hợp Dáng Người', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[1], 'added_by' => $userIds[1], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
+            ['title' => 'Xu Hướng Thời Trang Công Sở Nam 2025', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[2], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
+            ['title' => 'Cách Bảo Quản Vest Da Đúng Cách', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[9], 'added_by' => $userIds[3], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
+            ['title' => 'Top 5 Thương Hiệu Giày Da Nam Uy Tín', 'post_cat_id' => $postCategoryIds[9], 'post_tag_id' => $postTagIds[4], 'added_by' => $userIds[4], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']],
+            ['title' => 'Phong Cách Công Sở Nữ Thanh Lịch', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[3], 'added_by' => $userIds[5], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
+            ['title' => 'Review Vest Owen - Có Đáng Đồng Tiền?', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[6], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
+            ['title' => 'Cách Phối Phụ Kiện Nam Đẳng Cấp', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[5], 'added_by' => $userIds[7], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
+            ['title' => 'Thời Trang Bền Vững - Xu Hướng Tương Lai', 'post_cat_id' => $postCategoryIds[4], 'post_tag_id' => $postTagIds[7], 'added_by' => $userIds[8], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
+            ['title' => '5 Lỗi Thường Gặp Khi Mặc Vest', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[9], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']],
+            ['title' => 'Hướng Dẫn Chọn Size Áo Sơ Mi Chuẩn', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[1], 'added_by' => $userIds[10], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
+            ['title' => 'Sự Kiện Fashion Week 2025 Highlights', 'post_cat_id' => $postCategoryIds[8], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[11], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
+            ['title' => 'Quần Âu Nam: Ống Đứng Hay Ống Côn?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[2], 'added_by' => $userIds[12], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
+            ['title' => 'Cách Làm Sạch Giày Da Hiệu Quả', 'post_cat_id' => $postCategoryIds[2], 'post_tag_id' => $postTagIds[9], 'added_by' => $userIds[13], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
+            ['title' => 'Aristino vs Pierre Cardin - So Sánh Chi Tiết', 'post_cat_id' => $postCategoryIds[6], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[14], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']],
+            ['title' => 'Phối Đồ Công Sở Với Màu Be', 'post_cat_id' => $postCategoryIds[3], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[15], 'tag_slugs' => ['vest-cong-so', 'ao-so-mi', 'phoi-do-nam']],
+            ['title' => 'Tips Mua Vest Giảm Giá Mùa Sale', 'post_cat_id' => $postCategoryIds[7], 'post_tag_id' => $postTagIds[8], 'added_by' => $userIds[16], 'tag_slugs' => ['ao-so-mi', 'phoi-do-nam', 'phoi-do-nu']],
+            ['title' => 'Túi Xách Công Sở Nữ - Chọn Sao Cho Đúng?', 'post_cat_id' => $postCategoryIds[1], 'post_tag_id' => $postTagIds[3], 'added_by' => $userIds[17], 'tag_slugs' => ['phoi-do-nam', 'phoi-do-nu', 'giay-da']],
+            ['title' => 'Lịch Sử Phát Triển Của Vest Nam', 'post_cat_id' => $postCategoryIds[5], 'post_tag_id' => $postTagIds[0], 'added_by' => $userIds[18], 'tag_slugs' => ['phoi-do-nu', 'giay-da', 'phu-kien']],
+            ['title' => 'Xu Hướng Màu Sắc Thời Trang 2025', 'post_cat_id' => $postCategoryIds[0], 'post_tag_id' => $postTagIds[6], 'added_by' => $userIds[19], 'tag_slugs' => ['giay-da', 'phu-kien', 'xu-huong-2025']]
         ];
 
         $postIds = [];
@@ -328,8 +328,8 @@ class DatabaseSeeder extends Seeder
                 'summary' => 'Tóm tắt ngắn gọn về ' . $post['title'] . '. Cung cấp thông tin hữu ích cho người đọc.',
                 'description' => '<p>Nội dung chi tiết bài viết <strong>' . $post['title'] . '</strong>.</p><p>Bài viết cung cấp những thông tin chuyên sâu, hữu ích về thời trang công sở, giúp bạn nâng cao phong cách và tự tin hơn trong môi trường làm việc chuyên nghiệp.</p>',
                 'quote' => 'Thời trang là cách bạn thể hiện bản thân mà không cần nói một lời.',
-                'photo' => '/storage/posts/post_' . ($index + 1) . '.jpg',
-                'tags' => implode(',', array_slice($postTags, $index % 5, 3)),
+                'photo' => '/storage/photos/1/Blog/blog' . ($index + 1) . '.jpg',
+                'tags' => implode(',', $post['tag_slugs']), // LƯU SLUG TAGS
                 'post_cat_id' => $post['post_cat_id'],
                 'post_tag_id' => $post['post_tag_id'],
                 'added_by' => $post['added_by'],
@@ -420,9 +420,9 @@ class DatabaseSeeder extends Seeder
 
         // ==================== ORDERS & CARTS (20 bản ghi mỗi bảng) ====================
         $orderIds = [];
-        $orderStatuses = ['new', 'progress', 'delivered', 'cancel'];
-        $paymentStatuses = ['paid', 'unpaid'];
-        $paymentMethods = ['cod', 'paypal'];
+        $orderStatuses = ['new', 'progress', 'process', 'delivered', 'cancel'];
+        $paymentStatuses = ['paid', 'unpaid', 'pending'];
+        $paymentMethods = ['cod', 'paypal', 'momo', 'vnpay', 'stripe'];
 
         for ($i = 0; $i < 20; $i++) {
             $userId = $userIds[$i];
@@ -468,8 +468,8 @@ class DatabaseSeeder extends Seeder
             $totalAmount = max(0, $subTotal + $shippingPrice - $couponValue);
 
             $orderStatus = $orderStatuses[$i % count($orderStatuses)];
-            $paymentStatus = $paymentStatuses[$i % 2];
-            $paymentMethod = $paymentMethods[$i % 2];
+            $paymentStatus = $paymentStatuses[$i % count($paymentStatuses)];
+            $paymentMethod = $paymentMethods[$i % count($paymentMethods)];
 
             $orderId = DB::table('orders')->insertGetId([
                 'order_number' => 'ORD-' . str_pad($i + 1, 5, '0', STR_PAD_LEFT),

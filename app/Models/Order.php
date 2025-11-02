@@ -21,7 +21,6 @@ class Order extends Model
         return $this->hasMany(Cart::class);
     }
 
-    // Thêm relationship với Cart items
     public function items(){
         return $this->hasMany(Cart::class, 'order_id');
     }

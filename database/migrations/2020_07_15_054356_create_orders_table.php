@@ -22,9 +22,9 @@ class CreateOrdersTable extends Migration
             $table->decimal('coupon', 12, 2)->nullable()->unsigned();
             $table->decimal('total_amount', 15, 2)->unsigned();
             $table->integer('quantity');
-            $table->enum('payment_method',['cod','paypal'])->default('cod');
-            $table->enum('payment_status',['paid','unpaid'])->default('unpaid');
-            $table->enum('status',['new','progress','delivered','cancel'])->default('new');
+            $table->enum('payment_method',['cod', 'paypal', 'momo', 'vnpay', 'stripe'])->default('cod');
+            $table->enum('payment_status',['paid', 'unpaid', 'pending'])->default('unpaid');
+            $table->enum('status',['new', 'progress', 'process', 'delivered', 'cancel'])->default('new');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('SET NULL');
             $table->string('first_name');
