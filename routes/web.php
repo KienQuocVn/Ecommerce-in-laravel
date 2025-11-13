@@ -23,6 +23,9 @@ use App\Http\Controllers\PaymentStartController;
 use App\Http\Controllers\PaymentReturnController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DeliveryFeedbackController;
+use App\Http\Controllers\Shipper\DashboardController as ShipperDashboardController;
+use App\Http\Controllers\Shipper\DeliveryController as ShipperDeliveryController;
 // CACHE CLEAR ROUTE
 Route::get('cache-clear', function () {
     Artisan::call('optimize:clear');
@@ -198,6 +201,14 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function
     Route::post('change-password', [AdminController::class, 'changPasswordStore'])->name('change.password');
 });
 
+Route::group(['prefix' => '/shipper', 'middleware' => ['auth', 'shipper']], function () {
+    Route::get('/', [ShipperDashboardController::class, 'index'])->name('shipper.dashboard');
+    Route::get('/deliveries', [ShipperDeliveryController::class, 'index'])->name('shipper.deliveries.index');
+    Route::post('/deliveries/{delivery}/accept', [ShipperDeliveryController::class, 'accept'])->name('shipper.deliveries.accept');
+    Route::post('/deliveries/{delivery}/progress', [ShipperDeliveryController::class, 'progress'])->name('shipper.deliveries.progress');
+    Route::post('/deliveries/{delivery}/complete', [ShipperDeliveryController::class, 'complete'])->name('shipper.deliveries.complete');
+    Route::post('/deliveries/{delivery}/cancel', [ShipperDeliveryController::class, 'cancel'])->name('shipper.deliveries.cancel');
+});
 
 // User section start
 Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
@@ -209,6 +220,7 @@ Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
     Route::get('/order', "HomeController@orderIndex")->name('user.order.index');
     Route::get('/order/show/{id}', "HomeController@orderShow")->name('user.order.show');
     Route::delete('/order/delete/{id}', [HomeController::class, 'userOrderDelete'])->name('user.order.delete');
+    Route::post('/delivery/{delivery}/review', [DeliveryFeedbackController::class, 'store'])->name('user.delivery.review');
     // Product Review
     Route::get('/user-review', [HomeController::class, 'productReviewIndex'])->name('user.productreview.index');
     Route::delete('/user-review/delete/{id}', [HomeController::class, 'productReviewDelete'])->name('user.productreview.delete');

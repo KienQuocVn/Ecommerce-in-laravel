@@ -3,165 +3,198 @@
 @section('main-content')
 <div class="container-fluid">
   @include('user.layouts.notification')
-  <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Bảng điều khiển</h1>
+    <h1 class="h3 mb-0 text-gray-800">Bảng điều khiển khách hàng</h1>
+    <a href="{{route('user.order.index')}}" class="btn btn-sm btn-primary"><i class="fas fa-receipt mr-1"></i> Xem tất cả đơn hàng</a>
   </div>
 
-  <!-- Content Row -->
-  {{-- <div class="row">
+  @php
+    $tiers = config('loyalty.tiers');
+    $currentTierKey = $tierMeta['key'] ?? 'bronze';
+    $tierKeys = array_keys($tiers);
+    $currentIndex = array_search($currentTierKey, $tierKeys);
+    $nextTierKey = ($currentIndex !== false && isset($tierKeys[$currentIndex + 1])) ? $tierKeys[$currentIndex + 1] : null;
+    $nextTier = $nextTierKey ? $tiers[$nextTierKey] + ['key' => $nextTierKey] : null;
+    $remainingOrders = $nextTier ? max(0, ($nextTier['min_orders'] ?? 0) - ($user->total_orders ?? 0)) : 0;
+    $remainingSpent = $nextTier ? max(0, ($nextTier['min_spent'] ?? 0) - ($user->total_spent ?? 0)) : 0;
+  @endphp
 
-      <!-- Category -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Category</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Category::countActiveCategory()}}
-</div>
-</div>
-<div class="col-auto">
-  <i class="fas fa-sitemap fa-2x text-gray-300"></i>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Products -->
-<div class="col-xl-3 col-md-6 mb-4">
-  <div class="card border-left-success shadow h-100 py-2">
-    <div class="card-body">
-      <div class="row no-gutters align-items-center">
-        <div class="col mr-2">
-          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Products</div>
-          <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Product::countActiveProduct()}}</div>
-        </div>
-        <div class="col-auto">
-          <i class="fas fa-cubes fa-2x text-gray-300"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Order -->
-<div class="col-xl-3 col-md-6 mb-4">
-  <div class="card border-left-info shadow h-100 py-2">
-    <div class="card-body">
-      <div class="row no-gutters align-items-center">
-        <div class="col mr-2">
-          <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Order</div>
+  <div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
           <div class="row no-gutters align-items-center">
-            <div class="col-auto">
-              <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\Order::countActiveOrder()}}</div>
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Hạng thành viên</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{$tierMeta['name'] ?? 'Bronze'}}</div>
+              <p class="mt-2 mb-0 small text-muted">{{$tierMeta['benefits'] ?? 'Ưu đãi thành viên mới'}}</p>
+              @if($nextTier)
+                <p class="small mb-0 mt-2">Cần thêm <strong>{{max(0,$remainingOrders)}}</strong> đơn hoặc <strong>{{number_format(max(0,$remainingSpent),0)}} VNĐ</strong> để lên hạng <strong>{{$nextTier['name']}}</strong>.</p>
+              @else
+                <p class="small mb-0 mt-2 text-success"><i class="fas fa-crown mr-1"></i>Bạn đang ở hạng cao nhất!</p>
+              @endif
             </div>
-
+            <div class="col-auto">
+              <i class="fas fa-medal fa-2x text-gray-300"></i>
+            </div>
           </div>
         </div>
-        <div class="col-auto">
-          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+      </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng chi tiêu</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{number_format($user->total_spent ?? 0,0)}} VNĐ</div>
+              <p class="small text-muted mb-0 mt-2">Đã hoàn thành {{$user->total_orders ?? 0}} đơn hàng.</p>
+              @if($user->last_order_at)
+                <p class="small text-muted mb-0">Đơn gần nhất: {{\Carbon\Carbon::parse($user->last_order_at)->format('d/m/Y')}}</p>
+              @endif
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-coins fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-md-12 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Điểm tích luỹ</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{$user->loyalty_points ?? 0}} điểm</div>
+              <p class="small text-muted mt-2 mb-0">Sử dụng điểm để đổi quà tặng hoặc voucher giảm giá trong các chương trình ưu đãi.</p>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-gift fa-2x text-gray-300"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!--Posts-->
-<div class="col-xl-3 col-md-6 mb-4">
-  <div class="card border-left-warning shadow h-100 py-2">
+  <div class="row">
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h6 class="m-0 font-weight-bold text-primary">Đơn hàng đang xử lý</h6>
+          <a href="{{route('user.order.index')}}" class="small">Xem tất cả</a>
+        </div>
+        <div class="card-body p-0">
+          @if($activeOrders->isEmpty())
+            <p class="text-muted text-center my-4">Hiện tại bạn chưa có đơn hàng nào đang được xử lý.</p>
+          @else
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Mã</th>
+                    <th>Ngày</th>
+                    <th>Trạng thái</th>
+                    <th>Giao hàng</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($activeOrders as $order)
+                  @php
+                    $deliveryStatusMap = [
+                      'pending' => ['Chờ nhận', 'secondary'],
+                      'accepted' => ['Đã nhận', 'info'],
+                      'in_transit' => ['Đang giao', 'warning'],
+                      'completed' => ['Hoàn thành', 'success'],
+                      'cancelled' => ['Huỷ', 'danger'],
+                    ];
+                    $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
+                  @endphp
+                  <tr>
+                    <td>{{$order->order_number}}</td>
+                    <td>{{$order->created_at->format('d/m/Y')}}</td>
+                    <td><span class="badge badge-info text-uppercase">{{$order->status}}</span></td>
+                    <td>
+                      @if($deliveryMeta)
+                        <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
+                      @else
+                        <span class="badge badge-light text-dark">Đang điều phối</span>
+                      @endif
+                    </td>
+                    <td class="text-right"><a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-primary">Chi tiết</a></td>
+                  </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          @endif
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h6 class="m-0 font-weight-bold text-success">Lịch sử đơn hàng đã hoàn thành</h6>
+          <a href="{{route('user.order.index')}}" class="small">Xem chi tiết</a>
+        </div>
+        <div class="card-body p-0">
+          @if($recentCompletedOrders->isEmpty())
+            <p class="text-muted text-center my-4">Bạn chưa có đơn hàng nào được giao thành công.</p>
+          @else
+            <div class="list-group list-group-flush">
+              @foreach($recentCompletedOrders as $order)
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">{{$order->order_number}}</h6>
+                    <p class="mb-1 small text-muted">Tổng cộng: {{number_format($order->total_amount,0)}} VNĐ</p>
+                    <p class="mb-0 small text-muted">Giao ngày: {{$order->updated_at->format('d/m/Y H:i')}}</p>
+                  </div>
+                  <a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-success">Đánh giá</a>
+                </div>
+              </div>
+              @endforeach
+            </div>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-5">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Gợi ý dành riêng cho bạn</h6>
+      <a href="{{route('product-grids')}}" class="small">Khám phá thêm</a>
+    </div>
     <div class="card-body">
-      <div class="row no-gutters align-items-center">
-        <div class="col mr-2">
-          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Post</div>
-          <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Post::countActivePost()}}</div>
+      @if($recommendedProducts->isEmpty())
+        <p class="text-muted mb-0">Chúng tôi đang cập nhật gợi ý cho bạn. Hãy tiếp tục mua sắm để nhận các đề xuất phù hợp hơn.</p>
+      @else
+        <div class="row">
+          @foreach($recommendedProducts as $product)
+          @php
+            $photos = $product->photo ? explode(',', $product->photo) : [];
+            $photo = count($photos) ? $photos[0] : asset('frontend/img/no-image.png');
+          @endphp
+          <div class="col-xl-2 col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <a href="{{route('product-detail',$product->slug)}}" target="_blank" class="text-decoration-none text-dark">
+                <img src="{{$photo}}" class="card-img-top" alt="{{$product->title}}">
+                <div class="card-body p-3">
+                  <h6 class="card-title mb-1">{{$product->title}}</h6>
+                  <p class="card-text text-primary font-weight-bold mb-0">{{number_format($product->price,0)}} VNĐ</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          @endforeach
         </div>
-        <div class="col-auto">
-          <i class="fas fa-folder fa-2x text-gray-300"></i>
-        </div>
-      </div>
+      @endif
     </div>
   </div>
-</div>
-</div> --}}
-
-<!-- Content Row -->
-
-<div class="row">
-  @php
-  $orders=DB::table('orders')->where('user_id',auth()->user()->id)->paginate(10);
-  @endphp
-  <!-- Order -->
-  <div class="col-xl-12 col-lg-12">
-    <table class="table table-bordered" id="order-dataTable" width="100%" cellspacing="0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Số đơn hàng</th>
-          <th>Tên</th>
-          <th>Email</th>
-          <th>Số lượng</th>
-          <th>Tổng số tiền</th>
-          <th>Trạng thái</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <th>ID</th>
-          <th>Số đơn hàng</th>
-          <th>Tên</th>
-          <th>Email</th>
-          <th>Số lượng</th>
-          <th>Tổng số tiền</th>
-          <th>Trạng thái</th>
-          <th>Hành động</th>
-        </tr>
-      </tfoot>
-      <tbody>
-        @if(count($orders)>0)
-        @foreach($orders as $order)
-        <tr>
-          <td>{{$order->id}}</td>
-          <td>{{$order->order_number}}</td>
-          <td>{{$order->first_name}} {{$order->last_name}}</td>
-          <td>{{$order->email}}</td>
-          <td>{{$order->quantity}}</td>
-          <td>{{number_format($order->total_amount,0)}} VNĐ</td>
-          <td>
-            @if($order->status=='new')
-            <span class="badge badge-primary">{{$order->status}}</span>
-            @elseif($order->status=='process')
-            <span class="badge badge-warning">{{$order->status}}</span>
-            @elseif($order->status=='delivered')
-            <span class="badge badge-success">{{$order->status}}</span>
-            @else
-            <span class="badge badge-danger">{{$order->status}}</span>
-            @endif
-          </td>
-          <td>
-            <a href="{{route('user.order.show',$order->id)}}" class="btn btn-warning btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
-            <form method="POST" action="{{route('user.order.delete',[$order->id])}}">
-              @csrf
-              @method('delete')
-              <button class="btn btn-danger btn-sm dltBtn" data-id="{{$order->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-            </form>
-          </td>
-        </tr>
-        @endforeach
-        @else
-        <td colspan="8" class="text-center">
-          <h4 class="my-4">You have no order yet!! Please order some products</h4>
-        </td>
-        @endif
-      </tbody>
-    </table>
-
-    {{$orders->links()}}
-  </div>
-</div>
-
 </div>
 @endsection
 

@@ -26,6 +26,8 @@
                             @auth
                             @if(Auth::user()->role=='admin')
                             <li><i class="ti-user"></i> <a href="{{route('admin')}}" target="_blank">Bảng điều khiển</a></li>
+                            @elseif(Auth::user()->role=='shipper')
+                            <li><i class="ti-truck"></i> <a href="{{route('shipper.dashboard')}}" target="_blank">Bảng điều khiển</a></li>
                             @else
                             <li><i class="ti-user"></i> <a href="{{route('user')}}" target="_blank">Bảng điều khiển</a></li>
                             @endif

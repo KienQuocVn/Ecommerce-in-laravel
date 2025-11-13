@@ -19,8 +19,12 @@
         <thead>
           <tr>
             <th>ID.</th>
-            <th>Tiêu đề</th>
-            <th>Giá</th>
+            <th>Tên gói</th>
+            <th>Mã</th>
+            <th>Chiến lược giá</th>
+            <th>Chi phí hiển thị</th>
+            <th>Khu vực</th>
+            <th>COD</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
           </tr>
@@ -28,8 +32,12 @@
         <tfoot>
           <tr>
             <th>ID.</th>
-            <th>Tiêu đề</th>
-            <th>Giá</th>
+            <th>Tên gói</th>
+            <th>Mã</th>
+            <th>Chiến lược giá</th>
+            <th>Chi phí hiển thị</th>
+            <th>Khu vực</th>
+            <th>COD</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
           </tr>
@@ -39,7 +47,36 @@
           <tr>
             <td>{{$shipping->id}}</td>
             <td>{{$shipping->type}}</td>
-            <td>{{$shipping->price}}</td>
+            <td><code>{{$shipping->code}}</code></td>
+            <td>
+              @switch($shipping->pricing_strategy)
+                @case('percentage')
+                  <span class="badge badge-info">% theo đơn</span>
+                  @break
+                @case('mixed')
+                  <span class="badge badge-primary">Kết hợp</span>
+                  @break
+                @default
+                  <span class="badge badge-secondary">Cố định</span>
+              @endswitch
+            </td>
+            <td>
+              @if($shipping->pricing_strategy === 'percentage')
+                {{$shipping->percentage_rate}}% giá trị đơn
+              @elseif($shipping->pricing_strategy === 'mixed')
+                {{number_format($shipping->price,0)}} VNĐ + {{$shipping->percentage_rate}}%
+              @else
+                {{number_format($shipping->price,0)}} VNĐ
+              @endif
+            </td>
+            <td>{{$shipping->delivery_zone ?? 'Toàn quốc'}}</td>
+            <td>
+              @if($shipping->supports_cod)
+                <span class="badge badge-success">Có</span>
+              @else
+                <span class="badge badge-light border">Không</span>
+              @endif
+            </td>
             <td>
               @if($shipping->status=='active')
               <span class="badge badge-success">{{$shipping->status}}</span>
@@ -120,7 +157,7 @@
   $('#banner-dataTable').DataTable({
     "columnDefs": [{
       "orderable": false,
-      "targets": [3, 4]
+      "targets": [8]
     }]
   });
 

@@ -24,7 +24,18 @@ class FrontendController extends Controller
 
     public function index(Request $request)
     {
-        return redirect()->route($request->user()->role);
+        $role = $request->user()->role ?? 'guest';
+
+        switch ($role) {
+            case 'admin':
+                return redirect()->route('admin');
+            case 'shipper':
+                return redirect()->route('shipper.dashboard');
+            case 'user':
+                return redirect()->route('user');
+            default:
+                return redirect()->route('home');
+        }
     }
 
     public function home()
@@ -619,7 +630,17 @@ class FrontendController extends Controller
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 'active'])) {
             Session::put('user', $data['email']);
             session()->flash('success', 'Đăng nhập thành công');
-            return redirect()->route('home');
+
+            switch (Auth::user()->role) {
+                case 'admin':
+                    return redirect()->route('admin');
+                case 'shipper':
+                    return redirect()->route('shipper.dashboard');
+                case 'user':
+                    return redirect()->route('user');
+                default:
+                    return redirect()->route('home');
+            }
         } else {
             session()->flash('error', 'Email và mật khẩu không hợp lệ, vui lòng thử lại!');
             return redirect()->back();

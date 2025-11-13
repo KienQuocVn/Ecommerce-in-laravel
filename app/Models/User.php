@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','role','photo','status','provider','provider_id',
+        'name', 'email', 'password','role','photo','status','provider','provider_id','loyalty_points','loyalty_tier','total_spent','total_orders','last_order_at',
     ];
 
     /**
@@ -35,9 +35,23 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'total_spent' => 'decimal:2',
+        'last_order_at' => 'datetime',
+        'loyalty_points' => 'integer',
+        'total_orders' => 'integer',
     ];
 
     public function orders(){
         return $this->hasMany('App\Models\Order');
+    }
+
+    public function shipperProfile()
+    {
+        return $this->hasOne(Shipper::class);
+    }
+
+    public function shipperReviews()
+    {
+        return $this->hasMany(ShipperReview::class, 'customer_id');
     }
 }

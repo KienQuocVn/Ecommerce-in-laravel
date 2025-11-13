@@ -8,11 +8,14 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Shipping;
 use App\Models\User;
+use App\Models\OrderDelivery;
 use PDF;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Auth;
 use Helper;
 use Illuminate\Support\Str;
 use App\Notifications\StatusNotification;
+use App\Services\LoyaltyService;
 
 class OrderController extends Controller
 {
@@ -34,7 +37,8 @@ class OrderController extends Controller
             'phone' => 'numeric|required',
             'post_code' => 'string|nullable',
             'email' => 'string|required',
-            'payment_method' => 'required|in:cod,paypal,stripe,momo,vnpay'
+            'payment_method' => 'required|in:cod,paypal,stripe,momo,vnpay',
+            'shipping' => 'nullable|exists:shippings,id'
         ]);
 
         if (empty(Cart::where('user_id', auth()->user()->id)->where('order_id', null)->first())) {
@@ -46,30 +50,39 @@ class OrderController extends Controller
         $order_data = $request->all();
         $order_data['order_number'] = 'ORD-' . strtoupper(Str::random(10));
         $order_data['user_id'] = $request->user()->id;
-        $order_data['shipping_id'] = $request->shipping;
 
-        $shipping = Shipping::where('id', $order_data['shipping_id'])->pluck('price');
-        $order_data['sub_total'] = Helper::totalCartPrice();
+        $subTotal = Helper::totalCartPrice();
+        $order_data['sub_total'] = $subTotal;
         $order_data['quantity'] = Helper::cartCount();
+
+        $shippingCost = 0;
+        $shipping = null;
+
+        if ($request->filled('shipping')) {
+            $shipping = Shipping::active()->find($request->shipping);
+
+            if (!$shipping) {
+                return back()->withErrors(['shipping' => 'Phương thức vận chuyển không khả dụng. Vui lòng chọn lại.']);
+            }
+
+            if (!$shipping->isAvailableForCart($subTotal)) {
+                return back()->withErrors(['shipping' => 'Phương thức vận chuyển không phù hợp với giá trị đơn hàng hiện tại.']);
+            }
+
+            $shippingCost = $shipping->calculateCost($subTotal);
+            $order_data['shipping_id'] = $shipping->id;
+            $order_data['delivery_charge'] = $shippingCost;
+        } else {
+            $order_data['shipping_id'] = null;
+            $order_data['delivery_charge'] = 0;
+        }
 
         if (session('coupon')) {
             $order_data['coupon'] = session('coupon')['value'];
         }
 
-        // Tính tổng tiền
-        if ($request->shipping) {
-            if (session('coupon')) {
-                $order_data['total_amount'] = Helper::totalCartPrice() + $shipping[0] - session('coupon')['value'];
-            } else {
-                $order_data['total_amount'] = Helper::totalCartPrice() + $shipping[0];
-            }
-        } else {
-            if (session('coupon')) {
-                $order_data['total_amount'] = Helper::totalCartPrice() - session('coupon')['value'];
-            } else {
-                $order_data['total_amount'] = Helper::totalCartPrice();
-            }
-        }
+        $couponValue = session('coupon')['value'] ?? 0;
+        $order_data['total_amount'] = max(0, $subTotal + $shippingCost - $couponValue);
 
         $order_data['status'] = "new";
         $method = (string) $request->input('payment_method', 'cod');
@@ -86,6 +99,14 @@ class OrderController extends Controller
         $status = $order->save();
 
         if ($status) {
+            // **TẠO DELIVERY RECORD**
+            OrderDelivery::create([
+                'order_id' => $order->id,
+                'delivery_fee' => $shippingCost,
+                'status' => OrderDelivery::STATUS_PENDING,
+                'assignment_type' => 'self-claim',
+            ]);
+
             // **TẠO PAYMENT RECORD**
             Payment::create([
                 'order_id' => $order->id,
@@ -158,6 +179,9 @@ class OrderController extends Controller
             }
         }
         $status = $order->fill($data)->save();
+        if ($status && $order->status === 'delivered') {
+            LoyaltyService::syncForOrder($order);
+        }
         if ($status) {
             session()->flash('success', 'Đã cập nhật đơn hàng thành công');
         } else {
@@ -184,28 +208,41 @@ class OrderController extends Controller
         }
     }
 
-    public function orderTrack()
+    public function orderTrack(Request $request)
     {
-        return view('frontend.pages.order-track');
+        $order = null;
+        $code = $request->query('code');
+
+        if ($code) {
+            $orderQuery = Order::with(['delivery.shipper.user', 'shipping', 'cart_info.product'])
+                ->where('order_number', $code);
+
+            if (Auth::check()) {
+                $orderQuery->where('user_id', Auth::id());
+            }
+
+            $order = $orderQuery->first();
+        }
+
+        return view('frontend.pages.order-track', compact('order', 'code'));
     }
 
     public function productTrackOrder(Request $request)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('order_number', $request->order_number)->first();
+        $request->validate([
+            'order_number' => 'required|string',
+        ]);
+
+        $orderQuery = Order::where('order_number', $request->order_number);
+
+        if (Auth::check()) {
+            $orderQuery->where('user_id', Auth::id());
+        }
+
+        $order = $orderQuery->first();
+
         if ($order) {
-            if ($order->status == "new") {
-                session()->flash('success', 'Đơn hàng của bạn đã được đặt. Vui lòng chờ.');
-                return redirect()->route('home');
-            } elseif ($order->status == "process") {
-                session()->flash('success', 'Đơn hàng của bạn đang được xử lý, vui lòng đợi.');
-                return redirect()->route('home');
-            } elseif ($order->status == "delivered") {
-                session()->flash('success', 'Đơn hàng của bạn đã được giao thành công.');
-                return redirect()->route('home');
-            } else {
-                session()->flash('error', 'Đơn hàng của bạn đã bị hủy. Vui lòng thử lại');
-                return redirect()->route('home');
-            }
+            return redirect()->route('order.track', ['code' => $order->order_number]);
         } else {
             session()->flash('error', 'Số đơn hàng không hợp lệ, vui lòng thử lại');
             return back();

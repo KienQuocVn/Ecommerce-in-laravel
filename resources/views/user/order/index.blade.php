@@ -22,9 +22,10 @@
             <th>Tên</th>
             <th>Email</th>
             <th>Số lượng</th>
-            <th>Charge</th>
+            <th>Phí vận chuyển</th>
             <th>Tổng số tiền</th>
-            <th>Trang thái</th>
+            <th>Trạng thái</th>
+            <th>Trạng thái giao</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -35,9 +36,10 @@
             <th>Tên</th>
             <th>Email</th>
             <th>Số lượng</th>
-            <th>Charge</th>
+            <th>Phí vận chuyển</th>
             <th>Tổng số tiền</th>
-            <th>Trang thái</th>
+            <th>Trạng thái</th>
+            <th>Trạng thái giao</th>
             <th>Hành động</th>
           </tr>
         </tfoot>
@@ -49,7 +51,7 @@
             <td>{{$order->first_name}} {{$order->last_name}}</td>
             <td>{{$order->email}}</td>
             <td>{{$order->quantity}}</td>
-            <td>{{$order->shipping->price}} VNĐ</td>
+            <td>{{number_format($order->delivery_charge ?? 0,0)}} VNĐ</td>
             <td>{{number_format($order->total_amount,0)}} VNĐ</td>
             <td>
               @if($order->status=='new')
@@ -60,6 +62,23 @@
               <span class="badge badge-success">{{$order->status}}</span>
               @else
               <span class="badge badge-danger">{{$order->status}}</span>
+              @endif
+            </td>
+            @php
+              $deliveryStatusMap = [
+                'pending' => ['Chờ nhận', 'secondary'],
+                'accepted' => ['Đã nhận', 'info'],
+                'in_transit' => ['Đang giao', 'warning'],
+                'completed' => ['Hoàn thành', 'success'],
+                'cancelled' => ['Đã huỷ', 'danger'],
+              ];
+              $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
+            @endphp
+            <td>
+              @if($deliveryMeta)
+                <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
+              @else
+                <span class="badge badge-light text-dark">Đang điều phối</span>
               @endif
             </td>
             <td>
@@ -106,7 +125,7 @@
   $('#order-dataTable').DataTable({
     "columnDefs": [{
       "orderable": false,
-      "targets": [8]
+      "targets": [9]
     }]
   });
 

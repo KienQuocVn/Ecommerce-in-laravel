@@ -8,9 +8,11 @@ use App\Models\Order;
 use App\Models\Wishlist;
 use App\Models\Shipping;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Auth;
+
 class Helper
 {
     public static function messageList()
@@ -99,10 +101,6 @@ class Helper
             return 0;
         }
     }
-    public function product()
-    {
-        return $this->hasOne('App\Models\Product', 'id', 'product_id');
-    }
 
     public static function getAllProductFromCart($user_id = '')
     {
@@ -153,18 +151,91 @@ class Helper
         }
     }
 
-    // Total price with shipping and coupon
-    public static function grandPrice($id, $user_id)
+    public static function shipping(?float $cartTotal = null)
     {
-        $order = Order::find($id);
-        dd($id);
-        if ($order) {
-            $shipping_price = (float)$order->shipping->price;
-            $order_price = self::orderPrice($id, $user_id);
-            return number_format((float)($order_price + $shipping_price), 2, '.', '');
-        } else {
+        $cartTotal = $cartTotal ?? self::totalCartPrice();
+
+        return Shipping::active()
+            ->availableForTotal($cartTotal)
+            ->orderBy('priority')
+            ->orderBy('price')
+            ->get()
+            ->map(function (Shipping $shipping) use ($cartTotal) {
+                $shipping->calculated_cost = $shipping->calculateCost($cartTotal);
+                return $shipping;
+            });
+    }
+
+    public static function recommendedProductsForUser($user, int $limit = 6)
+    {
+        if (!$user) {
+            return collect();
+        }
+
+        $cartItems = Cart::with('product')
+            ->where('user_id', $user->id)
+            ->whereNotNull('order_id')
+            ->whereHas('order', function ($query) {
+                $query->where('status', 'delivered');
+            })
+            ->get();
+
+        $categoryIds = $cartItems->pluck('product.cat_id')->filter()->unique()->values();
+        $purchasedIds = $cartItems->pluck('product_id')->filter()->unique()->values();
+        $prices = $cartItems->pluck('product.price')->filter()->map(fn($price) => (float) $price)->values();
+
+        $query = Product::where('status', 'active');
+
+        if ($categoryIds->isNotEmpty()) {
+            $query->whereIn('cat_id', $categoryIds->toArray());
+        }
+
+        if ($purchasedIds->isNotEmpty()) {
+            $query->whereNotIn('id', $purchasedIds->toArray());
+        }
+
+        if ($prices->isNotEmpty()) {
+            $average = $prices->avg();
+            $min = max(0, $average * 0.7);
+            $max = $average * 1.3;
+            $query->whereBetween('price', [$min, $max]);
+        }
+
+        $recommendations = $query->orderByDesc('is_featured')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        if ($recommendations->count() < $limit) {
+            $fallback = Product::where('status', 'active')
+                ->whereNotIn('id', $purchasedIds->toArray())
+                ->withCount('carts')
+                ->orderBy('carts_count', 'desc')
+                ->orderBy('discount', 'desc')
+                ->limit($limit - $recommendations->count())
+                ->get();
+            $recommendations = $recommendations->merge($fallback)->unique('id')->take($limit);
+        }
+
+        return $recommendations;
+    }
+
+    // Total price with shipping and coupon
+    public static function grandPrice($orderId)
+    {
+        $order = Order::with('shipping')->find($orderId);
+        if (!$order) {
             return 0;
         }
+
+        $subTotal = (float) $order->sub_total;
+        $shippingCost = 0;
+
+        if ($order->shipping) {
+            $shippingCost = $order->shipping->calculateCost($subTotal);
+        }
+
+        return round($subTotal + $shippingCost, 2);
     }
 
 
@@ -178,11 +249,6 @@ class Helper
             $price = $data->cart_info->sum('price');
         }
         return number_format((float)($price), 2, '.', '');
-    }
-
-    public static function shipping()
-    {
-        return Shipping::orderBy('id', 'DESC')->get();
     }
 }
 

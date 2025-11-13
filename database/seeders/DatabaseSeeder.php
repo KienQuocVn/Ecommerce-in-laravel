@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Services\LoyaltyService;
 
 class DatabaseSeeder extends Seeder
 {
@@ -86,6 +87,46 @@ class DatabaseSeeder extends Seeder
                 'status' => $index % 10 == 0 ? 'inactive' : 'active',
                 'created_at' => now()->subDays(rand(1, 180)),
                 'updated_at' => now()->subDays(rand(0, 30)),
+            ]);
+        }
+
+        $shipperNames = [
+            'Đinh Văn Lực',
+            'Lưu Thị Thanh Hà',
+            'Mai Quốc Huy',
+            'Phạm Đức Tín',
+            'Vương Thị Mỹ Linh',
+        ];
+
+        $shipperUserIds = [];
+        foreach ($shipperNames as $index => $name) {
+            $shipperUserIds[] = DB::table('users')->insertGetId([
+                'name' => $name,
+                'email' => 'shipper' . ($index + 1) . '@fashionoffice.vn',
+                'password' => Hash::make('Shipper@2025'),
+                'role' => 'shipper',
+                'status' => 'active',
+                'created_at' => now()->subDays(rand(1, 90)),
+                'updated_at' => now()->subDays(rand(0, 10)),
+            ]);
+        }
+
+        $shipperProfileIds = [];
+        foreach ($shipperUserIds as $index => $userId) {
+            $shipperProfileIds[] = DB::table('shippers')->insertGetId([
+                'user_id' => $userId,
+                'phone' => '09' . rand(10000000, 99999999),
+                'vehicle_type' => ['Xe máy', 'Ô tô bán tải', 'Xe tải nhỏ'][rand(0, 2)],
+                'vehicle_plate' => '51H-' . rand(10000, 99999),
+                'trust_score' => number_format(rand(45, 65) / 10, 2),
+                'completed_deliveries' => 0,
+                'cancelled_deliveries' => 0,
+                'average_rating' => 0,
+                'is_available' => true,
+                'bio' => 'Tài xế chuyên nghiệp với hơn ' . rand(1, 5) . ' năm kinh nghiệm giao hàng.',
+                'metadata' => json_encode(['preferred_area' => ['Nội thành', 'Ngoại thành', 'Liên tỉnh'][rand(0, 2)]]),
+                'created_at' => now()->subDays(rand(10, 60)),
+                'updated_at' => now()->subDays(rand(0, 10)),
             ]);
         }
 
@@ -462,29 +503,211 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // ==================== SHIPPINGS (10 bản ghi) ====================
+        // ==================== SHIPPINGS (Nâng cấp logic) ====================
         $shippings = [
-            ['type' => 'Giao hàng tiêu chuẩn - Nội thành', 'price' => 30000],
-            ['type' => 'Giao hàng tiêu chuẩn - Ngoại thành', 'price' => 50000],
-            ['type' => 'Giao hàng nhanh - Nội thành', 'price' => 50000],
-            ['type' => 'Giao hàng nhanh - Ngoại thành', 'price' => 80000],
-            ['type' => 'Giao hàng hỏa tốc - 2 giờ', 'price' => 100000],
-            ['type' => 'Giao hàng liên tỉnh - Miền Nam', 'price' => 70000],
-            ['type' => 'Giao hàng liên tỉnh - Miền Trung', 'price' => 90000],
-            ['type' => 'Giao hàng liên tỉnh - Miền Bắc', 'price' => 110000],
-            ['type' => 'Giao hàng COD', 'price' => 40000],
-            ['type' => 'Miễn phí vận chuyển', 'price' => 0]
+            [
+                'code' => 'STD_INNER',
+                'type' => 'Giao hàng tiêu chuẩn - Nội thành',
+                'service_level' => 'Standard',
+                'delivery_zone' => 'Nội thành',
+                'pricing_strategy' => 'flat',
+                'price' => 30000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '1-2 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => true,
+                'description' => 'Tiết kiệm chi phí, giao hàng trong khung giờ hành chính nội thành.',
+                'priority' => 1,
+            ],
+            [
+                'code' => 'STD_OUTER',
+                'type' => 'Giao hàng tiêu chuẩn - Ngoại thành',
+                'service_level' => 'Standard',
+                'delivery_zone' => 'Ngoại thành',
+                'pricing_strategy' => 'flat',
+                'price' => 50000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '2-3 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Phù hợp cho các quận ngoại thành với chi phí ổn định.',
+                'priority' => 2,
+            ],
+            [
+                'code' => 'EXPRESS_INNER',
+                'type' => 'Giao hàng nhanh - Nội thành',
+                'service_level' => 'Express',
+                'delivery_zone' => 'Nội thành',
+                'pricing_strategy' => 'flat',
+                'price' => 50000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => 'Trong 24 giờ',
+                'supports_cod' => true,
+                'is_recommended' => true,
+                'description' => 'Ưu tiên giao nhanh cho khách hàng nội thành.',
+                'priority' => 1,
+            ],
+            [
+                'code' => 'EXPRESS_OUTER',
+                'type' => 'Giao hàng nhanh - Ngoại thành',
+                'service_level' => 'Express',
+                'delivery_zone' => 'Ngoại thành',
+                'pricing_strategy' => 'flat',
+                'price' => 80000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '1-2 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Giao hàng nhanh cho khu vực ngoại thành, ưu tiên cuối tuần.',
+                'priority' => 2,
+            ],
+            [
+                'code' => 'SAME_DAY_2H',
+                'type' => 'Giao hàng hỏa tốc - 2 giờ',
+                'service_level' => 'Same Day',
+                'delivery_zone' => 'Nội thành',
+                'pricing_strategy' => 'flat',
+                'price' => 100000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => 5000000,
+                'estimated_time' => 'Trong 2 giờ',
+                'supports_cod' => false,
+                'is_recommended' => false,
+                'description' => 'Hỏa tốc 2 giờ cho nhu cầu gấp, không áp dụng COD.',
+                'priority' => 0,
+            ],
+            [
+                'code' => 'INTER_PROV_SOUTH',
+                'type' => 'Giao hàng liên tỉnh - Miền Nam',
+                'service_level' => 'Intercity',
+                'delivery_zone' => 'Miền Nam',
+                'pricing_strategy' => 'flat',
+                'price' => 70000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '3-4 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Luồng giao cố định các tỉnh miền Nam.',
+                'priority' => 3,
+            ],
+            [
+                'code' => 'INTER_PROV_CENTRAL',
+                'type' => 'Giao hàng liên tỉnh - Miền Trung',
+                'service_level' => 'Intercity',
+                'delivery_zone' => 'Miền Trung',
+                'pricing_strategy' => 'flat',
+                'price' => 90000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '4-5 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Phục vụ các tuyến miền Trung với lịch trình cố định.',
+                'priority' => 3,
+            ],
+            [
+                'code' => 'INTER_PROV_NORTH',
+                'type' => 'Giao hàng liên tỉnh - Miền Bắc',
+                'service_level' => 'Intercity',
+                'delivery_zone' => 'Miền Bắc',
+                'pricing_strategy' => 'flat',
+                'price' => 110000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '4-6 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Trung chuyển liên tỉnh miền Bắc.',
+                'priority' => 3,
+            ],
+            [
+                'code' => 'COD_STANDARD',
+                'type' => 'Giao hàng COD',
+                'service_level' => 'COD',
+                'delivery_zone' => 'Toàn quốc',
+                'pricing_strategy' => 'flat',
+                'price' => 40000,
+                'percentage_rate' => 0,
+                'min_cart_total' => 0,
+                'max_cart_total' => 2000000,
+                'estimated_time' => '2-4 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Thu hộ khi giao, phù hợp đơn nhỏ và trung bình.',
+                'priority' => 4,
+            ],
+            [
+                'code' => 'FREE_SHIP',
+                'type' => 'Miễn phí vận chuyển',
+                'service_level' => 'Free',
+                'delivery_zone' => 'Toàn quốc',
+                'pricing_strategy' => 'flat',
+                'price' => 0,
+                'percentage_rate' => 0,
+                'min_cart_total' => 1500000,
+                'max_cart_total' => null,
+                'estimated_time' => '3-5 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => true,
+                'description' => 'Áp dụng cho đơn từ 1.500.000 VNĐ trở lên.',
+                'priority' => 5,
+            ],
+            [
+                'code' => 'VALUE_BASED_20',
+                'type' => 'Giao hàng theo giá trị đơn hàng',
+                'service_level' => 'Delivery by Purchase',
+                'delivery_zone' => 'Toàn quốc',
+                'pricing_strategy' => 'percentage',
+                'price' => 0,
+                'percentage_rate' => 20,
+                'min_cart_total' => 0,
+                'max_cart_total' => null,
+                'estimated_time' => '2-4 ngày làm việc',
+                'supports_cod' => true,
+                'is_recommended' => false,
+                'description' => 'Phí vận chuyển bằng 20% giá trị đơn, linh hoạt cho đơn hàng giá trị cao.',
+                'priority' => 4,
+            ],
         ];
 
         $shippingIds = [];
+        $shippingMeta = [];
         foreach ($shippings as $shipping) {
-            $shippingIds[] = DB::table('shippings')->insertGetId([
+            $id = DB::table('shippings')->insertGetId([
+                'code' => $shipping['code'],
                 'type' => $shipping['type'],
+                'service_level' => $shipping['service_level'],
+                'delivery_zone' => $shipping['delivery_zone'],
                 'price' => number_format($shipping['price'], 2, '.', ''),
+                'pricing_strategy' => $shipping['pricing_strategy'],
+                'percentage_rate' => $shipping['percentage_rate'],
+                'min_cart_total' => $shipping['min_cart_total'],
+                'max_cart_total' => $shipping['max_cart_total'],
+                'estimated_time' => $shipping['estimated_time'],
+                'supports_cod' => $shipping['supports_cod'],
+                'is_recommended' => $shipping['is_recommended'],
+                'description' => $shipping['description'],
+                'priority' => $shipping['priority'],
                 'status' => 'active',
                 'created_at' => now()->subDays(rand(60, 365)),
                 'updated_at' => now()->subDays(rand(0, 30)),
             ]);
+
+            $shippingIds[] = $id;
+            $shippingMeta[$id] = $shipping;
         }
 
         // ==================== COUPONS (10 bản ghi) ====================
@@ -559,12 +782,72 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-            $shippingPrice = (float)DB::table('shippings')->where('id', $shippingId)->value('price');
+            $shippingConfig = $shippingMeta[$shippingId] ?? null;
+            $shippingPrice = 0;
+            if ($shippingConfig) {
+                $strategy = $shippingConfig['pricing_strategy'];
+                $base = (float) $shippingConfig['price'];
+                $rate = (float) $shippingConfig['percentage_rate'];
+
+                if (!is_null($shippingConfig['min_cart_total']) && $subTotal < $shippingConfig['min_cart_total']) {
+                    $shippingPrice = 0;
+                } elseif (!is_null($shippingConfig['max_cart_total']) && $subTotal > $shippingConfig['max_cart_total']) {
+                    $shippingPrice = $base;
+                } else {
+                    switch ($strategy) {
+                        case 'percentage':
+                            $shippingPrice = $subTotal * ($rate / 100);
+                            break;
+                        case 'mixed':
+                            $shippingPrice = $base + ($subTotal * ($rate / 100));
+                            break;
+                        default:
+                            $shippingPrice = $base;
+                            break;
+                    }
+                }
+            }
             $totalAmount = max(0, $subTotal + $shippingPrice - $couponValue);
 
             $orderStatus = $orderStatuses[$i % count($orderStatuses)];
             $paymentStatus = $paymentStatuses[$i % count($paymentStatuses)];
             $paymentMethod = $paymentMethods[$i % count($paymentMethods)];
+
+            $deliveryStatusMap = [
+                'new' => 'pending',
+                'progress' => 'accepted',
+                'process' => 'in_transit',
+                'delivered' => 'completed',
+                'cancel' => 'cancelled',
+            ];
+            $deliveryStatus = $deliveryStatusMap[$orderStatus] ?? 'pending';
+
+            $assignedShipperId = null;
+            $assignmentType = 'self-claim';
+            $assignedAt = $acceptedAt = $pickedUpAt = $completedAt = $cancelledAt = null;
+            $tipAmount = 0;
+
+            if ($deliveryStatus !== 'pending' && !empty($shipperProfileIds)) {
+                $assignedShipperId = $shipperProfileIds[$i % count($shipperProfileIds)];
+                $assignmentType = 'manual';
+
+                $assignedAt = Carbon::now()->subDays(rand(1, 20))->subHours(rand(1, 8));
+                $acceptedAt = (clone $assignedAt)->addHours(rand(1, 3));
+
+                if (in_array($deliveryStatus, ['accepted', 'in_transit', 'completed'])) {
+                    $pickedUpAt = (clone $acceptedAt)->addHours(rand(1, 4));
+                }
+
+                if ($deliveryStatus === 'completed') {
+                    $baseCompleted = $pickedUpAt ? clone $pickedUpAt : ($acceptedAt ? clone $acceptedAt : Carbon::now());
+                    $completedAt = $baseCompleted->addHours(rand(2, 5));
+                    $tipAmount = rand(0, 1) ? rand(10000, 50000) : 0;
+                }
+
+                if ($deliveryStatus === 'cancelled') {
+                    $cancelledAt = (clone $acceptedAt)->addHours(rand(1, 4));
+                }
+            }
 
             $orderId = DB::table('orders')->insertGetId([
                 'order_number' => 'ORD-' . str_pad($i + 1, 5, '0', STR_PAD_LEFT),
@@ -572,6 +855,7 @@ class DatabaseSeeder extends Seeder
                 'sub_total' => number_format($subTotal, 2, '.', ''),
                 'shipping_id' => $shippingId,
                 'coupon' => number_format($couponValue, 2, '.', ''),
+                'delivery_charge' => number_format($shippingPrice, 2, '.', ''),
                 'total_amount' => number_format($totalAmount, 2, '.', ''),
                 'quantity' => $totalQuantity,
                 'payment_method' => $paymentMethod,
@@ -604,7 +888,83 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
+            $deliveryId = DB::table('order_deliveries')->insertGetId([
+                'order_id' => $orderId,
+                'shipper_id' => $assignedShipperId,
+                'status' => $deliveryStatus,
+                'assignment_type' => $assignmentType,
+                'delivery_fee' => number_format($shippingPrice, 2, '.', ''),
+                'tip_amount' => number_format($tipAmount, 2, '.', ''),
+                'assigned_at' => $assignedAt ? $assignedAt->toDateTimeString() : null,
+                'accepted_at' => $acceptedAt ? $acceptedAt->toDateTimeString() : null,
+                'picked_up_at' => $pickedUpAt ? $pickedUpAt->toDateTimeString() : null,
+                'completed_at' => $completedAt ? $completedAt->toDateTimeString() : null,
+                'cancelled_at' => $cancelledAt ? $cancelledAt->toDateTimeString() : null,
+                'cancel_reason' => $deliveryStatus === 'cancelled' ? 'Shipper báo huỷ do sự cố phương tiện' : null,
+                'notes' => null,
+                'created_at' => now()->subDays(rand(1, 60)),
+                'updated_at' => now()->subDays(rand(0, 5)),
+            ]);
+
+            if ($deliveryStatus === 'completed' && $assignedShipperId) {
+                $rating = rand(4, 5);
+                $liked = (bool) rand(0, 1);
+                $reviewTimestamp = $completedAt ? (clone $completedAt)->addHours(rand(1, 6)) : now();
+
+                DB::table('shipper_reviews')->insert([
+                    'delivery_id' => $deliveryId,
+                    'order_id' => $orderId,
+                    'shipper_id' => $assignedShipperId,
+                    'customer_id' => $userId,
+                    'rating' => $rating,
+                    'is_liked' => $liked,
+                    'tip_amount' => number_format($tipAmount, 2, '.', ''),
+                    'comment' => $liked ? 'Shipper giao đúng hẹn và hỗ trợ nhiệt tình.' : 'Giao hàng đúng yêu cầu.',
+                    'created_at' => $reviewTimestamp,
+                    'updated_at' => (clone $reviewTimestamp)->addHours(1),
+                ]);
+            }
+
             $orderIds[] = $orderId;
+        }
+
+        foreach ($shipperProfileIds as $shipperId) {
+            $completedCount = DB::table('order_deliveries')->where('shipper_id', $shipperId)->where('status', 'completed')->count();
+            $cancelledCount = DB::table('order_deliveries')->where('shipper_id', $shipperId)->where('status', 'cancelled')->count();
+            $averageRating = DB::table('shipper_reviews')->where('shipper_id', $shipperId)->avg('rating');
+
+            $calculatedTrust = $averageRating ? min(10, max(0, 5 + ($averageRating - 3) * 0.7)) : 5;
+
+            DB::table('shippers')->where('id', $shipperId)->update([
+                'completed_deliveries' => $completedCount,
+                'cancelled_deliveries' => $cancelledCount,
+                'average_rating' => $averageRating ? number_format($averageRating, 2, '.', '') : 0,
+                'trust_score' => number_format($calculatedTrust, 2, '.', ''),
+            ]);
+        }
+
+        $pointsPerVnd = config('loyalty.points_per_vnd', 0.01);
+        foreach ($userIds as $customerId) {
+            $stats = DB::table('orders')
+                ->where('user_id', $customerId)
+                ->where('status', 'delivered')
+                ->selectRaw('COUNT(*) as total_orders, COALESCE(SUM(total_amount),0) as total_spent, MAX(created_at) as last_order_at')
+                ->first();
+
+            $totalOrders = (int) ($stats->total_orders ?? 0);
+            $totalSpent = (float) ($stats->total_spent ?? 0);
+            $lastOrderAt = $stats->last_order_at;
+
+            $tier = LoyaltyService::determineTier($totalOrders, $totalSpent);
+            $points = (int) round($totalSpent * $pointsPerVnd);
+
+            DB::table('users')->where('id', $customerId)->update([
+                'total_orders' => $totalOrders,
+                'total_spent' => number_format($totalSpent, 2, '.', ''),
+                'last_order_at' => $lastOrderAt,
+                'loyalty_points' => $points,
+                'loyalty_tier' => $tier,
+            ]);
         }
 
         // ==================== PRODUCT_REVIEWS (20 bản ghi) ====================
@@ -801,7 +1161,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Post Categories: 10');
         $this->command->info('   - Post Tags: 10');
         $this->command->info('   - Messages: 10');
-        $this->command->info('   - Shippings: 10');
+        $this->command->info('   - Shippings: 11');
+        $this->command->info('   - Shippers: ' . count($shipperProfileIds));
         $this->command->info('   - Coupons: 10');
     }
 }

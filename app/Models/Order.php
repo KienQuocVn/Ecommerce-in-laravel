@@ -58,6 +58,16 @@ class Order extends Model
         return $this->hasOne(Payment::class);
     }
 
+    public function delivery()
+    {
+        return $this->hasOne(OrderDelivery::class);
+    }
+
+    public function shipper()
+    {
+        return $this->hasOneThrough(Shipper::class, OrderDelivery::class, 'order_id', 'id', 'id', 'shipper_id');
+    }
+
     public static function getAllOrder($id)
     {
         return Order::with('cart_info')->find($id);

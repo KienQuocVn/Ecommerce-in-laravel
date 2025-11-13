@@ -11,6 +11,8 @@ use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use App\Rules\NotSameAsOldPassword;
 use Illuminate\Support\Facades\Auth;
+use App\Services\LoyaltyService;
+use Helper;
 
 class HomeController extends Controller
 {
@@ -33,7 +35,27 @@ class HomeController extends Controller
 
     public function index()
     {
-        return view('user.index');
+        /** @var User $user */
+        $user = Auth::user();
+
+        $recentCompletedOrders = $user->orders()
+            ->with(['delivery.shipper', 'shipping'])
+            ->where('status', 'delivered')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $activeOrders = $user->orders()
+            ->with(['delivery.shipper', 'shipping'])
+            ->whereIn('status', ['new', 'progress', 'process'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $recommendedProducts = Helper::recommendedProductsForUser($user, 6);
+        $tierMeta = LoyaltyService::tierMeta($user->loyalty_tier);
+
+        return view('user.index', compact('recentCompletedOrders', 'activeOrders', 'recommendedProducts', 'tierMeta', 'user'));
     }
 
     public function profile()
@@ -60,7 +82,10 @@ class HomeController extends Controller
     // Order
     public function orderIndex()
     {
-        $orders = Order::orderBy('id', 'DESC')->where('user_id', auth()->user()->id)->paginate(10);
+        $orders = Order::with(['shipping', 'delivery.shipper'])
+            ->orderBy('id', 'DESC')
+            ->where('user_id', auth()->user()->id)
+            ->paginate(10);
         return view('user.order.index')->with('orders', $orders);
     }
     public function userOrderDelete($id)
@@ -86,9 +111,16 @@ class HomeController extends Controller
 
     public function orderShow($id)
     {
-        $order = Order::find($id);
-        // return $order;
-        return view('user.order.show')->with('order', $order);
+        $order = Order::with(['shipping', 'delivery.shipper.user', 'delivery.reviews'])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('user.order.index')->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+        return view('user.order.show', compact('order'));
     }
     // Product Review
     public function productReviewIndex()
@@ -116,9 +148,9 @@ class HomeController extends Controller
         $review = ProductReview::find($id);
         if ($review) {
             $data = $request->all();
-            $status = $review->fill($data)->update();
+            $status = $review->fill($data)->save();
             if ($status) {
-                session()->flash('success', 'Đánh giá Đã cập nhật thành công');
+                session()->flash('success', 'Đánh giá đã được cập nhật thành công');
             } else {
                 session()->flash('error', 'Có lỗi xảy ra! Vui lòng thử lại!');
             }
@@ -192,7 +224,7 @@ class HomeController extends Controller
         if ($comment) {
             $data = $request->all();
             // return $data;
-            $status = $comment->fill($data)->update();
+            $status = $comment->fill($data)->save();
             if ($status) {
                 session()->flash('success', 'Bình luận đã được cập nhật thành công');
             } else {
@@ -219,6 +251,7 @@ class HomeController extends Controller
         ]);
 
         // Cập nhật mật khẩu mới
+        /** @var User $user */
         $user = Auth::user();
         $user->update(['password' => Hash::make($request->new_password)]);
 
