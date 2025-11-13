@@ -7,7 +7,7 @@
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span style="font-size: 1.25rem;">🤖</span>
                 <div>
-                    <div style="font-weight: 600; font-size: 0.95rem;">AI Assistant</div>
+                    <div style="font-weight: 600; font-size: 0.95rem;">Shopfy</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;">Online</div>
                 </div>
             </div>
@@ -118,6 +118,97 @@
         opacity: 0.8;
         font-size: 0.85rem;
         font-style: italic;
+    }
+
+    /* Product Cards Styles */
+    .chatbot-products-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .chatbot-product-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .chatbot-product-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    }
+
+    .chatbot-product-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1f2937;
+        line-height: 1.4;
+    }
+
+    .chatbot-product-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .chatbot-product-brand {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .chatbot-product-price {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chatbot-product-discount {
+        font-size: 0.75rem;
+        background: #fef3c7;
+        color: #d97706;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .chatbot-product-meta {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .chatbot-product-btn {
+        display: inline-block;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin-top: 0.25rem;
+    }
+
+    .chatbot-product-btn:hover {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .chatbot-message-text {
+        margin-bottom: 0.5rem;
     }
 
     #chatbot-input:focus {

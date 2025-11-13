@@ -16,22 +16,22 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-    
+
     'github' => [
-        'client_id' => env('GITHUB_CLIENT_ID'), 
-        'client_secret' => env('GITHUB_CLIENT_SECRET'), 
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('GITHUB_REDIRECT_URI'),
     ],
 
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'), 
+        'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
     'facebook' => [
-        'client_id' => env('FACEBOOK_CLIENT_ID'), 
-        'client_secret' => env('FACEBOOK_CLIENT_SECRET'), 
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
 
@@ -39,13 +39,13 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-        'currency' => env('STRIPE_CURRENCY', 'USD'),
+        'vnd_to_usd_rate' => env('STRIPE_VND_TO_USD_RATE', 24000),
     ],
     'paypal' => [
         'client_id' => env('PAYPAL_CLIENT_ID'),
         'client_secret' => env('PAYPAL_CLIENT_SECRET'),
         'mode' => env('PAYPAL_MODE', 'sandbox'),
-        'vnd_to_usd_rate' => env('PAYPAL_VND_TO_USD_RATE', 28000), 
+        'vnd_to_usd_rate' => env('PAYPAL_VND_TO_USD_RATE', 28000),
     ],
     'momo' => [
         'partner_code' => env('MOMO_PARTNER_CODE'),
@@ -66,5 +66,7 @@ return [
 
     'groq' => [
         'api_key' => env('GROQ_API_KEY'),
+        'api_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        'model' => env('GROQ_MODEL', 'openai/gpt-oss-120b'),
     ],
 ];

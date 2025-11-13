@@ -67,7 +67,7 @@ class PaymentWebhookController extends Controller
         }
         DB::transaction(function () use ($orderId, $pi, $eventId) {
             $order = Order::with('items')->lockForUpdate()->findOrFail($orderId);
-            if ($order->status === 'paid') {
+            if ($order->payment_status === 'paid') {
                 Log::info('wh.order_already_paid', ['order_id' => $order->id, 'event_id' => $eventId]);
                 return;
             }
@@ -93,7 +93,7 @@ class PaymentWebhookController extends Controller
                 ]);
             $order->update([
                 'payment_status' => 'paid',
-                'status' => 'delivered' // hoặc 'progress'
+                'status' => 'process'
             ]);
 
             Log::info('wh.completed', ['order_id' => $order->id, 'event_id' => $eventId]);
@@ -103,7 +103,7 @@ class PaymentWebhookController extends Controller
     {
         return $this->generic('momo', $req);
     }
-    
+
     public function vnpay(Request $req)
     {
         return $this->generic('vnpay', $req);
@@ -111,21 +111,21 @@ class PaymentWebhookController extends Controller
 
     private function generic(string $provider, Request $req)
     {
-        $gateway = PaymentService::make($provider);
-        $result = $gateway->handleWebhook($req->all());
-        $orderId = $req->input('orderId') ?? $req->input('vnp_TxnRef');
-        if ($orderId && $order = Order::find($orderId)) {
-            $payment = $order->payment;
-            $payment->update([
-                'status' => $result['status'],
-                'transaction_id' =>
-                $result['transaction_id'] ?? $payment->transaction_id,
-                'raw_payload' => $req->all(),
+        try {
+            $gateway = PaymentService::make($provider);
+            $result = $gateway->handleWebhook($req->all());
+
+            // Webhook đã xử lý trong gateway (trừ stock, update order)
+            // Chỉ cần return OK
+            return response('OK', 200);
+        } catch (\Exception $e) {
+            Log::error('Webhook error', [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+                'request' => $req->all()
             ]);
-            $order->update(['status' =>
-            $result['status'] === 'succeeded' ? 'paid' : 'failed']);
+            return response('Error', 500);
         }
-        return response('OK');
     }
 
     public function paypalWebhook(Request $req)

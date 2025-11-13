@@ -113,8 +113,9 @@ class OrderController extends Controller
 
             // Nếu thanh toán online, chuyển hướng đến gateway
             if (in_array($order->payment_method, ['paypal', 'stripe', 'momo', 'vnpay'])) {
-                return redirect()->route('payments.start', ['provider' => $order->payment_method])
-                    ->with('order_id', $order->id);
+                // Lưu order_id vào session
+                session()->put('order_id', $order->id);
+                return redirect()->route('payments.start', ['provider' => $order->payment_method]);
             } else {
                 // COD: xóa session và về trang chủ
                 session()->forget('cart');

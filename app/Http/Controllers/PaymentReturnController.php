@@ -6,6 +6,8 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PaymentReturnController extends Controller
 {
@@ -16,25 +18,30 @@ class PaymentReturnController extends Controller
             $result = $gateway->handleReturn($req->all());
 
             // Lấy orderId từ nhiều nguồn
-            $momoOrderId = $req->query('orderId')
-                ?? $req->input('orderId')
+            $orderId = $req->query('order_id')
                 ?? $req->input('order_id')
-                ?? $req->input('vnp_TxnRef');
+                ?? $req->query('orderId')
+                ?? $req->input('orderId')
+                ?? $req->input('vnp_TxnRef')
+                ?? session()->get('order_id');
 
             $order = null;
-            if ($momoOrderId && $provider === 'momo') {
-                // Với MoMo, orderId không phải là database ID
-                // Cần tìm qua Payment record
+
+            if ($orderId && $provider === 'momo') {
+                // Với MoMo, orderId có thể là momo_order_id, cần tìm qua Payment record
                 $payment = Payment::where('provider', 'momo')
-                    ->whereJsonContains('raw_payload->momo_order_id', $momoOrderId)
+                    ->where(function ($q) use ($orderId) {
+                        $q->where('order_id', $orderId)
+                            ->orWhereJsonContains('raw_payload->momo_order_id', $orderId);
+                    })
                     ->first();
 
                 if ($payment) {
                     $order = Order::find($payment->order_id);
                 }
-            } elseif ($momoOrderId) {
+            } elseif ($orderId) {
                 // Các provider khác dùng trực tiếp order ID
-                $order = Order::find($momoOrderId);
+                $order = Order::find($orderId);
             }
 
             if ($order && $order->payment) {
@@ -45,19 +52,36 @@ class PaymentReturnController extends Controller
                     'raw_payload' => $req->all()
                 ]);
 
-                // Nếu thanh toán thành công, cập nhật order
-                if ($result['status'] === 'succeeded') {
-                    $order->update([
-                        'payment_status' => 'paid',
-                        'status' => 'delivered'
-                    ]);
+                // Nếu thanh toán thành công, cập nhật order và trừ stock
+                if ($result['status'] === 'succeeded' && $order->payment_status !== 'paid') {
+                    DB::transaction(function () use ($order) {
+                        // Trừ stock
+                        foreach ($order->items as $item) {
+                            $qty = (int) $item->quantity;
+                            $affected = DB::table('products')
+                                ->where('id', $item->product_id)
+                                ->where('stock', '>=', $qty)
+                                ->update([
+                                    'stock' => DB::raw('stock - ' . $qty),
+                                ]);
+                            if ($affected === 0) {
+                                throw new \RuntimeException("Không đủ tồn kho cho sản phẩm ID {$item->product_id}");
+                            }
+                        }
+
+                        $order->update([
+                            'payment_status' => 'paid',
+                            'status' => 'process'
+                        ]);
+                    });
                 }
             }
 
-            // Xóa session cart nếu thanh toán thành công
+            // Xóa session cart và order_id nếu thanh toán thành công
             if ($result['status'] === 'succeeded') {
                 session()->forget('cart');
                 session()->forget('coupon');
+                session()->forget('order_id');
             }
 
             return view('frontend.pages.payment-result', [
@@ -67,7 +91,11 @@ class PaymentReturnController extends Controller
                 'order' => $order,
             ]);
         } catch (\Exception $e) {
-
+            Log::error('Payment return error', [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+                'request' => $req->all()
+            ]);
 
             return view('frontend.pages.payment-result', [
                 'provider' => $provider,

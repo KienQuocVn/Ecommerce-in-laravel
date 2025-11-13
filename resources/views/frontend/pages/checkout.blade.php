@@ -411,6 +411,7 @@
                                                 <input name="payment_method"  type="radio" value="paypal"> <label> PayPal</label> 
                                                 <input name="payment_method"  type="radio" value="momo"> <label> Momo</label>
                                                 <input name="payment_method"  type="radio" value="stripe"> <label> Stripe</label>
+                                                <input name="payment_method"  type="radio" value="vnpay"> <label> VNPay</label>
                                             </form-group>
                                         </div>
                                     </div>

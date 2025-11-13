@@ -8,17 +8,12 @@
 
     // Configuration
     const CONFIG = {
-        DEFAULT_MODEL: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        DEFAULT_TEMPERATURE: 0.5,
-        MAX_CONTEXT_MESSAGES: 8,
-        SYSTEM_MESSAGE: 'You are a helpful AI assistant. Be concise and clear.',
-        API_ENDPOINT: '/api/chat'
+        API_ENDPOINT: '/chat/send'
     };
 
     // State management
     const ChatState = {
-        model: localStorage.getItem('chatbot_model') || CONFIG.DEFAULT_MODEL,
-        temperature: parseFloat(localStorage.getItem('chatbot_temp') || CONFIG.DEFAULT_TEMPERATURE),
+        chatId: localStorage.getItem('chatbot_chat_id') || null,
         history: (function() {
             try {
                 return JSON.parse(localStorage.getItem('chatbot_hist') || '[]');
@@ -55,8 +50,9 @@
     }
 
     function saveToLocalStorage() {
-        localStorage.setItem('chatbot_model', ChatState.model);
-        localStorage.setItem('chatbot_temp', String(ChatState.temperature));
+        if (ChatState.chatId) {
+            localStorage.setItem('chatbot_chat_id', ChatState.chatId);
+        }
         localStorage.setItem('chatbot_hist', JSON.stringify(ChatState.history));
     }
 
@@ -66,6 +62,103 @@
                 elements.messages.scrollTop = elements.messages.scrollHeight;
             }
         }, 100);
+    }
+
+    // Create product card element
+    function createProductCard(product) {
+        const card = document.createElement('div');
+        card.className = 'chatbot-product-card';
+        
+        const title = document.createElement('div');
+        title.className = 'chatbot-product-title';
+        title.textContent = product.name || product.title || 'Sản phẩm';
+        card.appendChild(title);
+        
+        const details = document.createElement('div');
+        details.className = 'chatbot-product-details';
+        
+        // Brand and Category
+        if (product.brand || product.category) {
+            const brandCat = document.createElement('div');
+            brandCat.className = 'chatbot-product-brand';
+            brandCat.textContent = [product.brand, product.category].filter(Boolean).join(' • ');
+            details.appendChild(brandCat);
+        }
+        
+        // Price
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'chatbot-product-price';
+        const finalPrice = product.final_price || product.price || 0;
+        const priceText = new Intl.NumberFormat('vi-VN', { 
+            style: 'currency', 
+            currency: 'VND' 
+        }).format(finalPrice);
+        priceDiv.textContent = priceText;
+        if (product.discount) {
+            const discountBadge = document.createElement('span');
+            discountBadge.className = 'chatbot-product-discount';
+            discountBadge.textContent = ` -${product.discount}%`;
+            priceDiv.appendChild(discountBadge);
+        }
+        details.appendChild(priceDiv);
+        
+        // Size and Stock
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'chatbot-product-meta';
+        const metaItems = [];
+        if (product.size) {
+            metaItems.push(`Size: ${product.size}`);
+        }
+        if (product.stock !== undefined) {
+            metaItems.push(product.stock > 0 ? `Còn hàng: ${product.stock}` : 'Hết hàng');
+        }
+        if (metaItems.length > 0) {
+            metaDiv.textContent = metaItems.join(' • ');
+            details.appendChild(metaDiv);
+        }
+        
+        card.appendChild(details);
+        
+        // View button
+        if (product.url) {
+            const viewBtn = document.createElement('a');
+            viewBtn.href = product.url;
+            viewBtn.className = 'chatbot-product-btn';
+            viewBtn.textContent = 'Xem sản phẩm';
+            viewBtn.target = '_blank';
+            card.appendChild(viewBtn);
+        }
+        
+        return card;
+    }
+
+    // Parse products from text (fallback)
+    function parseProductsFromText(text) {
+        const products = [];
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+            // Pattern: "- Product Name (Brand, Category) — Price — Link: url"
+            const match = line.match(/^-\s*(.+?)\s*\(([^)]+)\)\s*—\s*([^—]+)\s*—\s*Link:\s*(https?:\/\/[^\s]+)/i);
+            if (match) {
+                const [, name, brandCat, priceInfo, url] = match;
+                const [brand, category] = brandCat.split(',').map(s => s.trim());
+                const priceMatch = priceInfo.match(/([\d.,]+)/);
+                const price = priceMatch ? parseFloat(priceMatch[1].replace(/[,.]/g, '')) : 0;
+                
+                products.push({
+                    name: name.trim(),
+                    title: name.trim(),
+                    brand: brand,
+                    category: category,
+                    price: price,
+                    final_price: price,
+                    url: url.trim()
+                });
+            }
+        });
+        
+        return products;
     }
 
     // Message Rendering
@@ -104,7 +197,51 @@
             // Message bubble
             const bubble = document.createElement('div');
             bubble.className = 'chatbot-message-bubble';
-            bubble.textContent = clean || msg.content || '';
+            
+            if (isUser) {
+                bubble.textContent = clean || msg.content || '';
+            } else {
+                // For assistant messages, parse and render with products
+                const textContent = clean || msg.content || '';
+                const products = msg.meta?.products || [];
+                
+                // Remove product links from text (they'll be shown as cards)
+                const textWithoutLinks = textContent.replace(/Link:\s*https?:\/\/[^\s]+/gi, '').trim();
+                
+                if (textWithoutLinks) {
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'chatbot-message-text';
+                    textDiv.textContent = textWithoutLinks;
+                    bubble.appendChild(textDiv);
+                }
+                
+                // Add product cards if available
+                if (products && products.length > 0) {
+                    const productsContainer = document.createElement('div');
+                    productsContainer.className = 'chatbot-products-container';
+                    
+                    products.forEach(product => {
+                        const productCard = createProductCard(product);
+                        productsContainer.appendChild(productCard);
+                    });
+                    
+                    bubble.appendChild(productsContainer);
+                } else {
+                    // Fallback: if no products in meta, try to parse from text
+                    const parsedProducts = parseProductsFromText(textContent);
+                    if (parsedProducts.length > 0) {
+                        const productsContainer = document.createElement('div');
+                        productsContainer.className = 'chatbot-products-container';
+                        
+                        parsedProducts.forEach(product => {
+                            const productCard = createProductCard(product);
+                            productsContainer.appendChild(productCard);
+                        });
+                        
+                        bubble.appendChild(productsContainer);
+                    }
+                }
+            }
 
             messageDiv.appendChild(bubble);
 
@@ -145,13 +282,6 @@
         // Clear input
         elements.input.value = '';
 
-        // Get recent history only
-        const recentHistory = ChatState.history.slice(-CONFIG.MAX_CONTEXT_MESSAGES);
-        const messages = [
-            { role: 'system', content: CONFIG.SYSTEM_MESSAGE },
-            ...recentHistory
-        ];
-
         try {
             // Get CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -160,36 +290,50 @@
                 'Accept': 'application/json'
             };
             
-            // Add CSRF token if available (for web routes, API routes don't need it)
+            // Add CSRF token if available
             if (csrfToken) {
                 headers['X-CSRF-TOKEN'] = csrfToken;
+            }
+
+            const payload = {
+                text: inputText
+            };
+            
+            if (ChatState.chatId) {
+                payload.chat_id = ChatState.chatId;
             }
 
             const response = await fetch(CONFIG.API_ENDPOINT, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({
-                    model: ChatState.model,
-                    temperature: ChatState.temperature,
-                    messages: messages
-                }),
+                body: JSON.stringify(payload),
                 signal: ChatState.abortController.signal
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                const errorMsg = errorData.content || `Server error (${response.status}). Please try again.`;
+                const errorMsg = errorData.message || errorData.reply || `Server error (${response.status}). Please try again.`;
                 throw new Error(errorMsg);
             }
 
             const json = await response.json();
-            const { think, clean } = parseThink(json.content || '');
-            const final = clean || json.content || 'No response received';
-            const withThink = think
-                ? `${final}\n\n<think>\n${think}\n</think>`
-                : final;
+            
+            // Update chat ID if provided
+            if (json.chat_id) {
+                ChatState.chatId = json.chat_id;
+                saveToLocalStorage();
+            }
 
-            ChatState.history.push({ role: 'assistant', content: withThink });
+            // Add assistant reply to history with products in meta
+            const reply = json.reply || 'No response received';
+            ChatState.history.push({ 
+                role: 'assistant', 
+                content: reply,
+                meta: {
+                    products: json.matched_products || []
+                }
+            });
+            
             saveToLocalStorage();
             renderMessages();
 
@@ -206,7 +350,7 @@
 
             ChatState.history.push({
                 role: 'assistant',
-                content: `❌ Error: ${errorMsg}\n\nPlease try again or start a new chat.`
+                content: `❌ Lỗi: ${errorMsg}\n\nVui lòng thử lại hoặc bắt đầu cuộc trò chuyện mới.`
             });
             saveToLocalStorage();
             renderMessages();
@@ -289,8 +433,10 @@
             ChatState.abortController.abort();
         }
         ChatState.history = [];
+        ChatState.chatId = null;
         ChatState.isLoading = false;
         localStorage.removeItem('chatbot_hist');
+        localStorage.removeItem('chatbot_chat_id');
         renderMessages();
         updateUI();
     }
@@ -354,8 +500,7 @@
         clear: handleClear,
         getState: function() {
             return {
-                model: ChatState.model,
-                temperature: ChatState.temperature,
+                chatId: ChatState.chatId,
                 historyLength: ChatState.history.length,
                 isLoading: ChatState.isLoading
             };

@@ -19,20 +19,17 @@ class StripeGateway implements PaymentGateway
         $order->load(['items.product']); // đảm bảo có dữ liệu
 
         $lineItems = $order->items->map(function ($item) {
-            $productName = $item->product->name ?? 'Sản phẩm không xác định';
-            $unitPrice   = (float) ($item->unit_price ?? 0);
-            // Chuyển đổi VNĐ sang USD (tỷ giá 1 USD ~ 24000 VND, bạn có thể điều chỉnh)
-            $exchangeRate = 24000; 
-            $priceInUsd = $item->unit_price / $exchangeRate;
+            $product = $item->product;
+            $productName = $product->title ?? 'Sản phẩm không xác định';
+            $unitPrice = (float) ($item->price ?? 0);
+
+            // Chuyển đổi VNĐ sang USD (tỷ giá từ config hoặc 24000 VND)
+            $exchangeRate = (float) config('services.stripe.vnd_to_usd_rate', 24000);
+            $priceInUsd = $unitPrice / $exchangeRate;
             $amountCents = (int) round($priceInUsd * 100);
 
             if ($amountCents <= 0) {
-                throw new \RuntimeException("Sản phẩm {$productName} có giá không hợp lệ ({$item->unit_price})");
-            }
-
-
-            if ($amountCents <= 0) {
-                throw new \RuntimeException("Sản phẩm {$productName} có giá không hợp lệ ({$unitPrice})");
+                throw new \RuntimeException("Sản phẩm {$productName} có giá không hợp lệ ({$unitPrice} VND)");
             }
 
             return [
@@ -41,7 +38,6 @@ class StripeGateway implements PaymentGateway
                     'product_data' => ['name' => $productName],
                     'unit_amount'  => $amountCents,
                 ],
-
                 'quantity' => (int) $item->quantity,
             ];
         })->values()->toArray();
@@ -96,17 +92,27 @@ class StripeGateway implements PaymentGateway
         DB::transaction(function () use ($orderId, $pi, $eventId) {
             $order = Order::with(['items'])->lockForUpdate()->findOrFail($orderId);
 
-            if ($order->status === 'paid') {
+            if ($order->payment_status === 'paid') {
                 return;
             }
 
             foreach ($order->items as $item) {
-                Product::whereKey($item->product_id)
-                    ->where('stock', '>=', $item->quantity)
-                    ->decrement('stock', $item->quantity);
+                $qty = (int) $item->quantity;
+                $affected = DB::table('products')
+                    ->where('id', $item->product_id)
+                    ->where('stock', '>=', $qty)
+                    ->update([
+                        'stock' => DB::raw('stock - ' . $qty),
+                    ]);
+                if ($affected === 0) {
+                    throw new \RuntimeException("Không đủ tồn kho cho sản phẩm ID {$item->product_id}");
+                }
             }
 
-            $order->update(['status' => 'paid']);
+            $order->update([
+                'payment_status' => 'paid',
+                'status' => 'process'
+            ]);
 
             Payment::where('order_id', $order->id)
                 ->where('provider', 'stripe')

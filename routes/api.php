@@ -7,4 +7,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/chat', [ChatController::class, 'chat']);
+
+// Chat route moved to web.php to support guest users
