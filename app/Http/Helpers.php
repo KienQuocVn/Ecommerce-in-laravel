@@ -29,7 +29,6 @@ class Helper
     public static function getHeaderCategory()
     {
         $category = new Category();
-        // dd($category);
         $menu = $category->getAllParentWithChild();
 
         if ($menu) {
