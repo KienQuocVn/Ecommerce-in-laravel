@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Services\CloudinaryService;
 
 class Post extends Model
 {
@@ -68,5 +69,13 @@ class Post extends Model
             return $data;
         }
         return 0;
+    }
+
+    /**
+     * Get photo URL (Cloudinary or local)
+     */
+    public function getPhotoUrlAttribute()
+    {
+        return CloudinaryService::getImageUrl($this->photo);
     }
 }

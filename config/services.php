@@ -69,4 +69,22 @@ return [
         'api_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
         'model' => env('GROQ_MODEL', 'openai/gpt-oss-120b'),
     ],
+
+    'zegocloud' => [
+        'app_id' => env('ZEGOCLOUD_APP_ID'),
+        'app_secret' => env('ZEGOCLOUD_APP_SECRET'),
+        'server_secret' => env('ZEGOCLOUD_SERVER_SECRET'),
+    ],
+
+    'jitsi' => [
+        'domain' => env('JITSI_DOMAIN', 'meet.jit.si'),
+        'options' => [
+            'roomName' => '',
+            'width' => '100%',
+            'height' => '100%',
+            'parentNode' => null,
+            'configOverwrite' => [],
+            'interfaceConfigOverwrite' => [],
+        ],
+    ],
 ];

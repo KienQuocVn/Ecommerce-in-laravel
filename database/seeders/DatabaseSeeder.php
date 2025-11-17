@@ -366,7 +366,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => Str::slug($product['title']),
                 'summary' => 'Sản phẩm ' . $product['title'] . ' chất lượng cao, thiết kế hiện đại, phù hợp văn phòng.',
                 'description' => 'Mô tả chi tiết: ' . $product['title'] . ' được làm từ chất liệu cao cấp, đảm bảo độ bền và thoải mái khi sử dụng. Thiết kế thanh lịch, sang trọng, phù hợp cho môi trường công sở chuyên nghiệp.',
-                'photo' => '/storage/photos/1/Products/product' . ($index + 1) . '.jpg',
+                'photo' => '/storage/photos/1/Products/product' . ($index + 1) . '.webp',
                 'stock' => $product['stock'],
                 'size' => in_array($product['cat_id'], [$parentCategoryIds[0], $parentCategoryIds[1], $parentCategoryIds[2], $parentCategoryIds[3]]) ? 'S,M,L,XL,XXL' : (in_array($product['cat_id'], [$parentCategoryIds[4], $parentCategoryIds[8]]) ? '38,39,40,41,42,43' : 'One Size'),
                 'condition' => $product['condition'],

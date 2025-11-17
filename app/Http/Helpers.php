@@ -9,6 +9,8 @@ use App\Models\Wishlist;
 use App\Models\Shipping;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\LiveStream;
+use App\Services\CloudinaryService;
 use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Auth;
@@ -248,6 +250,30 @@ class Helper
             $price = $data->cart_info->sum('price');
         }
         return number_format((float)($price), 2, '.', '');
+    }
+
+    /**
+     * Get image URL (Cloudinary or local)
+     */
+    public static function getImageUrl($path, $default = '/images/default.jpg')
+    {
+        return CloudinaryService::getImageUrl($path, $default);
+    }
+
+    /**
+     * Check if there's an active live stream
+     */
+    public static function hasActiveLiveStream()
+    {
+        return LiveStream::hasActive();
+    }
+
+    /**
+     * Get active live stream
+     */
+    public static function getActiveLiveStream()
+    {
+        return LiveStream::getActive();
     }
 }
 

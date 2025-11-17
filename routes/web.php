@@ -26,6 +26,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DeliveryFeedbackController;
 use App\Http\Controllers\Shipper\DashboardController as ShipperDashboardController;
 use App\Http\Controllers\Shipper\DeliveryController as ShipperDeliveryController;
+use App\Http\Controllers\LiveStreamController;
 // CACHE CLEAR ROUTE
 Route::get('cache-clear', function () {
     Artisan::call('optimize:clear');
@@ -199,6 +200,12 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function
     // Password Change
     Route::get('change-password', [AdminController::class, 'changePassword'])->name('change.password.form');
     Route::post('change-password', [AdminController::class, 'changPasswordStore'])->name('change.password');
+
+    // Live Stream Management
+    Route::get('/livestream', [\App\Http\Controllers\LiveStreamController::class, 'index'])->name('admin.livestream.index');
+    Route::get('/livestream/create', [\App\Http\Controllers\LiveStreamController::class, 'create'])->name('admin.livestream.create');
+    Route::post('/livestream/start', [\App\Http\Controllers\LiveStreamController::class, 'start'])->name('admin.livestream.start');
+    Route::post('/livestream/{id}/end', [\App\Http\Controllers\LiveStreamController::class, 'end'])->name('admin.livestream.end');
 });
 
 Route::group(['prefix' => '/shipper', 'middleware' => ['auth', 'shipper']], function () {
@@ -244,3 +251,9 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 
 // Chat route - allow both authenticated and guest users
 Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+
+// Live Stream Routes (Public)
+Route::get('/live-stream/view/{id?}', [\App\Http\Controllers\LiveStreamController::class, 'view'])->name('livestream.view');
+Route::get('/api/live-stream/status', [\App\Http\Controllers\LiveStreamController::class, 'status'])->name('api.livestream.status');
+Route::post('/api/live-stream/{id}/join', [\App\Http\Controllers\LiveStreamController::class, 'join'])->name('api.livestream.join');
+Route::post('/api/live-stream/{id}/leave', [\App\Http\Controllers\LiveStreamController::class, 'leave'])->name('api.livestream.leave');

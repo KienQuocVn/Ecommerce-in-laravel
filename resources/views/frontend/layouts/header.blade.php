@@ -23,6 +23,12 @@
                         <ul class="list-main">
                             <li><i class="ti-location-pin"></i> <a href="{{route('order.track')}}">Theo dõi đơn hàng</a></li>
                             {{-- <li><i class="ti-alarm-clock"></i> <a href="#">Ưu đãi hàng ngày</a></li> --}}
+                            <!-- Live Stream Icon -->
+                            <li id="live-stream-indicator" style="display: none; list-style: none;">
+                                <a href="#" id="live-stream-link" style="color: #ff0000; font-weight: bold; text-decoration: none;">
+                                    <i class="ti-video-camera"></i> <span id="live-text">Đang LIVE</span>
+                                </a>
+                            </li>
                             @auth
                             @if(Auth::user()->role=='admin')
                             <li><i class="ti-user"></i> <a href="{{route('admin')}}" target="_blank">Bảng điều khiển</a></li>
@@ -75,7 +81,7 @@
                 <div class="col-lg-8 col-md-7 col-12">
                     <div class="search-bar-top">
                         <div class="search-bar">
-                            
+
                             <form method="POST" action="{{route('product.search')}}">
                                 @csrf
                                 <input name="search" placeholder="Tìm kiếm sản phẩm tại đây....." type="search">
@@ -207,3 +213,151 @@
     </div>
     <!--/ End Header Inner -->
 </header>
+
+<!-- Floating Live Icon (Top Left) -->
+<div id="floating-live-icon" style="position: fixed; top: 80px; left: 20px; z-index: 999; display: none;">
+    <a href="#" id="floating-live-link" style="background: #ff0000; color: white; padding: 12px 20px; border-radius: 25px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(255,0,0,0.4); animation: pulse-live 2s infinite;">
+        <span class="live-dot" style="width: 10px; height: 10px; background: white; border-radius: 50%; animation: blink 1s infinite;"></span>
+        <span style="font-weight: bold;">LIVE</span>
+    </a>
+</div>
+
+@push('styles')
+<style>
+    /* Live Stream Indicator Styles */
+    #live-stream-indicator {
+        display: inline-block !important;
+        margin: 0;
+        padding: 0;
+        vertical-align: middle;
+    }
+
+    #live-stream-indicator a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    #live-stream-indicator i {
+        margin-right: 0;
+    }
+
+    #live-stream-indicator #live-text {
+        display: inline-block;
+    }
+
+    /* Floating Live Icon */
+    #floating-live-icon {
+        position: fixed;
+        top: 80px;
+        left: 20px;
+        z-index: 999;
+        display: none;
+    }
+
+    #floating-live-link {
+        background: #ff0000;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        animation: pulse-live 2s infinite;
+    }
+
+    .live-dot {
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+    }
+
+    @keyframes pulse-live {
+
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+        }
+    }
+
+    #floating-live-icon:hover {
+        transform: scale(1.1);
+        transition: transform 0.3s;
+    }
+
+    /* Ensure list items don't break layout */
+    .list-main li {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        #floating-live-icon {
+            top: 60px;
+            left: 10px;
+        }
+
+        #floating-live-link {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    // Check for active live stream
+    function checkLiveStream() {
+        fetch('/api/live-stream/status')
+            .then(res => res.json())
+            .then(data => {
+                if (data.has_active && data.stream) {
+                    // Show indicators
+                    document.getElementById('live-stream-indicator').style.display = 'block';
+                    document.getElementById('floating-live-icon').style.display = 'block';
+
+                    // Set links
+                    const streamUrl = '/live-stream/view/' + data.stream.id;
+                    document.getElementById('live-stream-link').href = streamUrl;
+                    document.getElementById('floating-live-link').href = streamUrl;
+                } else {
+                    // Hide indicators
+                    document.getElementById('live-stream-indicator').style.display = 'none';
+                    document.getElementById('floating-live-icon').style.display = 'none';
+                }
+            })
+            .catch(err => console.error('Error checking live stream:', err));
+    }
+
+    // Check on page load
+    checkLiveStream();
+
+    // Check every 10 seconds
+    setInterval(checkLiveStream, 10000);
+</script>
+@endpush
