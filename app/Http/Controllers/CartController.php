@@ -7,74 +7,86 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\Cart;
+use App\Services\CheckoutRecoveryService;
 use Illuminate\Support\Str;
 use Helper;
 
 class CartController extends Controller
 {
     protected $product = null;
-    public function __construct(Product $product)
+    protected CheckoutRecoveryService $checkoutRecovery;
+
+    public function __construct(Product $product, CheckoutRecoveryService $checkoutRecovery)
     {
         $this->product = $product;
+        $this->checkoutRecovery = $checkoutRecovery;
     }
 
-    public function addToCart(Request $request)
+    public function addToCart(Request $request, $slug)
     {
-        if (empty($request->slug)) {
-            session()->flash('error', 'Sản phẩm không hợp lệ');
-            return back();
-        }
-        
-        $product = Product::where('slug', $request->slug)->first();
-        
+        $request->validate([
+            'size' => 'required|string',
+        ]);
+
+        $product = Product::where('slug', $slug)->first();
+
         if (empty($product)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();
         }
 
+        // Validate size
+        $availableSizes = $product->size ? explode(',', $product->size) : [];
+        $availableSizes = array_map('trim', $availableSizes);
+
+        if (!in_array($request->size, $availableSizes)) {
+            return back()->with('error', 'Vui lòng chọn size sản phẩm.');
+        }
+
         $already_cart = Cart::where('user_id', auth()->user()->id)
             ->where('order_id', null)
             ->where('product_id', $product->id)
+            ->where('size', $request->size)
             ->first();
 
         if ($already_cart) {
-            // Sản phẩm đã có trong giỏ, tăng số lượng
+            // Sản phẩm đã có trong giỏ với cùng size, tăng số lượng
             $already_cart->quantity = $already_cart->quantity + 1;
             $already_cart->amount = $product->price + $already_cart->amount;
-            
+
             if ($already_cart->product->stock < $already_cart->quantity || $already_cart->product->stock <= 0) {
                 return back()->with('error', 'Không đủ hàng!');
             }
-            
+
             $already_cart->save();
-            
+
             // ⭐ XÓA SẢN PHẨM NÀY KHỎI WISHLIST (nếu có)
             Wishlist::where('user_id', auth()->user()->id)
                 ->where('product_id', $product->id)
                 ->where('cart_id', null)
                 ->delete();
-                
         } else {
             // Thêm sản phẩm mới vào giỏ
             $cart = new Cart;
             $cart->user_id = auth()->user()->id;
             $cart->product_id = $product->id;
+            $cart->size = $request->size;
             $cart->price = ($product->price - ($product->price * $product->discount) / 100);
             $cart->quantity = 1;
             $cart->amount = $cart->price * $cart->quantity;
-            
+
             if ($cart->product->stock < $cart->quantity || $cart->product->stock <= 0) {
                 return back()->with('error', 'Không đủ hàng!');
             }
-            
+
             $cart->save();
-            
+
             Wishlist::where('user_id', auth()->user()->id)
-                ->where('product_id', $product->id)  
+                ->where('product_id', $product->id)
                 ->where('cart_id', null)
                 ->delete();
         }
-        
+
         session()->flash('success', 'Sản phẩm đã được thêm vào giỏ hàng thành công');
         return back();
     }
@@ -82,13 +94,23 @@ class CartController extends Controller
     public function singleAddToCart(Request $request)
     {
         $request->validate([
-            'slug'      =>  'required',
+            'slug'      =>  'required|exists:products,slug',
             'quant'      =>  'required',
+            'size'      =>  'required|string',
         ]);
         // dd($request->quant[1]);
 
 
         $product = Product::where('slug', $request->slug)->first();
+
+        // Validate size
+        $availableSizes = $product->size ? explode(',', $product->size) : [];
+        $availableSizes = array_map('trim', $availableSizes);
+
+        if (!in_array($request->size, $availableSizes)) {
+            return back()->with('error', 'Size không hợp lệ. Vui lòng chọn size phù hợp.');
+        }
+
         if ($product->stock < $request->quant[1]) {
             return back()->with('error', 'Hết hàng, Bạn có thể thêm sản phẩm khác.');
         }
@@ -97,7 +119,12 @@ class CartController extends Controller
             return back();
         }
 
-        $already_cart = Cart::where('user_id', auth()->user()->id)->where('order_id', null)->where('product_id', $product->id)->first();
+        // Check if same product with same size already in cart
+        $already_cart = Cart::where('user_id', auth()->user()->id)
+            ->where('order_id', null)
+            ->where('product_id', $product->id)
+            ->where('size', $request->size)
+            ->first();
 
         // return $already_cart;
 
@@ -114,6 +141,7 @@ class CartController extends Controller
             $cart = new Cart;
             $cart->user_id = auth()->user()->id;
             $cart->product_id = $product->id;
+            $cart->size = $request->size;
             $cart->price = ($product->price - ($product->price * $product->discount) / 100);
             $cart->quantity = $request->quant[1];
             $cart->amount = ($product->price * $request->quant[1]);
@@ -259,25 +287,13 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-        // $cart=session('cart');
-        // $cart_index=\Str::random(10);
-        // $sub_total=0;
-        // foreach($cart as $cart_item){
-        //     $sub_total+=$cart_item['amount'];
-        //     $data=array(
-        //         'cart_id'=>$cart_index,
-        //         'user_id'=>$request->user()->id,
-        //         'product_id'=>$cart_item['id'],
-        //         'quantity'=>$cart_item['quantity'],
-        //         'amount'=>$cart_item['amount'],
-        //         'status'=>'new',
-        //         'price'=>$cart_item['price'],
-        //     );
+        if (auth()->check() && Helper::cartCount() === 0) {
+            $restoredOrder = $this->checkoutRecovery->tryRestoreForUser(auth()->user());
+            if ($restoredOrder) {
+                session()->flash('warning', 'Đã khôi phục giỏ hàng từ đơn ' . $restoredOrder . ' chưa thanh toán.');
+            }
+        }
 
-        //     $cart=new Cart();
-        //     $cart->fill($data);
-        //     $cart->save();
-        // }
         return view('frontend.pages.checkout');
     }
 }

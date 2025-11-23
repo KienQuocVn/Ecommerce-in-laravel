@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Shipping;
 use App\Models\User;
-use App\Models\OrderDelivery;
 use PDF;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
@@ -32,14 +31,26 @@ class OrderController extends Controller
             'first_name' => 'string|required',
             'last_name' => 'string|required',
             'address1' => 'string|required',
-            'address2' => 'string|nullable',
-            'coupon' => 'nullable|numeric',
             'phone' => 'numeric|required',
-            'post_code' => 'string|nullable',
             'email' => 'string|required',
             'payment_method' => 'required|in:cod,paypal,stripe,momo,vnpay',
-            'shipping' => 'nullable|exists:shippings,id'
+            'shipping' => 'nullable|exists:shippings,id',
+            'coupon_id' => 'nullable|exists:coupons,id'
         ]);
+
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if ($user && $user->needsProfileCompletion()) {
+            $user->update([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'name' => trim($request->input('first_name') . ' ' . $request->input('last_name')),
+                'email' => $request->input('email'),
+                'phone' => $request->input('phone'),
+                'address_line1' => $request->input('address1'),
+            ]);
+        }
 
         if (empty(Cart::where('user_id', auth()->user()->id)->where('order_id', null)->first())) {
             session()->flash('error', 'Giỏ hàng trống!');
@@ -77,11 +88,24 @@ class OrderController extends Controller
             $order_data['delivery_charge'] = 0;
         }
 
-        if (session('coupon')) {
+        // Handle coupon from user account
+        $couponValue = 0;
+        $couponId = null;
+
+        if ($request->filled('coupon_id')) {
+            $coupon = $user->availableCoupons()->find($request->coupon_id);
+
+            if ($coupon && $coupon->isValidForAmount($subTotal)) {
+                $couponValue = $coupon->discount($subTotal);
+                $couponId = $coupon->id;
+                $order_data['coupon'] = $couponValue;
+                $order_data['coupon_id'] = $couponId;
+            }
+        } elseif (session('coupon')) {
+            // Fallback to session coupon for backward compatibility
             $order_data['coupon'] = session('coupon')['value'];
         }
 
-        $couponValue = session('coupon')['value'] ?? 0;
         $order_data['total_amount'] = max(0, $subTotal + $shippingCost - $couponValue);
 
         $order_data['status'] = "new";
@@ -99,13 +123,9 @@ class OrderController extends Controller
         $status = $order->save();
 
         if ($status) {
-            // **TẠO DELIVERY RECORD**
-            OrderDelivery::create([
-                'order_id' => $order->id,
-                'delivery_fee' => $shippingCost,
-                'status' => OrderDelivery::STATUS_PENDING,
-                'assignment_type' => 'self-claim',
-            ]);
+            if ($order->payment_method === 'cod') {
+                $order->ensureDeliveryRecord($shippingCost);
+            }
 
             // **TẠO PAYMENT RECORD**
             Payment::create([
@@ -132,6 +152,14 @@ class OrderController extends Controller
                 ->where('order_id', null)
                 ->update(['order_id' => $order->id]);
 
+            // Mark coupon as used if applied
+            if ($couponId) {
+                $user->coupons()->updateExistingPivot($couponId, [
+                    'used_at' => now(),
+                    'used_in_order_id' => $order->id
+                ]);
+            }
+
             // Nếu thanh toán online, chuyển hướng đến gateway
             if (in_array($order->payment_method, ['paypal', 'stripe', 'momo', 'vnpay'])) {
                 // Lưu order_id vào session
@@ -142,6 +170,10 @@ class OrderController extends Controller
                 session()->forget('cart');
                 session()->forget('coupon');
                 session()->flash('success', 'Đơn hàng của bạn đã được đặt thành công');
+
+                // Award loyalty points
+                LoyaltyService::syncForOrder($order);
+
                 return redirect()->route('home');
             }
         }

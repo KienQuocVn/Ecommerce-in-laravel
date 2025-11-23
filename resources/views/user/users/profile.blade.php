@@ -39,8 +39,24 @@
                 <form class="border px-4 pt-2 pb-3" method="POST" action="{{route('user-profile-update',$profile->id)}}">
                     @csrf
                     <div class="form-group">
-                        <label for="inputTitle" class="col-form-label">Tên</label>
-                        <input id="inputTitle" type="text" name="name" placeholder="Enter name" value="{{$profile->name}}" class="form-control">
+                        <label for="inputFirstName" class="col-form-label">Tên <span class="text-danger">*</span></label>
+                        <input id="inputFirstName" type="text" name="first_name" placeholder="Nhập tên" value="{{$profile->first_name}}" class="form-control" required>
+                        @error('first_name')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputLastName" class="col-form-label">Họ <span class="text-danger">*</span></label>
+                        <input id="inputLastName" type="text" name="last_name" placeholder="Nhập họ" value="{{$profile->last_name}}" class="form-control" required>
+                        @error('last_name')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputDisplayName" class="col-form-label">Tên hiển thị</label>
+                        <input id="inputDisplayName" type="text" name="name" placeholder="Tên hiển thị" value="{{$profile->name}}" class="form-control">
                         @error('name')
                         <span class="text-danger">{{$message}}</span>
                         @enderror
@@ -48,8 +64,48 @@
 
                     <div class="form-group">
                         <label for="inputEmail" class="col-form-label">Email</label>
-                        <input id="inputEmail" disabled type="email" name="email" placeholder="Nhập email" value="{{$profile->email}}" class="form-control">
+                        <input id="inputEmail" readonly type="email" name="email" placeholder="Nhập email" value="{{$profile->email}}" class="form-control">
                         @error('email')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputPhone" class="col-form-label">Số điện thoại <span class="text-danger">*</span></label>
+                        <input id="inputPhone" type="text" name="phone" placeholder="Nhập số điện thoại" value="{{$profile->phone}}" class="form-control" required>
+                        @error('phone')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputAddress1" class="col-form-label">Địa chỉ (dòng 1) <span class="text-danger">*</span></label>
+                        <input id="inputAddress1" type="text" name="address_line1" placeholder="Nhập địa chỉ" value="{{$profile->address_line1}}" class="form-control" required>
+                        @error('address_line1')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputAddress2" class="col-form-label">Địa chỉ (dòng 2)</label>
+                        <input id="inputAddress2" type="text" name="address_line2" placeholder="Căn hộ, tầng..." value="{{$profile->address_line2}}" class="form-control">
+                        @error('address_line2')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputCountry" class="col-form-label">Quốc gia</label>
+                        <input id="inputCountry" type="text" name="country" placeholder="Quốc gia" value="{{$profile->country}}" class="form-control">
+                        @error('country')
+                        <span class="text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputPostal" class="col-form-label">Mã bưu chính</label>
+                        <input id="inputPostal" type="text" name="post_code" placeholder="Mã bưu chính" value="{{$profile->post_code}}" class="form-control">
+                        @error('post_code')
                         <span class="text-danger">{{$message}}</span>
                         @enderror
                     </div>
@@ -74,6 +130,7 @@
                             <option value="">-----Select Role-----</option>
                             <option value="admin" {{(($profile->role=='admin')? 'selected' : '')}}>Admin</option>
                             <option value="user" {{(($profile->role=='user')? 'selected' : '')}}>User</option>
+                            <option value="shipper" {{(($profile->role=='shipper')? 'selected' : '')}}>Shipper</option>
                         </select>
                         @error('role')
                         <span class="text-danger">{{$message}}</span>

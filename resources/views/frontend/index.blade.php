@@ -133,9 +133,9 @@
                                             <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
                                             <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                         </div>
-                                        <div class="product-action-2">
+                                        <!-- <div class="product-action-2">
                                             <a title="Thêm vào giỏ hàng" href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                                 <div class="product-content">
@@ -227,9 +227,9 @@
                                     <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
                                     <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                 </div>
-                                <div class="product-action-2">
+                                <!-- <div class="product-action-2">
                                     <a href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="product-content">

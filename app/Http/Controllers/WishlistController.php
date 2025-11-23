@@ -15,13 +15,9 @@ class WishlistController extends Controller
         $this->product = $product;
     }
 
-    public function wishlist(Request $request)
+    public function wishlist(Request $request, $slug)
     {
-        if (empty($request->slug)) {
-            session()->flash('error', 'Sản phẩm không hợp lệ');
-            return back();
-        }
-        $product = Product::where('slug', $request->slug)->first();
+        $product = Product::where('slug', $slug)->first();
         if (empty($product)) {
             session()->flash('error', 'Sản phẩm không hợp lệ');
             return back();

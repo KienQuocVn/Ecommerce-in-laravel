@@ -62,7 +62,14 @@ class OrderDelivery extends Model
 
     public function scopeAvailable($query)
     {
-        return $query->whereNull('shipper_id')->where('status', self::STATUS_PENDING);
+        return $query->whereNull('shipper_id')
+            ->where('status', self::STATUS_PENDING)
+            ->whereHas('order', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('payment_method', 'cod')
+                        ->orWhere('payment_status', 'paid');
+                });
+            });
     }
 
     public function markAccepted(): void

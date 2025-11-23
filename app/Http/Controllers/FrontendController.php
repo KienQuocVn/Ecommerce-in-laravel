@@ -177,7 +177,8 @@ class FrontendController extends Controller
         return view('frontend.pages.product-grids')
             ->with('products', $products)
             ->with('recent_products', $recent_products)
-            ->with('available_sizes', $available_sizes);
+            ->with('available_sizes', $available_sizes)
+            ->with('viewMode', 'grid');
     }
 
     public function productLists()
@@ -288,13 +289,26 @@ class FrontendController extends Controller
         return view('frontend.pages.product-lists')
             ->with('products', $products)
             ->with('recent_products', $recent_products)
-            ->with('available_sizes', $available_sizes);
+            ->with('available_sizes', $available_sizes)
+            ->with('viewMode', 'list');
     }
 
     // FIX: Giữ nguyên trang hiện tại khi filter
     public function productFilter(Request $request)
     {
-        $data = $request->all();
+        $data = $request->validate([
+            'show' => 'nullable|integer|min:6|max:60',
+            'sortBy' => 'nullable|string|max:20',
+            'category' => 'nullable|array',
+            'category.*' => 'string',
+            'brand' => 'nullable|array',
+            'brand.*' => 'string',
+            'size' => 'nullable|array',
+            'size.*' => 'string|max:10',
+            'condition' => 'nullable|in:new,hot,sale',
+            'rating' => 'nullable|integer|min:3|max:5',
+            'price_range' => ['nullable', 'regex:/^\d+\-\d+$/'],
+        ]);
 
         // Build URL parameters
         $params = [];
@@ -343,6 +357,10 @@ class FrontendController extends Controller
 
     public function productSearch(Request $request)
     {
+        $request->validate([
+            'search' => 'required|string|max:120',
+        ]);
+
         $search = $request->search;
 
         $recent_products = Product::where('status', 'active')
@@ -416,17 +434,15 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        } else {
-            return view('frontend.pages.product-lists')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        }
+        $viewMode = $request->get('view');
+        $template = $viewMode === 'grid' ? 'frontend.pages.product-grids' : 'frontend.pages.product-lists';
+
+        return view($template, [
+            'products' => $products,
+            'recent_products' => $recent_products,
+            'available_sizes' => $available_sizes,
+            'viewMode' => $viewMode,
+        ]);
     }
 
     public function productCat(Request $request)
@@ -463,17 +479,15 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        } else {
-            return view('frontend.pages.product-lists')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        }
+        $viewMode = $request->get('view');
+        $template = $viewMode === 'grid' ? 'frontend.pages.product-grids' : 'frontend.pages.product-lists';
+
+        return view($template, [
+            'products' => $products,
+            'recent_products' => $recent_products,
+            'available_sizes' => $available_sizes,
+            'viewMode' => $viewMode,
+        ]);
     }
 
     public function productSubCat(Request $request)
@@ -626,12 +640,44 @@ class FrontendController extends Controller
     }
     public function loginSubmit(Request $request)
     {
-        $data = $request->all();
-        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'status' => 'active'])) {
-            Session::put('user', $data['email']);
+        $credentials = $request->validate([
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6|max:255',
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không đúng định dạng.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        ]);
+
+        // Kiểm tra user có tồn tại không
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return back()
+                ->withErrors(['email' => 'Email không tồn tại trong hệ thống.'])
+                ->withInput($request->only('email'));
+        }
+
+        if ($user->status !== 'active') {
+            return back()
+                ->withErrors(['email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.'])
+                ->withInput($request->only('email'));
+        }
+
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password'], 'status' => 'active'])) {
+            $request->session()->regenerate();
+            Session::put('user', $credentials['email']);
             session()->flash('success', 'Đăng nhập thành công');
 
-            switch (Auth::user()->role) {
+            /** @var \App\Models\User|null $user */
+            $user = Auth::user();
+
+            if ($user && $user->needsProfileCompletion()) {
+                session()->flash('warning', 'Tài khoản của bạn chưa đủ thông tin. Vui lòng cập nhật hồ sơ để thanh toán nhanh hơn.');
+            }
+
+            switch ($user->role) {
                 case 'admin':
                     return redirect()->route('admin');
                 case 'shipper':
@@ -641,10 +687,11 @@ class FrontendController extends Controller
                 default:
                     return redirect()->route('home');
             }
-        } else {
-            session()->flash('error', 'Email và mật khẩu không hợp lệ, vui lòng thử lại!');
-            return redirect()->back();
         }
+
+        return back()
+            ->withErrors(['password' => 'Mật khẩu không đúng.'])
+            ->withInput($request->only('email'));
     }
 
     public function logout()
@@ -661,30 +708,63 @@ class FrontendController extends Controller
     }
     public function registerSubmit(Request $request)
     {
-        // return $request->all();
-        $this->validate($request, [
-            'name' => 'string|required|min:2',
-            'email' => 'string|required|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+        $data = $request->validate([
+            'first_name' => 'required|string|min:2|max:120',
+            'last_name' => 'required|string|min:2|max:120',
+            'email' => 'required|email|max:255|unique:users,email',
+            'phone' => 'required|string|min:8|max:20|regex:/^[0-9+\-\s()]+$/',
+            'address_line1' => 'required|string|min:5|max:255',
+            'password' => 'required|string|min:6|max:255|confirmed',
+        ], [
+            'first_name.required' => 'Vui lòng nhập tên.',
+            'first_name.min' => 'Tên phải có ít nhất 2 ký tự.',
+            'last_name.required' => 'Vui lòng nhập họ.',
+            'last_name.min' => 'Họ phải có ít nhất 2 ký tự.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email này đã được sử dụng.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'phone.min' => 'Số điện thoại phải có ít nhất 8 ký tự.',
+            'phone.regex' => 'Số điện thoại không đúng định dạng.',
+            'address_line1.required' => 'Vui lòng nhập địa chỉ.',
+            'address_line1.min' => 'Địa chỉ phải có ít nhất 5 ký tự.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
         ]);
-        $data = $request->all();
-        // dd($data);
-        $check = $this->create($data);
-        Session::put('user', $data['email']);
-        if ($check) {
-            session()->flash('success', 'Đã đăng ký thành công');
-            return redirect()->route('home');
-        } else {
-            session()->flash('error', 'Vui lòng thử lại!');
-            return back();
+
+        try {
+            $data['name'] = trim($data['first_name'] . ' ' . $data['last_name']);
+            $check = $this->create($data);
+
+            if ($check) {
+                Session::put('user', $data['email']);
+                Auth::login($check);
+                session()->flash('success', 'Đã đăng ký thành công');
+                if ($check->needsProfileCompletion()) {
+                    session()->flash('warning', 'Vui lòng hoàn tất hồ sơ để trải nghiệm thanh toán nhanh hơn.');
+                }
+                return redirect()->route('home');
+            }
+
+            session()->flash('error', 'Không thể tạo tài khoản. Vui lòng thử lại!');
+            return back()->withInput();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            return back()->withInput();
         }
     }
     public function create(array $data)
     {
         return User::create([
             'name' => $data['name'],
+            'first_name' => $data['first_name'] ?? null,
+            'last_name' => $data['last_name'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'address_line1' => $data['address_line1'] ?? null,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => 'user',
             'status' => 'active'
         ]);
     }

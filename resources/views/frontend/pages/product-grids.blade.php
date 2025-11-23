@@ -89,7 +89,7 @@
                                 @foreach($available_sizes as $size)
                                 <li>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" name="size[]" value="{{$size}}" 
+                                        <input type="checkbox" name="size[]" value="{{$size}}"
                                             {{in_array($size, $selected_sizes) ? 'checked' : ''}}>
                                         <span>{{$size}}</span>
                                     </label>
@@ -107,16 +107,16 @@
                             <ul class="categor-list">
                                 @php
                                 $conditions = [
-                                    'new' => 'Mới nhất',
-                                    'hot' => 'Hot - Bán chạy',
-                                    'sale' => 'Giảm giá'
+                                'new' => 'Mới nhất',
+                                'hot' => 'Hot - Bán chạy',
+                                'sale' => 'Giảm giá'
                                 ];
                                 $selected_condition = $_GET['condition'] ?? '';
                                 @endphp
                                 @foreach($conditions as $key => $label)
                                 <li>
                                     <label class="checkbox-label">
-                                        <input type="radio" name="condition" value="{{$key}}" 
+                                        <input type="radio" name="condition" value="{{$key}}"
                                             {{$selected_condition == $key ? 'checked' : ''}}
                                             onchange="this.form.submit();">
                                         <span>{{$label}}</span>
@@ -144,17 +144,17 @@
                                 @for($i = 5; $i >= 3; $i--)
                                 <li>
                                     <label class="checkbox-label">
-                                        <input type="radio" name="rating" value="{{$i}}" 
+                                        <input type="radio" name="rating" value="{{$i}}"
                                             {{$selected_rating == $i ? 'checked' : ''}}
                                             onchange="this.form.submit();">
                                         <span>
                                             @for($j = 1; $j <= $i; $j++)
                                                 <i class="fa fa-star text-warning"></i>
-                                            @endfor
-                                            @for($j = $i + 1; $j <= 5; $j++)
-                                                <i class="fa fa-star-o"></i>
-                                            @endfor
-                                            trở lên
+                                                @endfor
+                                                @for($j = $i + 1; $j <= 5; $j++)
+                                                    <i class="fa fa-star-o"></i>
+                                                    @endfor
+                                                    trở lên
                                         </span>
                                     </label>
                                 </li>
@@ -185,7 +185,7 @@
                                 <div class="content">
                                     <h5><a href="{{route('product-detail',$product->slug)}}">{{$product->title}}</a></h5>
                                     <p class="price">
-                                        <del class="text-muted">{{number_format($product->price,0)}} VNĐ</del> 
+                                        <del class="text-muted">{{number_format($product->price,0)}} VNĐ</del>
                                         {{number_format($org,0)}} VNĐ
                                     </p>
                                 </div>
@@ -226,7 +226,7 @@
                                                 <option value="title_desc" @if(!empty($_GET['sortBy']) && $_GET['sortBy']=='title_desc' ) selected @endif>Tên: Z → A</option>
                                             </optgroup>
                                             <optgroup label="Theo giá">
-                                                <option value="price_asc" @if(!empty($_GET['sortBy']) && in_array($_GET['sortBy'], ['price', 'price_asc'])) selected @endif>Giá: Thấp → Cao</option>
+                                                <option value="price_asc" @if(!empty($_GET['sortBy']) && in_array($_GET['sortBy'], ['price', 'price_asc' ])) selected @endif>Giá: Thấp → Cao</option>
                                                 <option value="price_desc" @if(!empty($_GET['sortBy']) && $_GET['sortBy']=='price_desc' ) selected @endif>Giá: Cao → Thấp</option>
                                             </optgroup>
                                             <optgroup label="Khác">
@@ -246,10 +246,21 @@
                                     </div>
                                     @endif
                                 </div>
-                                
+
+                                @php
+                                $currentRoute = \Illuminate\Support\Facades\Route::currentRouteName();
+                                $query = request()->query();
+                                $activeView = $viewMode ?? ($currentRoute === 'product-grids' ? 'grid' : 'list');
+                                $gridUrl = in_array($currentRoute, ['product-grids', 'product-lists'])
+                                ? route('product-grids', $query)
+                                : request()->fullUrlWithQuery(array_merge($query, ['view' => 'grid']));
+                                $listUrl = in_array($currentRoute, ['product-grids', 'product-lists'])
+                                ? route('product-lists', $query)
+                                : request()->fullUrlWithQuery(array_merge($query, ['view' => 'list']));
+                                @endphp
                                 <ul class="view-mode">
-                                    <li class="active"><a href="javascript:void(0)"><i class="fa fa-th-large"></i></a></li>
-                                    <li><a href="{{route('product-lists')}}"><i class="fa fa-th-list"></i></a></li>
+                                    <li class="{{ $activeView === 'grid' ? 'active' : '' }}"><a href="{{ $activeView === 'grid' ? 'javascript:void(0)' : $gridUrl }}"><i class="fa fa-th-large"></i></a></li>
+                                    <li class="{{ $activeView === 'list' ? 'active' : '' }}"><a href="{{ $listUrl }}"><i class="fa fa-th-list"></i></a></li>
                                 </ul>
                             </div>
                             <!--/ End Shop Top -->
@@ -257,18 +268,18 @@
                             <!-- HIỂN THỊ THÔNG TIN BỘ LỌC -->
                             @if(!empty($_GET) && count(array_filter($_GET)) > 0)
                             <div class="filter-info">
-                                <p><strong>Đang lọc:</strong> 
+                                <p><strong>Đang lọc:</strong>
                                     @if(!empty($_GET['price']))
-                                        <span class="badge badge-primary">Giá: {{$_GET['price']}} VNĐ</span>
+                                    <span class="badge badge-primary">Giá: {{$_GET['price']}} VNĐ</span>
                                     @endif
                                     @if(!empty($_GET['size']))
-                                        <span class="badge badge-info">Size: {{$_GET['size']}}</span>
+                                    <span class="badge badge-info">Size: {{$_GET['size']}}</span>
                                     @endif
                                     @if(!empty($_GET['condition']))
-                                        <span class="badge badge-warning">{{ucfirst($_GET['condition'])}}</span>
+                                    <span class="badge badge-warning">{{ucfirst($_GET['condition'])}}</span>
                                     @endif
                                     @if(!empty($_GET['rating']))
-                                        <span class="badge badge-success">{{$_GET['rating']}}⭐ trở lên</span>
+                                    <span class="badge badge-success">{{$_GET['rating']}}⭐ trở lên</span>
                                     @endif
                                 </p>
                             </div>
@@ -387,7 +398,7 @@
                                             @else
                                             <i class="fa fa-star"></i>
                                             @endif
-                                        @endfor
+                                            @endfor
                                     </div>
                                     <a href="#"> ({{$rate_count}} đánh giá)</a>
                                 </div>
@@ -403,7 +414,7 @@
                             $after_discount=($product->price-($product->price*$product->discount)/100);
                             @endphp
                             <h3>
-                                <small><del class="text-muted">{{number_format($product->price,0)}} VNĐ</del></small> 
+                                <small><del class="text-muted">{{number_format($product->price,0)}} VNĐ</del></small>
                                 {{number_format($after_discount,0)}} VNĐ
                             </h3>
                             <div class="quickview-peragraph">
@@ -476,7 +487,7 @@
         width: 100%;
         transition: all 0.3s;
     }
-    
+
     .filter_button:hover {
         background: #e67e22;
         transform: translateY(-2px);
@@ -607,16 +618,16 @@
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .shop-shorter {
             width: 100%;
             flex-direction: column;
         }
-        
+
         .single-shorter {
             width: 100%;
         }
-        
+
         .single-shorter select {
             width: 100%;
         }
@@ -634,7 +645,7 @@
             const min_value = parseInt($("#slider-range").data('min')) || 0;
             const currency = $("#slider-range").data('currency') || '';
             let price_range = min_value + '-' + max_value;
-            
+
             if ($("#price_range").length > 0 && $("#price_range").val()) {
                 price_range = $("#price_range").val().trim();
             }
@@ -651,7 +662,7 @@
                 }
             });
         }
-        
+
         if ($("#amount").length > 0) {
             $("#amount").val($("#slider-range").slider("values", 0) +
                 "  -  " + $("#slider-range").slider("values", 1));

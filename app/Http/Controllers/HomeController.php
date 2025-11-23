@@ -67,9 +67,21 @@ class HomeController extends Controller
 
     public function profileUpdate(Request $request, $id)
     {
-        // return $request->all();
         $user = User::findOrFail($id);
-        $data = $request->all();
+
+        $data = $request->validate([
+            'first_name' => 'required|string|min:2|max:120',
+            'last_name' => 'required|string|min:2|max:120',
+            'name' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'required|string|min:8|max:20',
+            'address_line1' => 'required|string|min:5|max:255',
+            'photo' => 'nullable|string|max:255',
+            'role' => 'nullable|in:admin,user,shipper',
+        ]);
+
+        $data['name'] = $data['name'] ?? trim($data['first_name'] . ' ' . $data['last_name']);
+
         $status = $user->fill($data)->save();
         if ($status) {
             session()->flash('success', 'Đã cập nhật hồ sơ của bạn thành công');

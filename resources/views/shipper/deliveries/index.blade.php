@@ -16,66 +16,83 @@
         </div>
         <div class="card-body">
           @if($assignedDeliveries->isEmpty())
-            <p class="text-muted mb-0">Bạn chưa nhận đơn giao nào. Hãy xem danh sách chờ để nhận thêm.</p>
+          <p class="text-muted mb-0">Bạn chưa nhận đơn giao nào. Hãy xem danh sách chờ để nhận thêm.</p>
           @else
-            <div class="table-responsive">
-              <table class="table table-sm table-bordered">
-                <thead class="thead-light">
-                  <tr>
-                    <th>Mã đơn</th>
-                    <th>Khách hàng</th>
-                    <th>Tổng</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($assignedDeliveries as $delivery)
-                    <tr>
-                      <td>{{$delivery->order->order_number}}</td>
-                      <td class="small">
-                        {{$delivery->order->first_name}} {{$delivery->order->last_name}}<br>
-                        <span class="text-muted">{{$delivery->order->phone}}</span>
-                      </td>
-                      <td>{{number_format($delivery->order->total_amount,0)}} VNĐ</td>
-                      <td>
-                        <span class="badge badge-{{ $delivery->status === 'completed' ? 'success' : ($delivery->status === 'pending' ? 'secondary' : ($delivery->status === 'accepted' ? 'info' : 'warning')) }}">{{$delivery->status}}</span>
-                      </td>
-                      <td class="text-nowrap">
-                        @if(in_array($delivery->status, ['pending', 'accepted']))
-                          <form action="{{route('shipper.deliveries.progress', $delivery)}}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-primary mb-1">Bắt đầu giao</button>
-                          </form>
-                        @endif
-                        @if(in_array($delivery->status, ['accepted', 'in_transit']))
-                          <form action="{{route('shipper.deliveries.complete', $delivery)}}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-success mb-1">Hoàn tất</button>
-                          </form>
-                        @endif
-                        @if($delivery->status !== 'completed')
-                          <form action="{{route('shipper.deliveries.cancel', $delivery)}}" method="POST" class="d-inline">
-                            @csrf
-                            <input type="hidden" name="reason" value="Không phù hợp lịch trình">
-                            <button type="submit" class="btn btn-sm btn-outline-danger mb-1">Huỷ</button>
-                          </form>
-                        @endif
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="5" class="small text-muted">
-                        <strong>Địa chỉ:</strong> {{$delivery->order->address1}}
-                        @if($delivery->order->delivery_charge)
-                          | <strong>Phí giao:</strong> {{number_format($delivery->order->delivery_charge,0)}} VNĐ
-                        @endif
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-            <div class="pagination justify-content-end">{{$assignedDeliveries->links()}}</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead class="thead-light">
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Khách hàng</th>
+                  <th>Tổng</th>
+                  <th>Thanh toán</th>
+                  <th>Trạng thái</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($assignedDeliveries as $delivery)
+                <tr>
+                  <td>{{$delivery->order->order_number}}</td>
+                  <td class="small">
+                    {{$delivery->order->first_name}} {{$delivery->order->last_name}}<br>
+                    <span class="text-muted">{{$delivery->order->phone}}</span>
+                  </td>
+                  <td>{{number_format($delivery->order->total_amount,0)}} VNĐ</td>
+                  <td class="small">
+                    @php
+                    $isCod = $delivery->order->payment_method === 'cod';
+                    $isPaid = $delivery->order->payment_status === 'paid';
+                    @endphp
+                    <span class="badge badge-{{$isPaid ? 'success' : ($isCod ? 'warning' : 'secondary')}}">
+                      {{$isPaid ? 'Đã thanh toán' : ($isCod ? 'Thu hộ' : 'Chờ thanh toán')}}
+                    </span>
+                    @if($delivery->tip_amount > 0)
+                    <div class="text-success mt-1">Tip: {{number_format($delivery->tip_amount,0)}} VNĐ</div>
+                    @endif
+                  </td>
+                  <td>
+                    <span class="badge badge-{{ $delivery->status === 'completed' ? 'success' : ($delivery->status === 'pending' ? 'secondary' : ($delivery->status === 'accepted' ? 'info' : 'warning')) }}">{{$delivery->status}}</span>
+                  </td>
+                  <td class="text-nowrap">
+                    @if(in_array($delivery->status, ['pending', 'accepted']))
+                    <form action="{{route('shipper.deliveries.progress', $delivery)}}" method="POST" class="d-inline">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-outline-primary mb-1">Bắt đầu giao</button>
+                    </form>
+                    @endif
+                    @if(in_array($delivery->status, ['accepted', 'in_transit']))
+                    <form action="{{route('shipper.deliveries.complete', $delivery)}}" method="POST" class="d-inline">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-success mb-1">Hoàn tất</button>
+                    </form>
+                    @endif
+                    @if($delivery->status !== 'completed')
+                    <form action="{{route('shipper.deliveries.cancel', $delivery)}}" method="POST" class="d-inline">
+                      @csrf
+                      <input type="hidden" name="reason" value="Không phù hợp lịch trình">
+                      <button type="submit" class="btn btn-sm btn-outline-danger mb-1">Huỷ</button>
+                    </form>
+                    @endif
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="6" class="small text-muted">
+                    <strong>Địa chỉ:</strong> {{$delivery->order->address1}}
+                    @if($delivery->order->delivery_charge)
+                    | <strong>Phí giao:</strong> {{number_format($delivery->order->delivery_charge,0)}} VNĐ
+                    @endif
+                    @if($delivery->reviews->isNotEmpty())
+                    @php $latestReview = $delivery->reviews->sortByDesc('created_at')->first(); @endphp
+                    | <strong>Đánh giá khách:</strong> {{$latestReview->rating}}/5
+                    @endif
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination justify-content-end">{{$assignedDeliveries->links()}}</div>
           @endif
         </div>
       </div>
@@ -88,32 +105,41 @@
         </div>
         <div class="card-body">
           @if($availableDeliveries->isEmpty())
-            <p class="text-muted mb-0">Không có đơn chờ xử lý. Vui lòng quay lại sau.</p>
+          <p class="text-muted mb-0">Không có đơn chờ xử lý. Vui lòng quay lại sau.</p>
           @else
-            <div class="table-responsive">
-              <table class="table table-sm table-borderless">
-                <tbody>
-                  @foreach($availableDeliveries as $delivery)
-                    <tr class="border-bottom">
-                      <td>
-                        <div class="font-weight-bold">{{$delivery->order->order_number}}</div>
-                        <div class="small text-muted">
-                          {{$delivery->order->first_name}} {{$delivery->order->last_name}} • {{number_format($delivery->order->total_amount,0)}} VNĐ
-                        </div>
-                        <div class="small text-muted">{{$delivery->order->address1}}</div>
-                      </td>
-                      <td class="text-right align-middle">
-                        <form action="{{route('shipper.deliveries.accept', $delivery)}}" method="POST">
-                          @csrf
-                          <button type="submit" class="btn btn-sm btn-primary">Nhận đơn</button>
-                        </form>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-            <div class="pagination justify-content-end">{{$availableDeliveries->links('pagination::bootstrap-4')}}</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-borderless">
+              <tbody>
+                @foreach($availableDeliveries as $delivery)
+                <tr class="border-bottom">
+                  <td>
+                    <div class="font-weight-bold">{{$delivery->order->order_number}}</div>
+                    <div class="small text-muted">
+                      {{$delivery->order->first_name}} {{$delivery->order->last_name}} • {{number_format($delivery->order->total_amount,0)}} VNĐ
+                    </div>
+                    <div class="small text-muted">{{$delivery->order->address1}}</div>
+                    <div class="small">
+                      @php
+                      $isCod = $delivery->order->payment_method === 'cod';
+                      $isPaid = $delivery->order->payment_status === 'paid';
+                      @endphp
+                      <span class="badge badge-pill badge-{{$isPaid ? 'success' : ($isCod ? 'warning' : 'secondary')}}">
+                        {{$isPaid ? 'Đã thanh toán' : ($isCod ? 'Thu hộ' : 'Chờ thanh toán')}}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="text-right align-middle">
+                    <form action="{{route('shipper.deliveries.accept', $delivery)}}" method="POST">
+                      @csrf
+                      <button type="submit" class="btn btn-sm btn-primary">Nhận đơn</button>
+                    </form>
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination justify-content-end">{{$availableDeliveries->links('pagination::bootstrap-4')}}</div>
           @endif
         </div>
       </div>

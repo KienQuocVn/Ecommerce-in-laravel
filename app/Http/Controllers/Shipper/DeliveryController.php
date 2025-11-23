@@ -17,15 +17,18 @@ class DeliveryController extends Controller
         $shipper = Shipper::where('user_id', Auth::id())->firstOrFail();
 
         $assignedDeliveries = $shipper->deliveries()
-            ->with(['order' => function ($query) {
-                $query->select('id', 'order_number', 'status', 'total_amount', 'delivery_charge', 'first_name', 'last_name', 'address1', 'phone');
-            }])
+            ->with([
+                'order' => function ($query) {
+                    $query->select('id', 'order_number', 'status', 'payment_method', 'payment_status', 'total_amount', 'delivery_charge', 'first_name', 'last_name', 'address1', 'phone');
+                },
+                'reviews:id,delivery_id,rating,tip_amount,created_at'
+            ])
             ->latest()
             ->paginate(10, ['*'], 'assigned_page');
 
         $availableDeliveries = OrderDelivery::available()
             ->with(['order' => function ($query) {
-                $query->select('id', 'order_number', 'status', 'total_amount', 'delivery_charge', 'first_name', 'last_name', 'address1', 'phone');
+                $query->select('id', 'order_number', 'status', 'payment_method', 'payment_status', 'total_amount', 'delivery_charge', 'first_name', 'last_name', 'address1', 'phone');
             }])
             ->latest()
             ->paginate(10, ['*'], 'available_page');

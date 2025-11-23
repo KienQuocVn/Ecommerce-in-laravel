@@ -73,6 +73,7 @@ class PaymentReturnController extends Controller
                             'payment_status' => 'paid',
                             'status' => 'process'
                         ]);
+                        $order->ensureDeliveryRecord($order->delivery_charge ?? 0);
                     });
                 }
             }

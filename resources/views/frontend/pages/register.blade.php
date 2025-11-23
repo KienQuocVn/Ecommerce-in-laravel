@@ -32,11 +32,20 @@
                     <form class="form" method="post" action="{{route('register.submit')}}">
                         @csrf
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label>Tên<span>*</span></label>
-                                    <input type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
-                                    @error('name')
+                                    <input type="text" name="first_name" placeholder="" required value="{{old('first_name')}}">
+                                    @error('first_name')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group">
+                                    <label>Họ<span>*</span></label>
+                                    <input type="text" name="last_name" placeholder="" required value="{{old('last_name')}}">
+                                    @error('last_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
@@ -44,8 +53,26 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>Email<span>*</span></label>
-                                    <input type="text" name="email" placeholder="" required="required" value="{{old('email')}}">
+                                    <input type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
                                     @error('email')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Số điện thoại<span>*</span></label>
+                                    <input type="text" name="phone" placeholder="" required value="{{old('phone')}}">
+                                    @error('phone')
+                                    <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Dòng địa chỉ<span>*</span></label>
+                                    <input type="text" name="address_line1" placeholder="" required value="{{old('address_line1')}}">
+                                    @error('address_line1')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
@@ -73,16 +100,16 @@
                                     <button class="btn btn-full-width" type="submit">Đăng ký</button>
                                     <!-- <a href="{{route('login.form')}}" class="btn">Đăng nhập</a> -->
                                     <p class="or-separator fw-bold">OR</p>
-                                    <div class="social-login-buttons"> 
+                                    <div class="social-login-buttons">
                                         <a href="{{route('login.redirect','facebook')}}" class="social-login-btn facebook">
                                             <img src="{{ asset('storage/photos/1/facebook.png') }}" alt="Facebook" class="social-icon">
                                             <span>Facebook</span>
                                         </a>
                                         <a href="{{route('login.redirect','google')}}" class="social-login-btn google">
-                                            <img src="{{ asset('storage/photos/1/google.png') }}" alt="Google" class="social-icon"> 
+                                            <img src="{{ asset('storage/photos/1/google.png') }}" alt="Google" class="social-icon">
                                             <span>Google</span>
                                         </a>
-                                        
+
                                     </div>
                                 </div>
                                 Bạn đã có tài khoản?
@@ -103,55 +130,55 @@
 <style>
     .shop.login .form .btn {
         margin-right: 0;
-        margin-bottom: 10px; 
+        margin-bottom: 10px;
     }
 
     .social-login-buttons {
-        display: flex; 
+        display: flex;
         justify-content: center;
         gap: 10px;
-        flex-wrap: wrap; 
-        margin-top: 15px; 
-        margin-bottom: 20px; 
+        flex-wrap: wrap;
+        margin-top: 15px;
+        margin-bottom: 20px;
     }
 
     .social-login-btn {
-        display: flex; 
-        align-items: center; 
+        display: flex;
+        align-items: center;
         padding: 8px 15px;
-        border: 1px solid #ccc; 
+        border: 1px solid #ccc;
         border-radius: 5px;
-        background-color: #fff; 
-        color: #333; 
-        text-decoration: none; 
-        font-size: 14px; 
-        transition: all 0.3s ease; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+        background-color: #fff;
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .social-login-btn:hover {
-        background-color: #f8f8f8; 
-        border-color: #999; 
+        background-color: #f8f8f8;
+        border-color: #999;
         color: #000;
     }
 
     .social-login-btn .social-icon {
-        height: 20px; 
+        height: 20px;
         width: 20px;
-        margin-right: 8px; 
-        vertical-align: middle; 
+        margin-right: 8px;
+        vertical-align: middle;
     }
 
     .btn-full-width {
         width: 100%;
-        margin: 0 !important; 
+        margin: 0 !important;
         border-radius: 0;
     }
 
     .or-separator {
         text-align: center;
-        font-weight: bold; 
-        margin: 15px 0; 
+        font-weight: bold;
+        margin: 15px 0;
         font-size: 14px;
     }
 </style>

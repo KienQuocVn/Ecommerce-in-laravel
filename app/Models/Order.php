@@ -16,16 +16,14 @@ class Order extends Model
         'total_amount',
         'first_name',
         'last_name',
-        'country',
-        'post_code',
         'address1',
-        'address2',
         'phone',
         'email',
         'payment_method',
         'payment_status',
         'shipping_id',
-        'coupon'
+        'coupon',
+        'coupon_id'
     ];
 
     public function cart_info()
@@ -61,6 +59,24 @@ class Order extends Model
     public function delivery()
     {
         return $this->hasOne(OrderDelivery::class);
+    }
+
+    public function appliedCoupon()
+    {
+        return $this->belongsTo(Coupon::class, 'coupon_id');
+    }
+
+    public function ensureDeliveryRecord(float $deliveryFee = 0): OrderDelivery
+    {
+        if ($this->delivery) {
+            return $this->delivery;
+        }
+
+        return $this->delivery()->create([
+            'delivery_fee' => $deliveryFee,
+            'status' => OrderDelivery::STATUS_PENDING,
+            'assignment_type' => 'self-claim',
+        ]);
     }
 
     public function shipper()

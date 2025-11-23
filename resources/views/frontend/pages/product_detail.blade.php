@@ -101,17 +101,23 @@
 							<!--/ End Color -->
 							<!-- Size -->
 							@if($product_detail->size)
+							@php
+							$sizes=explode(',',$product_detail->size);
+							$sizes = array_map('trim', $sizes);
+							@endphp
 							<div class="size mt-4">
-								<h4>Size</h4>
-								<ul>
-									@php
-									$sizes=explode(',',$product_detail->size);
-									// dd($sizes);
-									@endphp
+								<h4>Size <span class="text-danger">*</span></h4>
+								<div class="size-selector">
 									@foreach($sizes as $size)
-									<li><a href="#" class="one">{{$size}}</a></li>
+									<label class="size-option">
+										<input type="radio" name="size" value="{{trim($size)}}" required>
+										<span>{{trim($size)}}</span>
+									</label>
 									@endforeach
-								</ul>
+								</div>
+								@error('size')
+								<span class='text-danger'>{{$message}}</span>
+								@enderror
 							</div>
 							@endif
 							<!--/ End Size -->
@@ -119,8 +125,11 @@
 							<div class="product-buy">
 								<form action="{{route('single-add-to-cart')}}" method="POST">
 									@csrf
-									<div class="quantity">
-										<h6>Số lượng :</h6>
+									@if($product_detail->size)
+									<input type="hidden" name="size" id="selected_size" required>
+									@endif
+									<div class="quantity mt-4">
+										<h6>Số lượng <span class="text-danger">*</span>:</h6>
 										<!-- Input Order -->
 										<div class="input-group">
 											<div class="button minus">
@@ -129,7 +138,7 @@
 												</button>
 											</div>
 											<input type="hidden" name="slug" value="{{$product_detail->slug}}">
-											<input type="text" name="quant[1]" class="input-number" data-min="1" data-max="1000" value="1" id="quantity">
+											<input type="text" name="quant[1]" class="input-number" data-min="1" data-max="1000" value="1" id="quantity" required>
 											<div class="button plus">
 												<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
 													<i class="ti-plus"></i>
@@ -139,7 +148,7 @@
 										<!--/ End Input Order -->
 									</div>
 									<div class="add-to-cart mt-4">
-										<button type="submit" class="btn">Thêm vào giỏ hàng</button>
+										<button type="submit" class="btn" id="add-to-cart-btn" @if($product_detail->size) disabled @endif>Thêm vào giỏ hàng</button>
 										{{--<a href="{{route('add-to-wishlist',$product_detail->slug)}}" class="btn min"><i class="ti-heart"></i></a>--}}
 									</div>
 								</form>
@@ -529,6 +538,82 @@
 @endpush
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+@if($product_detail->size)
+<script>
+	var productHasSize = true;
+</script>
+@else
+<script>
+	var productHasSize = false;
+</script>
+@endif
+<script>
+	$(document).ready(function() {
+		// Handle size selection
+		$('.size-option input[type="radio"]').on('change', function() {
+			const selectedSize = $(this).val();
+			$('#selected_size').val(selectedSize);
+
+			// Update selected state
+			$('.size-option').removeClass('selected');
+			$(this).closest('.size-option').addClass('selected');
+
+			// Enable add to cart button
+			$('#add-to-cart-btn').prop('disabled', false);
+		});
+
+		// Form validation before submit
+		$('form').on('submit', function(e) {
+			if (productHasSize && !$('#selected_size').val()) {
+				e.preventDefault();
+				alert('Vui lòng chọn size sản phẩm!');
+				return false;
+			}
+		});
+	});
+</script>
+<style>
+	.size-selector {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 10px;
+	}
+
+	.size-option {
+		position: relative;
+		cursor: pointer;
+	}
+
+	.size-option input[type="radio"] {
+		position: absolute;
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.size-option span {
+		display: inline-block;
+		padding: 8px 16px;
+		border: 2px solid #ddd;
+		border-radius: 4px;
+		background: #fff;
+		transition: all 0.3s;
+		min-width: 50px;
+		text-align: center;
+	}
+
+	.size-option:hover span {
+		border-color: #F7941D;
+	}
+
+	.size-option input[type="radio"]:checked+span,
+	.size-option.selected span {
+		border-color: #F7941D;
+		background: #F7941D;
+		color: #fff;
+	}
+</style>
 
 {{-- <script>
         $('.cart').click(function(){

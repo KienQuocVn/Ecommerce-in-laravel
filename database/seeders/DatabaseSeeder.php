@@ -771,15 +771,27 @@ class DatabaseSeeder extends Seeder
                 ];
             }
 
-            // Tính coupon value
+            // Tính coupon value và tìm user coupon available
             $couponValue = 0;
+            $userAvailableCoupon = null;
             if ($couponId) {
                 $coupon = DB::table('coupons')->where('id', $couponId)->first();
-                if ($coupon->type === 'fixed') {
+                if ($coupon && $coupon->type === 'fixed') {
                     $couponValue = min((float)$coupon->value, $subTotal);
-                } else {
+                } elseif ($coupon && $coupon->type === 'percent') {
                     $couponValue = ($coupon->value / 100) * $subTotal;
                 }
+
+                // Tìm user coupon available cho user này
+                $userAvailableCoupon = DB::table('user_coupons')
+                    ->where('user_id', $userId)
+                    ->where('coupon_id', $couponId)
+                    ->whereNull('used_at')
+                    ->where(function ($query) {
+                        $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>', now());
+                    })
+                    ->first();
             }
 
             $shippingConfig = $shippingMeta[$shippingId] ?? null;
@@ -855,6 +867,7 @@ class DatabaseSeeder extends Seeder
                 'sub_total' => number_format($subTotal, 2, '.', ''),
                 'shipping_id' => $shippingId,
                 'coupon' => number_format($couponValue, 2, '.', ''),
+                'coupon_id' => $couponId,
                 'delivery_charge' => number_format($shippingPrice, 2, '.', ''),
                 'total_amount' => number_format($totalAmount, 2, '.', ''),
                 'quantity' => $totalQuantity,
@@ -865,20 +878,45 @@ class DatabaseSeeder extends Seeder
                 'last_name' => explode(' ', $userNames[$i])[0] . ' ' . explode(' ', $userNames[$i])[1],
                 'email' => 'user' . ($i + 1) . '@fashionoffice.vn',
                 'phone' => '090' . str_pad($i + 1, 7, '0', STR_PAD_LEFT),
-                'country' => 'Việt Nam',
-                'post_code' => '700000',
-                'address1' => 'Số ' . ($i * 10 + 10) . ', Đường ' . ['Nguyễn Huệ', 'Lê Lợi', 'Hai Bà Trưng', 'Trần Hưng Đạo', 'Võ Văn Kiệt'][$i % 5] . ', TP.HCM',
-                'address2' => ['Phường Bến Nghé, Quận 1', 'Phường Đa Kao, Quận 1', 'Phường Tân Định, Quận 1', 'Phường Bến Thành, Quận 1', 'Phường Nguyễn Thái Bình, Quận 1'][$i % 5],
+                'address1' => 'Số ' . ($i * 10 + 10) . ', Đường ' . ['Nguyễn Huệ', 'Lê Lợi', 'Hai Bà Trưng', 'Trần Hưng Đạo', 'Võ Văn Kiệt'][$i % 5] . ', ' . ['Phường Bến Nghé, Quận 1', 'Phường Đa Kao, Quận 1', 'Phường Tân Định, Quận 1', 'Phường Bến Thành, Quận 1', 'Phường Nguyễn Thái Bình, Quận 1'][$i % 5] . ', TP.HCM',
                 'created_at' => now()->subDays(rand(1, 60)),
                 'updated_at' => now()->subDays(rand(0, 5)),
             ]);
 
+            // Mark user coupon as used if applied
+            if ($userAvailableCoupon && $couponId) {
+                DB::table('user_coupons')
+                    ->where('id', $userAvailableCoupon->id)
+                    ->update([
+                        'used_at' => now(),
+                        'used_in_order_id' => $orderId,
+                        'updated_at' => now(),
+                    ]);
+            }
+
             // Insert cart items cho order này
+            $sizesClothes = ['S', 'M', 'L', 'XL', 'XXL'];
+            $sizesShoes = ['38', '39', '40', '41', '42', '43'];
+
             foreach ($cartData as $cart) {
+                $product = DB::table('products')->where('id', $cart['product_id'])->first();
+                $categoryId = $product->cat_id;
+
+                // Determine size based on category
+                $size = null;
+                if (in_array($categoryId, [$parentCategoryIds[4], $parentCategoryIds[8]])) {
+                    // Shoes
+                    $size = $sizesShoes[array_rand($sizesShoes)];
+                } elseif (in_array($categoryId, [$parentCategoryIds[0], $parentCategoryIds[1], $parentCategoryIds[2], $parentCategoryIds[3], $parentCategoryIds[6], $parentCategoryIds[7]])) {
+                    // Clothes
+                    $size = $sizesClothes[array_rand($sizesClothes)];
+                }
+
                 DB::table('carts')->insert([
                     'product_id' => $cart['product_id'],
                     'user_id' => $userId,
                     'order_id' => $orderId,
+                    'size' => $size,
                     'price' => $cart['price'],
                     'status' => $orderStatus,
                     'quantity' => $cart['quantity'],
@@ -926,6 +964,45 @@ class DatabaseSeeder extends Seeder
             }
 
             $orderIds[] = $orderId;
+        }
+
+        // ==================== USER_COUPONS - Award coupons to users ====================
+        // Award coupons to some users based on different sources
+        foreach (array_slice($userIds, 0, 30) as $index => $userId) {
+            $numCoupons = rand(1, 3);
+            $selectedCouponIndices = [];
+            for ($j = 0; $j < $numCoupons && $j < count($couponIds); $j++) {
+                $idx = array_rand($couponIds);
+                if (!in_array($idx, $selectedCouponIndices)) {
+                    $selectedCouponIndices[] = $idx;
+                }
+            }
+
+            foreach ($selectedCouponIndices as $couponIndex) {
+                $couponId = $couponIds[$couponIndex];
+                $source = ['purchase', 'livestream', 'loyalty', 'monthly', 'weekly'][rand(0, 4)];
+                $expiresAt = now()->addDays(rand(7, 90));
+
+                // Mark some as used if user has orders
+                $usedInOrderId = null;
+                $usedAt = null;
+                if ($index % 10 == 0 && isset($orderIds[$index])) {
+                    $usedAt = now()->subDays(rand(1, 5));
+                    $usedInOrderId = $orderIds[$index];
+                }
+
+                DB::table('user_coupons')->insert([
+                    'user_id' => $userId,
+                    'coupon_id' => $couponId,
+                    'source' => $source,
+                    'obtained_at' => now()->subDays(rand(1, 30)),
+                    'expires_at' => $expiresAt,
+                    'used_at' => $usedAt,
+                    'used_in_order_id' => $usedInOrderId,
+                    'created_at' => now()->subDays(rand(1, 30)),
+                    'updated_at' => now()->subDays(rand(0, 5)),
+                ]);
+            }
         }
 
         foreach ($shipperProfileIds as $shipperId) {

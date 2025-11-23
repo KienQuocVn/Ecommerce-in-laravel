@@ -16,11 +16,18 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 
-        'email', 
+        'name',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
         'password',
         'role',
         'photo',
+        'address_line1',
+        'address_line2',
+        'country',
+        'post_code',
         'status',
         'provider',
         'provider_id',
@@ -37,7 +44,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -53,7 +61,22 @@ class User extends Authenticatable
         'total_orders' => 'integer',
     ];
 
-    public function orders(){
+    public function hasCompleteProfile(): bool
+    {
+        return !empty($this->first_name)
+            && !empty($this->last_name)
+            && !empty($this->email)
+            && !empty($this->phone)
+            && !empty($this->address_line1);
+    }
+
+    public function needsProfileCompletion(): bool
+    {
+        return !$this->hasCompleteProfile();
+    }
+
+    public function orders()
+    {
         return $this->hasMany('App\Models\Order');
     }
 
@@ -65,5 +88,23 @@ class User extends Authenticatable
     public function shipperReviews()
     {
         return $this->hasMany(ShipperReview::class, 'customer_id');
+    }
+
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'user_coupons')
+            ->withPivot(['source', 'obtained_at', 'expires_at', 'used_at', 'used_in_order_id'])
+            ->withTimestamps();
+    }
+
+    public function availableCoupons()
+    {
+        return $this->coupons()
+            ->whereNull('user_coupons.used_at')
+            ->where(function ($query) {
+                $query->whereNull('user_coupons.expires_at')
+                    ->orWhere('user_coupons.expires_at', '>', now());
+            })
+            ->where('coupons.status', 'active');
     }
 }
