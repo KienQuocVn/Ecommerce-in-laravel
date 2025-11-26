@@ -85,7 +85,7 @@
       e.preventDefault();
       swal({
           title: "Bạn có chắc không?",
-          text: "Once deleted, you will not be able to recover this data!",
+          text: "Sau khi xóa, bạn sẽ không thể khôi phục dữ liệu này!",
           icon: "warning",
           buttons: true,
           dangerMode: true,

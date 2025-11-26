@@ -198,7 +198,6 @@
 												<div class="comment-review">
 													<div class="add-review">
 														<h5>Thêm đánh giá</h5>
-														\
 													</div>
 													<h4>Đánh giá của bạn <span class="text-danger">*</span></h4>
 													<div class="review-inner">

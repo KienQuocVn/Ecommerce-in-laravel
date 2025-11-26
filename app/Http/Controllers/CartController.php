@@ -9,7 +9,7 @@ use App\Models\Wishlist;
 use App\Models\Cart;
 use App\Services\CheckoutRecoveryService;
 use Illuminate\Support\Str;
-use Helper;
+use App\Helpers\Helper;
 
 class CartController extends Controller
 {

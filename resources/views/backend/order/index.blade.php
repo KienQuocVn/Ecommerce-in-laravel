@@ -69,9 +69,9 @@
               <a href="{{route('order.show',$order->id)}}" class="btn btn-warning btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
               <a href="{{route('order.edit',$order->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
               {{--<form method="POST" action="{{route('order.destroy',[$order->id])}}">
-                @csrf
-                @method('delete')
-                <button class="btn btn-danger btn-sm dltBtn" data-id="{{$order->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+              @csrf
+              @method('delete')
+              <button class="btn btn-danger btn-sm dltBtn" data-id="{{$order->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
               </form>--}}
             </td>
           </tr>
@@ -134,7 +134,7 @@
       e.preventDefault();
       swal({
           title: "Bạn có chắc không?",
-          text: "Once deleted, you will not be able to recover this data!",
+          text: "Sau khi xóa, bạn sẽ không thể khôi phục dữ liệu này!",
           icon: "warning",
           buttons: true,
           dangerMode: true,

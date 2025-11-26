@@ -6118,6 +6118,7 @@ a.close.disabled {
   touch-action: pan-y;
 }
 
+/* Banner Carousel Styles */
 .carousel-inner {
   position: relative;
   width: 100%;
@@ -6128,6 +6129,71 @@ a.close.disabled {
   display: block;
   clear: both;
   content: "";
+}
+
+.carousel-item {
+  position: relative;
+  width: 100%;
+  height: 500px; /* Hoặc chiều cao mong muốn */
+  background-color: #f8f9fa;
+}
+
+/* Hiển thị ảnh full không bị cắt */
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Hiển thị toàn bộ ảnh, không cắt */
+  object-position: center;
+}
+
+/* Nếu muốn ảnh fill full và có thể bị cắt một chút */
+.carousel-item img.cover-mode {
+  object-fit: cover; /* Ảnh sẽ fill full nhưng giữ tỷ lệ */
+}
+
+/* Caption overlay */
+.carousel-caption {
+  position: absolute;
+  bottom: 20px;
+  left: 50px;
+  z-index: 10;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5); /* Nền tối mờ cho text dễ đọc */
+  border-radius: 8px;
+}
+
+.carousel-caption h1 {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.carousel-caption p {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carousel-item {
+    height: 300px;
+  }
+  
+  .carousel-caption h1 {
+    font-size: 1.5rem;
+  }
+  
+  .carousel-caption p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel-item {
+    height: 250px;
+  }
 }
 
 .carousel-item {

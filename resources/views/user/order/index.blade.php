@@ -65,28 +65,28 @@
               @endif
             </td>
             @php
-              $deliveryStatusMap = [
-                'pending' => ['Chờ nhận', 'secondary'],
-                'accepted' => ['Đã nhận', 'info'],
-                'in_transit' => ['Đang giao', 'warning'],
-                'completed' => ['Hoàn thành', 'success'],
-                'cancelled' => ['Đã huỷ', 'danger'],
-              ];
-              $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
+            $deliveryStatusMap = [
+            'pending' => ['Chờ nhận', 'secondary'],
+            'accepted' => ['Đã nhận', 'info'],
+            'in_transit' => ['Đang giao', 'warning'],
+            'completed' => ['Hoàn thành', 'success'],
+            'cancelled' => ['Đã huỷ', 'danger'],
+            ];
+            $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
             @endphp
             <td>
               @if($deliveryMeta)
-                <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
+              <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
               @else
-                <span class="badge badge-light text-dark">Đang điều phối</span>
+              <span class="badge badge-light text-dark">Đang điều phối</span>
               @endif
             </td>
             <td>
               <a href="{{route('user.order.show',$order->id)}}" class="btn btn-warning btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
               {{--<form method="POST" action="{{route('user.order.delete',[$order->id])}}">
-                @csrf
-                @method('delete')
-                <button class="btn btn-danger btn-sm dltBtn" data-id="{{$order->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+              @csrf
+              @method('delete')
+              <button class="btn btn-danger btn-sm dltBtn" data-id="{{$order->id}}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
               </form>--}}
             </td>
           </tr>
@@ -149,7 +149,7 @@
       e.preventDefault();
       swal({
           title: "Bạn có chắc không?",
-          text: "Once deleted, you will not be able to recover this data!",
+          text: "Sau khi xóa, bạn sẽ không thể khôi phục dữ liệu này!",
           icon: "warning",
           buttons: true,
           dangerMode: true,

@@ -50,31 +50,31 @@
             <td><code>{{$shipping->code}}</code></td>
             <td>
               @switch($shipping->pricing_strategy)
-                @case('percentage')
-                  <span class="badge badge-info">% theo đơn</span>
-                  @break
-                @case('mixed')
-                  <span class="badge badge-primary">Kết hợp</span>
-                  @break
-                @default
-                  <span class="badge badge-secondary">Cố định</span>
+              @case('percentage')
+              <span class="badge badge-info">% theo đơn</span>
+              @break
+              @case('mixed')
+              <span class="badge badge-primary">Kết hợp</span>
+              @break
+              @default
+              <span class="badge badge-secondary">Cố định</span>
               @endswitch
             </td>
             <td>
               @if($shipping->pricing_strategy === 'percentage')
-                {{$shipping->percentage_rate}}% giá trị đơn
+              {{$shipping->percentage_rate}}% giá trị đơn
               @elseif($shipping->pricing_strategy === 'mixed')
-                {{number_format($shipping->price,0)}} VNĐ + {{$shipping->percentage_rate}}%
+              {{number_format($shipping->price,0)}} VNĐ + {{$shipping->percentage_rate}}%
               @else
-                {{number_format($shipping->price,0)}} VNĐ
+              {{number_format($shipping->price,0)}} VNĐ
               @endif
             </td>
             <td>{{$shipping->delivery_zone ?? 'Toàn quốc'}}</td>
             <td>
               @if($shipping->supports_cod)
-                <span class="badge badge-success">Có</span>
+              <span class="badge badge-success">Có</span>
               @else
-                <span class="badge badge-light border">Không</span>
+              <span class="badge badge-light border">Không</span>
               @endif
             </td>
             <td>
@@ -181,7 +181,7 @@
       e.preventDefault();
       swal({
           title: "Bạn có chắc không?",
-          text: "Once deleted, you will not be able to recover this data!",
+          text: "Sau khi xóa, bạn sẽ không thể khôi phục dữ liệu này!",
           icon: "warning",
           buttons: true,
           dangerMode: true,

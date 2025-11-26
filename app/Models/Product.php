@@ -20,7 +20,7 @@ class Product extends Model
     }
     public static function getAllProduct()
     {
-        return Product::with(['cat_info', 'sub_cat_info'])->orderBy('id', 'desc')->paginate(10);
+        return Product::with(['cat_info', 'sub_cat_info'])->orderBy('id', 'asc')->paginate(10);
     }
     public function rel_prods()
     {

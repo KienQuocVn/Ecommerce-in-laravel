@@ -1,5 +1,7 @@
 <!-- Meta Tag -->
 @yield('meta')
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSRF Token -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Title Tag  -->
@@ -36,7 +38,6 @@
 <link rel="stylesheet" href="{{asset('frontend/css/reset.css')}}">
 <link rel="stylesheet" href="{{asset('frontend/css/style.css')}}">
 <link rel="stylesheet" href="{{asset('frontend/css/responsive.css')}}">
-<script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=5f2e5abf393162001291e431&product=inline-share-buttons' async='async'></script>
 <style>
     /* Multilevel dropdown */
     .dropdown-submenu {
@@ -56,7 +57,5 @@
         margin-top: 0px;
         margin-left: 0px;
     }
-
-    
 </style>
 @stack('styles')

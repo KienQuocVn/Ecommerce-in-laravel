@@ -11,7 +11,7 @@ use App\Models\User;
 use PDF;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
-use Helper;
+use App\Helpers\Helper;
 use Illuminate\Support\Str;
 use App\Notifications\StatusNotification;
 use App\Services\LoyaltyService;

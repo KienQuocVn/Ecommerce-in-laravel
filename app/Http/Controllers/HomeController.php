@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Rules\NotSameAsOldPassword;
 use Illuminate\Support\Facades\Auth;
 use App\Services\LoyaltyService;
-use Helper;
+use App\Helpers\Helper;
 
 class HomeController extends Controller
 {

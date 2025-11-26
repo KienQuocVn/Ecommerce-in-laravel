@@ -91,6 +91,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Helper' => App\Helpers\Helper::class,
 
     ],
 

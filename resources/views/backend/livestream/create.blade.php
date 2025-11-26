@@ -297,7 +297,7 @@
                                 class="form-control"
                                 id="title"
                                 name="title"
-                                value="Live Shopping - {{ date('d/m/Y H:i') }}"
+                                value="Live Shopping -"
                                 required
                                 placeholder="Nhập tiêu đề cho live stream...">
                             <small class="form-text text-muted">Tiêu đề sẽ hiển thị cho người xem</small>

@@ -12,9 +12,10 @@ class BrandController extends Controller
 
     public function index()
     {
-        $brands = Brand::latest('id')->paginate();
+        $brands = Brand::orderBy('id', 'ASC')->paginate();
         return view('backend.brand.index', compact('brands'));
     }
+
 
     public function create()
     {
