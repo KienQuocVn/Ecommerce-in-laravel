@@ -556,6 +556,50 @@
     #Gslider .carousel-indicators {
         bottom: 70px;
     }
+
+    /* Normalize product card image ratio on homepage */
+    .product-area .single-product .product-img a,
+    .most-popular .single-product .product-img a {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .product-area .single-product .product-img,
+    .most-popular .single-product .product-img {
+        position: relative;
+        width: 100%;
+        padding-top: 120%;
+        overflow: hidden;
+    }
+
+    .product-area .single-product .product-img img,
+    .most-popular .single-product .product-img img {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-area .single-product .product-img img.hover-img,
+    .most-popular .single-product .product-img img.hover-img {
+        opacity: 0;
+    }
+
+    .product-area .single-product .product-img:hover img.hover-img,
+    .most-popular .single-product .product-img:hover img.hover-img {
+        opacity: 1;
+    }
+
+    .product-area .single-product .product-img:hover img.default-img,
+    .most-popular .single-product .product-img:hover img.default-img {
+        opacity: 0;
+    }
 </style>
 @endpush
 

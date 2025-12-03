@@ -613,6 +613,45 @@
         font-weight: bold;
     }
 
+    /* Normalize product card image ratio */
+    .single-product .product-img {
+        position: relative;
+        width: 100%;
+        padding-top: 120%;
+        overflow: hidden;
+    }
+
+    .single-product .product-img a {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .single-product .product-img img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+
+    .single-product .product-img img.hover-img {
+        opacity: 0;
+    }
+
+    .single-product .product-img:hover img.hover-img {
+        opacity: 1;
+    }
+
+    .single-product .product-img:hover img.default-img {
+        opacity: 0;
+    }
+
     @media (max-width: 768px) {
         .shop-top {
             flex-direction: column;

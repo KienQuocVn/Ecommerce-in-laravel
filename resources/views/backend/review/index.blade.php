@@ -20,7 +20,7 @@
             <th>ID</th>
             <th>Đánh giá bởi</th>
             <th>Tiêu đề sản phẩm</th>
-            <th>Ôn tập</th>
+            <th>Nội dung đánh giá</th>
             <th>Tỷ lệ</th>
             <th>Ngày</th>
             <th>Trạng thái</th>
@@ -32,7 +32,7 @@
             <th>ID</th>
             <th>Đánh giá bởi</th>
             <th>Tiêu đề sản phẩm</th>
-            <th>Ôn tập</th>
+            <th>Nội dung đánh giá</th>
             <th>Tỷ lệ</th>
             <th>Ngày</th>
             <th>Trạng thái</th>

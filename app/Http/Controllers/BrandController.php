@@ -93,7 +93,17 @@ class BrandController extends Controller
         $brand = Brand::find($id);
 
         if (!$brand) {
-            return redirect()->back()->with('error', 'Brand not found');
+            return redirect()->back()->with('error', 'Brand không tìm thấy');
+        }
+
+        // Kiểm tra xem brand có products không
+        $productCount = \App\Models\Product::where('brand_id', $id)->count();
+
+        if ($productCount > 0) {
+            return redirect()->route('brand.index')->with(
+                'error',
+                'Không thể xóa thương hiệu này vì vẫn còn ' . $productCount . ' sản phẩm. Vui lòng xóa hoặc chuyển các sản phẩm sang thương hiệu khác trước.'
+            );
         }
 
         $status = $brand->delete();

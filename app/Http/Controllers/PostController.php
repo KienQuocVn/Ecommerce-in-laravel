@@ -116,6 +116,9 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
+        // Xóa các comments liên quan
+        \App\Models\PostComment::where('post_id', $id)->delete();
+
         $status = $post->delete();
 
         if ($status) {

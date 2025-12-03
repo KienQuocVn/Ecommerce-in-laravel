@@ -129,6 +129,18 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
+
+        // Kiểm tra xem category có products không
+        $productCount = \App\Models\Product::where('cat_id', $id)->orWhere('child_cat_id', $id)->count();
+
+        if ($productCount > 0) {
+            return redirect()->route('category.index')->with(
+                'error',
+                'Không thể xóa danh mục này vì vẫn còn ' . $productCount . ' sản phẩm. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.'
+            );
+        }
+
+        // Kiểm tra xem có danh mục con không
         $child_cat_id = Category::where('parent_id', $id)->pluck('id');
 
         $status = $category->delete();

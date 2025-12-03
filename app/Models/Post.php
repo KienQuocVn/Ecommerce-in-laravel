@@ -26,7 +26,7 @@ class Post extends Model
 
     public static function getAllPost()
     {
-        return Post::with(['cat_info', 'author_info'])->orderBy('id', 'DESC')->paginate(10);
+        return Post::with(['cat_info', 'author_info'])->orderBy('id', 'asc')->paginate(10);
     }
 
     public static function getPostBySlug($slug)

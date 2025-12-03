@@ -81,12 +81,29 @@ class UsersController extends Controller
 
     public function destroy($id)
     {
-        $delete = User::findorFail($id);
-        $status = $delete->delete();
+        $user = User::findOrFail($id);
+
+        // Kiểm tra không được xóa chính mình
+        if ($user->id === auth()->id()) {
+            session()->flash('error', 'Bạn không thể vô hiệu hóa tài khoản của chính mình');
+            return redirect()->route('users.index');
+        }
+
+        // Kiểm tra không được xóa user admin cuối cùng
+        $adminCount = User::where('role', 'admin')->where('status', 'active')->count();
+        if ($user->role === 'admin' && $user->status === 'active' && $adminCount <= 1) {
+            session()->flash('error', 'Phải có ít nhất một admin hoạt động');
+            return redirect()->route('users.index');
+        }
+
+        // Thay vì xóa, chỉ thay đổi status thành inactive
+        $user->status = 'inactive';
+        $status = $user->save();
+
         if ($status) {
-            session()->flash('success', 'Người dùng đã xóa thành công1');
+            session()->flash('success', 'Người dùng đã bị vô hiệu hóa thành công');
         } else {
-            session()->flash('error', 'Có lỗi khi xóa người dùng');
+            session()->flash('error', 'Có lỗi khi vô hiệu hóa người dùng');
         }
         return redirect()->route('users.index');
     }

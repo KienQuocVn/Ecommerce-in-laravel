@@ -57,23 +57,30 @@ class ProductReviewController extends Controller
     public function edit($id)
     {
         $review = ProductReview::find($id);
-        // return $review;
+        if (!$review) {
+            return redirect()->route('review.index')->with('error', 'Đánh giá không tìm thấy');
+        }
         return view('backend.review.edit')->with('review', $review);
     }
 
     public function update(Request $request, $id)
     {
         $review = ProductReview::find($id);
-        if ($review) {
-            $data = $request->all();
-            $status = $review->fill($data)->update();
-            if ($status) {
-                session()->flash('success', 'Đánh giá Đã cập nhật thành công');
-            } else {
-                session()->flash('error', 'Có lỗi xảy ra! Vui lòng thử lại!!');
-            }
+        if (!$review) {
+            return redirect()->route('review.index')->with('error', 'Đánh giá không tìm thấy');
+        }
+
+        $this->validate($request, [
+            'rate' => 'required|numeric|min:1|max:5',
+            'review' => 'nullable|string'
+        ]);
+
+        $data = $request->all();
+        $status = $review->fill($data)->update();
+        if ($status) {
+            session()->flash('success', 'Đánh giá đã cập nhật thành công');
         } else {
-            session()->flash('error', 'Không tìm thấy đánh giá!!');
+            session()->flash('error', 'Có lỗi xảy ra! Vui lòng thử lại!!');
         }
 
         return redirect()->route('review.index');
@@ -82,6 +89,10 @@ class ProductReviewController extends Controller
     public function destroy($id)
     {
         $review = ProductReview::find($id);
+        if (!$review) {
+            return redirect()->route('review.index')->with('error', 'Đánh giá không tìm thấy');
+        }
+
         $status = $review->delete();
         if ($status) {
             session()->flash('success', 'Đã xóa đánh giá thành công');

@@ -45,12 +45,13 @@ class WishlistController extends Controller
     public function wishlistDelete(Request $request)
     {
         $wishlist = Wishlist::find($request->id);
-        if ($wishlist) {
-            $wishlist->delete();
-            session()->flash('success', 'Danh sách yêu thích đã được xóa thành công');
+        if (!$wishlist) {
+            session()->flash('error', 'Danh sách yêu thích không tìm thấy');
             return back();
         }
-        session()->flash('error', 'Lỗi vui lòng thử lại');
+
+        $wishlist->delete();
+        session()->flash('success', 'Danh sách yêu thích đã được xóa thành công');
         return back();
     }
 }

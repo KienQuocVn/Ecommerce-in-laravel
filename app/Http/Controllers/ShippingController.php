@@ -80,18 +80,25 @@ class ShippingController extends Controller
     public function destroy($id)
     {
         $shipping = Shipping::find($id);
-        if ($shipping) {
-            $status = $shipping->delete();
-            if ($status) {
-                session()->flash('success', 'Đã xóa thành công vận chuyển');
-            } else {
-                session()->flash('error', 'Lỗi, vui lòng thử lại');
-            }
-            return redirect()->route('shipping.index');
-        } else {
-            session()->flash('error', 'Không tìm thấy vận chuyển');
+        if (!$shipping) {
+            session()->flash('error', 'Vận chuyển không tìm thấy');
             return redirect()->back();
         }
+
+        // Kiểm tra xem shipping có được dùng trong orders không
+        $orderCount = \App\Models\Order::where('shipping_id', $id)->count();
+        if ($orderCount > 0) {
+            session()->flash('error', 'Không thể xóa phương thức vận chuyển này vì đã được sử dụng trong ' . $orderCount . ' đơn hàng');
+            return redirect()->route('shipping.index');
+        }
+
+        $status = $shipping->delete();
+        if ($status) {
+            session()->flash('success', 'Đã xóa thành công vận chuyển');
+        } else {
+            session()->flash('error', 'Lỗi, vui lòng thử lại');
+        }
+        return redirect()->route('shipping.index');
     }
 
     protected function pricingStrategies(): array

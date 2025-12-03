@@ -54,48 +54,50 @@ class PostCommentController extends Controller
     public function edit($id)
     {
         $comments = PostComment::find($id);
-        if ($comments) {
-            return view('backend.comment.edit')->with('comment', $comments);
-        } else {
-            session()->flash('error', 'Không tìm thấy bình luận');
+        if (!$comments) {
+            session()->flash('error', 'Bình luận không tìm thấy');
             return redirect()->back();
         }
+        return view('backend.comment.edit')->with('comment', $comments);
     }
 
 
     public function update(Request $request, $id)
     {
         $comment = PostComment::find($id);
-        if ($comment) {
-            $data = $request->all();
-            // return $data;
-            $status = $comment->fill($data)->update();
-            if ($status) {
-                session()->flash('success', 'Bình luận đã được cập nhật thành công');
-            } else {
-                session()->flash('error', 'Có lỗi xảy ra! Vui lòng thử lại!!');
-            }
-            return redirect()->route('comment.index');
-        } else {
-            session()->flash('error', 'Không tìm thấy bình luận');
+        if (!$comment) {
+            session()->flash('error', 'Bình luận không tìm thấy');
             return redirect()->back();
         }
+
+        $this->validate($request, [
+            'comment' => 'required|string'
+        ]);
+
+        $data = $request->all();
+        $status = $comment->fill($data)->update();
+        if ($status) {
+            session()->flash('success', 'Bình luận đã được cập nhật thành công');
+        } else {
+            session()->flash('error', 'Có lỗi xảy ra! Vui lòng thử lại!!');
+        }
+        return redirect()->route('comment.index');
     }
 
     public function destroy($id)
     {
         $comment = PostComment::find($id);
-        if ($comment) {
-            $status = $comment->delete();
-            if ($status) {
-                session()->flash('success', 'Đã xóa bình luận thành công');
-            } else {
-                session()->flash('error', 'Đã xảy ra lỗi, vui lòng thử lại');
-            }
-            return back();
-        } else {
-            session()->flash('error', 'Không tìm thấy bình luận');
+        if (!$comment) {
+            session()->flash('error', 'Bình luận không tìm thấy');
             return redirect()->back();
         }
+
+        $status = $comment->delete();
+        if ($status) {
+            session()->flash('success', 'Đã xóa bình luận thành công');
+        } else {
+            session()->flash('error', 'Đã xảy ra lỗi, vui lòng thử lại');
+        }
+        return back();
     }
 }

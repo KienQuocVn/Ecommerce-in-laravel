@@ -93,30 +93,69 @@ class CartController extends Controller
 
     public function singleAddToCart(Request $request)
     {
-        $request->validate([
-            'slug'      =>  'required|exists:products,slug',
-            'quant'      =>  'required',
-            'size'      =>  'required|string',
-        ]);
-        // dd($request->quant[1]);
+        // Support both product_id (AJAX) and slug (form)
+        $product = null;
 
+        // If product_id is provided (from AJAX)
+        if ($request->has('product_id')) {
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity'   => 'required|integer|min:1',
+                'size'       => 'required|string',
+            ]);
+            $product = Product::find($request->product_id);
+        }
+        // If slug is provided (from traditional form)
+        elseif ($request->has('slug')) {
+            $request->validate([
+                'slug'      => 'required|exists:products,slug',
+                'quant'     => 'required',
+                'size'      => 'required|string',
+            ]);
+            $product = Product::where('slug', $request->slug)->first();
+        } else {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Vui lòng cung cấp product_id hoặc slug'], 400);
+            }
+            return back()->with('error', 'Sản phẩm không hợp lệ');
+        }
 
-        $product = Product::where('slug', $request->slug)->first();
+        if (!$product) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại'], 404);
+            }
+            return back()->with('error', 'Sản phẩm không tồn tại');
+        }
+
+        // Get quantity from either source
+        $quantity = $request->has('product_id')
+            ? (int)$request->quantity
+            : (int)$request->quant[1];
 
         // Validate size
         $availableSizes = $product->size ? explode(',', $product->size) : [];
         $availableSizes = array_map('trim', $availableSizes);
 
         if (!in_array($request->size, $availableSizes)) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Size không hợp lệ. Vui lòng chọn size phù hợp.'], 400);
+            }
             return back()->with('error', 'Size không hợp lệ. Vui lòng chọn size phù hợp.');
         }
 
-        if ($product->stock < $request->quant[1]) {
+        // Check stock
+        if ($product->stock < $quantity) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Hết hàng, Bạn có thể thêm sản phẩm khác.'], 400);
+            }
             return back()->with('error', 'Hết hàng, Bạn có thể thêm sản phẩm khác.');
         }
-        if (($request->quant[1] < 1) || empty($product)) {
-            session()->flash('error', 'Sản phẩm không hợp lệ');
-            return back();
+
+        if ($quantity < 1 || !$product) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Sản phẩm không hợp lệ'], 400);
+            }
+            return back()->with('error', 'Sản phẩm không hợp lệ');
         }
 
         // Check if same product with same size already in cart
@@ -126,31 +165,50 @@ class CartController extends Controller
             ->where('size', $request->size)
             ->first();
 
-        // return $already_cart;
-
         if ($already_cart) {
-            $already_cart->quantity = $already_cart->quantity + $request->quant[1];
-            // $already_cart->price = ($product->price * $request->quant[1]) + $already_cart->price ;
-            $already_cart->amount = ($product->price * $request->quant[1]) + $already_cart->amount;
+            $already_cart->quantity = $already_cart->quantity + $quantity;
+            $already_cart->amount = ($product->price * $quantity) + $already_cart->amount;
 
-            if ($already_cart->product->stock < $already_cart->quantity || $already_cart->product->stock <= 0) return back()->with('error', 'Không đủ hàng!');
+            if ($already_cart->product->stock < $already_cart->quantity || $already_cart->product->stock <= 0) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Không đủ hàng!'], 400);
+                }
+                return back()->with('error', 'Không đủ hàng!');
+            }
 
             $already_cart->save();
         } else {
-
             $cart = new Cart;
             $cart->user_id = auth()->user()->id;
             $cart->product_id = $product->id;
             $cart->size = $request->size;
             $cart->price = ($product->price - ($product->price * $product->discount) / 100);
-            $cart->quantity = $request->quant[1];
-            $cart->amount = ($product->price * $request->quant[1]);
-            if ($cart->product->stock < $cart->quantity || $cart->product->stock <= 0) return back()->with('error', 'Không đủ hàng!');
-            // return $cart;
+            $cart->quantity = $quantity;
+            $cart->amount = ($product->price * $quantity);
+
+            if ($cart->product->stock < $cart->quantity || $cart->product->stock <= 0) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Không đủ hàng!'], 400);
+                }
+                return back()->with('error', 'Không đủ hàng!');
+            }
+
             $cart->save();
         }
-        session()->flash('success', 'Sản phẩm đã được thêm vào giỏ hàng thành công.');
-        return back();
+
+        // Delete from wishlist after adding to cart
+        Wishlist::where('user_id', auth()->user()->id)
+            ->where('product_id', $product->id)
+            ->where('cart_id', null)
+            ->delete();
+
+        $message = 'Sản phẩm đã được thêm vào giỏ hàng thành công.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => $message], 200);
+        }
+
+        return back()->with('success', $message);
     }
 
     public function cartDelete(Request $request)

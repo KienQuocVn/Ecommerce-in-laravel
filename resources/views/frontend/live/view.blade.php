@@ -290,6 +290,181 @@
     .products-sidebar::-webkit-scrollbar-thumb:hover {
         background: #ee5a6f;
     }
+
+    /* Quick Add to Cart Modal */
+    .quick-add-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        animation: fadeIn 0.3s ease;
+        margin-top: -120px;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .quick-add-content {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 650px;
+        box-shadow: 0 10px 50px rgba(255, 107, 107, 0.3);
+        animation: slideDown 0.3s ease;
+        color: white;
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .quick-add-close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .quick-add-close:hover {
+        color: #ff6b6b;
+    }
+
+    .quick-add-content h3 {
+        margin-top: 0;
+        color: #ff6b6b;
+        font-size: 22px;
+    }
+
+    .quick-add-content img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        padding: 10px 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 107, 107, 0.3);
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group select option {
+        background: #2a2a2a;
+        color: white;
+    }
+
+    .price-info {
+        background: rgba(255, 107, 107, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ff6b6b;
+    }
+
+    .price-info p {
+        margin: 8px 0;
+        font-size: 14px;
+    }
+
+    .price-info .total {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff6b6b;
+        margin-top: 10px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-add-cart {
+        flex: 1;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-add-cart:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+    }
+
+    .btn-add-cart:active {
+        transform: scale(0.98);
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
 </style>
 @endpush
 
@@ -342,16 +517,19 @@
             </h4>
             <div class="products-list">
                 @forelse($products as $product)
-                <div class="product-item" onclick="selectProduct('{{ $product->slug }}')" data-product-slug="{{ $product->slug }}">
+                <div class="product-item" data-product="{{ json_encode(['id' => $product->id, 'slug' => $product->slug, 'title' => $product->title, 'photo' => Helper::getImageUrl($product->photo), 'price' => $product->price, 'discount' => $product->discount, 'size' => $product->size ?? '']) }}" onclick="openQuickAddModalFromData(this)">
                     <div style="display: flex; gap: 15px;">
                         <img src="{{ Helper::getImageUrl($product->photo) }}" alt="{{ $product->title }}">
                         <div style="flex: 1;">
                             <h5>{{ $product->title }}</h5>
                             <p class="price">
-                                {{ number_format($product->price, 0, ',', '.') }} đ
+                                @php
+                                $after_discount = $product->price - (($product->price * $product->discount) / 100);
+                                @endphp
+                                {{ number_format($after_discount, 0, ',', '.') }} đ
                                 @if($product->discount)
                                 <span class="old-price">
-                                    {{ number_format($product->price + ($product->price * $product->discount / 100), 0, ',', '.') }} đ
+                                    {{ number_format($product->price, 0, ',', '.') }} đ
                                 </span>
                                 <span style="color: #4caf50; font-size: 12px; margin-left: 5px;">
                                     (-{{ $product->discount }}%)
@@ -377,6 +555,55 @@
             <i class="fas fa-shopping-cart"></i>
             <span>Mua Ngay</span>
         </button>
+    </div>
+
+    <!-- Quick Add to Cart Modal -->
+    <div id="quickAddModal" class="quick-add-modal">
+        <div class="quick-add-content">
+            <span class="quick-add-close" onclick="closeQuickAddModal()">&times;</span>
+            <h3 id="modalProductTitle">Thêm vào giỏ hàng</h3>
+            <img id="modalProductImage" src="" alt="Product">
+
+            <div class="price-info">
+                <p>Giá gốc: <span id="modalOriginalPrice">0</span> đ</p>
+                <p>Giảm giá: <span id="modalProductDiscount">0</span>%</p>
+                <p>Giá sau giảm: <span id="modalProductPrice">0</span> đ</p>
+                <div class="total">Tổng: <span id="modalTotalPrice">0</span> đ</div>
+            </div>
+
+            <form id="quickAddForm" onsubmit="addToCartFromLive(event)">
+                @csrf
+                <input type="hidden" id="productId" name="product_id">
+
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <!-- Size Column -->
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #fff;">Kích cỡ (Size) <span style="color: #ff6b6b;">*</span></label>
+                        <div class="size-selector" id="sizeSelector" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <!-- Sizes will be populated by JavaScript -->
+                        </div>
+                        <input type="hidden" id="modalSize" name="size" required>
+                    </div>
+
+                    <!-- Quantity Column -->
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #fff;">Số lượng <span style="color: #ff6b6b;">*</span></label>
+                        <div class="input-group" style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn" style="background: #ff6b6b; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; flex-shrink: 0;" onclick="decreaseQuantity()">−</button>
+                            <input type="number" id="modalQuantity" name="quantity" value="1" min="1" max="100" onchange="updateTotalPrice()" oninput="updateTotalPrice()" style="width: 60px; text-align: center; padding: 10px 15px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 107, 107, 0.3); border-radius: 8px; color: white; font-size: 14px;">
+                            <button type="button" class="btn" style="background: #ff6b6b; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; flex-shrink: 0;" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-add-cart">
+                        <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="closeQuickAddModal()">Hủy</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -553,6 +780,213 @@
             item.style.border = '2px solid transparent';
         });
         event.currentTarget.style.border = '2px solid #ff6b6b';
+    }
+
+    // Quick Add Modal Functions
+    let currentProduct = {
+        id: null,
+        price: 0,
+        discount: 0,
+        sizes: []
+    };
+
+    function openQuickAddModalFromData(element) {
+        try {
+            const productData = JSON.parse(element.dataset.product);
+            openQuickAddModal(
+                productData.id,
+                productData.slug,
+                productData.title,
+                productData.photo,
+                productData.price,
+                productData.discount,
+                productData.size
+            );
+        } catch (e) {
+            console.error('Error parsing product data:', e);
+            alert('Có lỗi khi tải thông tin sản phẩm');
+        }
+    }
+
+    function openQuickAddModal(productId, slug, title, image, price, discount, sizeString) {
+        // Store product data
+        currentProduct.id = productId;
+        currentProduct.price = price;
+        currentProduct.discount = discount;
+        currentProduct.sizes = sizeString ? sizeString.split(',').map(s => s.trim()) : [];
+
+        // Update modal
+        document.getElementById('modalProductTitle').textContent = title;
+        document.getElementById('modalProductImage').src = image;
+        document.getElementById('modalOriginalPrice').textContent = new Intl.NumberFormat('vi-VN').format(price);
+        document.getElementById('modalProductDiscount').textContent = discount;
+        document.getElementById('productId').value = productId;
+        document.getElementById('modalQuantity').value = 1;
+
+        // Populate sizes as radio buttons
+        const sizeSelector = document.getElementById('sizeSelector');
+        sizeSelector.innerHTML = '';
+
+        if (currentProduct.sizes.length > 0) {
+            currentProduct.sizes.forEach(size => {
+                const label = document.createElement('label');
+                label.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 15px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; border: 2px solid transparent; cursor: pointer; transition: all 0.3s;';
+                label.innerHTML = `
+                    <input type="radio" name="sizeOption" value="${size}" onclick="selectSize('${size}')" style="cursor: pointer;">
+                    <span>${size}</span>
+                `;
+                label.onmouseenter = () => label.style.borderColor = '#ff6b6b';
+                label.onmouseleave = () => {
+                    if (document.querySelector('input[name="sizeOption"]:checked')?.value !== size) {
+                        label.style.borderColor = 'transparent';
+                    }
+                };
+                sizeSelector.appendChild(label);
+            });
+        } else {
+            const label = document.createElement('label');
+            label.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 15px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; border: 2px solid #ff6b6b; cursor: pointer;';
+            label.innerHTML = `
+                <input type="radio" name="sizeOption" value="free" onclick="selectSize('free')" checked style="cursor: pointer;">
+                <span>One Size</span>
+            `;
+            sizeSelector.appendChild(label);
+            document.getElementById('modalSize').value = 'free';
+        }
+
+        // Calculate and show total
+        updateTotalPrice();
+
+        // Show modal
+        document.getElementById('quickAddModal').style.display = 'block';
+    }
+
+    function selectSize(size) {
+        document.getElementById('modalSize').value = size;
+        // Update border color for selected size
+        document.querySelectorAll('#sizeSelector label').forEach(label => {
+            if (label.querySelector('input').value === size) {
+                label.style.borderColor = '#ff6b6b';
+            } else {
+                label.style.borderColor = 'transparent';
+            }
+        });
+    }
+
+    function closeQuickAddModal() {
+        document.getElementById('quickAddModal').style.display = 'none';
+    }
+
+    function increaseQuantity() {
+        const input = document.getElementById('modalQuantity');
+        input.value = Math.min(parseInt(input.value || 1) + 1, parseInt(input.max));
+        updateTotalPrice();
+    }
+
+    function decreaseQuantity() {
+        const input = document.getElementById('modalQuantity');
+        input.value = Math.max(parseInt(input.value || 1) - 1, parseInt(input.min));
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        const quantity = parseInt(document.getElementById('modalQuantity').value) || 1;
+        const price = currentProduct.price;
+        const discount = currentProduct.discount;
+
+        const discountedPrice = price - (price * discount / 100);
+        const total = discountedPrice * quantity;
+
+        document.getElementById('modalProductPrice').textContent = new Intl.NumberFormat('vi-VN').format(discountedPrice);
+        document.getElementById('modalTotalPrice').textContent = new Intl.NumberFormat('vi-VN').format(total);
+    }
+
+    function incrementCartCount(delta) {
+        const change = parseInt(delta, 10);
+        if (isNaN(change) || change === 0) {
+            return;
+        }
+        document.querySelectorAll('.cart-count').forEach(el => {
+            const current = parseInt(el.textContent.trim(), 10) || 0;
+            const updated = Math.max(current + change, 0);
+            el.textContent = updated;
+        });
+    }
+
+    async function addToCartFromLive(event) {
+        event.preventDefault();
+
+        const productId = document.getElementById('productId').value;
+        const size = document.getElementById('modalSize').value;
+        const quantity = parseInt(document.getElementById('modalQuantity').value, 10) || 1;
+
+        if (!size) {
+            alert('Vui lòng chọn kích cỡ');
+            return;
+        }
+
+        try {
+            const response = await fetch('{{ route("single-add-to-cart") }}', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity,
+                    size: size
+                })
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+
+            const contentType = response.headers.get('content-type') || '';
+            const isJson = contentType.includes('application/json');
+            const data = isJson ? await response.json() : null;
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('Vui lòng đăng nhập để tiếp tục mua hàng.');
+                    window.location.href = '{{ route("login.form") }}';
+                    return;
+                }
+
+                if (response.status === 419) {
+                    alert('Phiên của bạn đã hết hạn. Vui lòng tải lại trang.');
+                    window.location.reload();
+                    return;
+                }
+
+                const message = data?.message || 'Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.';
+                throw new Error(message);
+            }
+
+            if (!data?.success) {
+                throw new Error(data?.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+            }
+
+            alert(data.message || 'Sản phẩm đã được thêm vào giỏ hàng!');
+            incrementCartCount(quantity);
+            closeQuickAddModal();
+        } catch (err) {
+            console.error('Error:', err);
+            alert('Có lỗi khi thêm vào giỏ hàng: ' + err.message);
+        }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('quickAddModal');
+        if (event.target === modal) {
+            closeQuickAddModal();
+        }
     }
 
     // Check live status periodically

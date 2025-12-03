@@ -226,18 +226,31 @@ class OrderController extends Controller
     public function destroy($id)
     {
         $order = Order::find($id);
-        if ($order) {
-            $status = $order->delete();
-            if ($status) {
-                session()->flash('success', 'Đơn hàng đã xóa thành công');
-            } else {
-                session()->flash('error', 'Không thể xóa đơn hàng');
-            }
-            return redirect()->route('order.index');
-        } else {
-            session()->flash('error', 'Không tìm thấy đơn hàng');
+        if (!$order) {
+            session()->flash('error', 'Đơn hàng không tìm thấy');
             return redirect()->back();
         }
+
+        // Chỉ cho phép xóa các đơn hàng chưa xử lý hoặc bị hủy
+        if (!in_array($order->status, ['new', 'cancel'])) {
+            session()->flash('error', 'Chỉ có thể xóa các đơn hàng ở trạng thái "mới" hoặc "bị hủy"');
+            return redirect()->route('order.index');
+        }
+
+        $cartCount = Cart::where('order_id', $id)->count();
+
+        // Xóa các carts liên quan
+        if ($cartCount > 0) {
+            Cart::where('order_id', $id)->delete();
+        }
+
+        $status = $order->delete();
+        if ($status) {
+            session()->flash('success', 'Đơn hàng đã xóa thành công');
+        } else {
+            session()->flash('error', 'Không thể xóa đơn hàng');
+        }
+        return redirect()->route('order.index');
     }
 
     public function orderTrack(Request $request)
