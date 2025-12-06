@@ -122,9 +122,21 @@ class Helper
                 $user_id = auth()->user()->id;
             }
 
-            return Cart::where('user_id', $user_id)
+            // Tính tổng giá với giảm giá từ database
+            $cartItems = Cart::with('product')
+                ->where('user_id', $user_id)
                 ->whereNull('order_id')
-                ->sum('amount');
+                ->get();
+
+            $total = 0;
+            foreach ($cartItems as $cart) {
+                $original_price = $cart->product['price'] ?? 0;
+                $discount = $cart->product['discount'] ?? 0;
+                $discounted_price = $original_price - ($original_price * $discount / 100);
+                $total += $discounted_price * $cart->quantity;
+            }
+
+            return $total;
         }
 
         return 0;
@@ -168,9 +180,21 @@ class Helper
                 $user_id = auth()->user()->id;
             }
 
-            return Wishlist::where('user_id', $user_id)
+            // Tính tổng giá với giảm giá từ database
+            $wishlistItems = Wishlist::with('product')
+                ->where('user_id', $user_id)
                 ->whereNull('cart_id')
-                ->sum('amount');
+                ->get();
+
+            $total = 0;
+            foreach ($wishlistItems as $wishlist) {
+                $original_price = $wishlist->product['price'] ?? 0;
+                $discount = $wishlist->product['discount'] ?? 0;
+                $discounted_price = $original_price - ($original_price * $discount / 100);
+                $total += $discounted_price;
+            }
+
+            return $total;
         }
 
         return 0;

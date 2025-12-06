@@ -119,23 +119,21 @@
                                         @if($product->stock<=0)
                                             <span class="out-of-stock">Sale out</span>
                                             @elseif($product->condition=='new')
-                                            <span class="new">New</span
-                                                @elseif($product->condition=='hot')
+                                            <span class="new">New</span>
+                                            @elseif($product->condition=='hot')
                                             <span class="hot">Hot</span>
                                             @else
                                             <span class="price-dec">{{$product->discount}}% Off</span>
                                             @endif
-
-
                                     </a>
                                     <div class="button-head">
                                         <div class="product-action">
                                             <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
                                             <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                         </div>
-                                        <!-- <div class="product-action-2">
-                                            <a title="Thêm vào giỏ hàng" href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
-                                        </div> -->
+                                        <div class="product-action-2">
+                                            <a title="Thêm vào giỏ hàng" href="{{route('add-to-cart',$product->slug)}}" >Thêm vào giỏ hàng</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="product-content">
@@ -227,9 +225,9 @@
                                     <a data-toggle="modal" data-target="#{{$product->id}}" title="Quick View" href="#"><i class=" ti-eye"></i><span>Mua sắm nhanh</span></a>
                                     <a title="Wishlist" href="{{route('add-to-wishlist',$product->slug)}}"><i class=" ti-heart "></i><span>Thêm vào danh sách yêu thích</span></a>
                                 </div>
-                                <!-- <div class="product-action-2">
+                                <div class="product-action-2">
                                     <a href="{{route('add-to-cart',$product->slug)}}">Thêm vào giỏ hàng</a>
-                                </div> -->
+                                </div>
                             </div>
                         </div>
                         <div class="product-content">
@@ -500,7 +498,9 @@
                                 </div>
                                 <div class="add-to-cart">
                                     <button type="submit" class="btn">Thêm vào giỏ hàng</button>
-                                    <a href="{{route('add-to-wishlist',$product->slug)}}" class="btn min"><i class="ti-heart"></i></a>
+                                    <a href="{{route('add-to-wishlist',$product->slug)}}" class="btn min">
+                                        <i class="ti-heart"></i>
+                                    </a>
                                 </div>
                             </form>
                             <div class="default-social">
