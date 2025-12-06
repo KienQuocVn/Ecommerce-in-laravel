@@ -94,8 +94,12 @@ Route::post('cart/order', [OrderController::class, 'store'])->name('cart.order')
 Route::get('order/pdf/{id}', [OrderController::class, 'pdf'])->name('order.pdf');
 Route::get('/income', [OrderController::class, 'incomeChart'])->name('product.order.income');
 // Route::get('/user/chart',[AdminController::class, 'userPieChart'])->name('user.piechart');
-Route::get('/product-grids', [FrontendController::class, 'productGrids'])->name('product-grids');
+// Route product-lists (chỉ sử dụng product-lists, không sử dụng product-grids)
 Route::get('/product-lists', [FrontendController::class, 'productLists'])->name('product-lists');
+// Redirect product-grids sang product-lists để giữ backward compatibility
+Route::get('/product-grids', function () {
+    return redirect()->route('product-lists');
+});
 Route::match(['get', 'post'], '/filter', [FrontendController::class, 'productFilter'])->name('shop.filter');
 // Order Track
 Route::get('/product/track', [OrderController::class, 'orderTrack'])->name('order.track');

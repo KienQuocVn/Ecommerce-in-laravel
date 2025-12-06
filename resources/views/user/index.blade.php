@@ -9,14 +9,14 @@
   </div>
 
   @php
-    $tiers = config('loyalty.tiers');
-    $currentTierKey = $tierMeta['key'] ?? 'bronze';
-    $tierKeys = array_keys($tiers);
-    $currentIndex = array_search($currentTierKey, $tierKeys);
-    $nextTierKey = ($currentIndex !== false && isset($tierKeys[$currentIndex + 1])) ? $tierKeys[$currentIndex + 1] : null;
-    $nextTier = $nextTierKey ? $tiers[$nextTierKey] + ['key' => $nextTierKey] : null;
-    $remainingOrders = $nextTier ? max(0, ($nextTier['min_orders'] ?? 0) - ($user->total_orders ?? 0)) : 0;
-    $remainingSpent = $nextTier ? max(0, ($nextTier['min_spent'] ?? 0) - ($user->total_spent ?? 0)) : 0;
+  $tiers = config('loyalty.tiers');
+  $currentTierKey = $tierMeta['key'] ?? 'bronze';
+  $tierKeys = array_keys($tiers);
+  $currentIndex = array_search($currentTierKey, $tierKeys);
+  $nextTierKey = ($currentIndex !== false && isset($tierKeys[$currentIndex + 1])) ? $tierKeys[$currentIndex + 1] : null;
+  $nextTier = $nextTierKey ? $tiers[$nextTierKey] + ['key' => $nextTierKey] : null;
+  $remainingOrders = $nextTier ? max(0, ($nextTier['min_orders'] ?? 0) - ($user->total_orders ?? 0)) : 0;
+  $remainingSpent = $nextTier ? max(0, ($nextTier['min_spent'] ?? 0) - ($user->total_spent ?? 0)) : 0;
   @endphp
 
   <div class="row">
@@ -29,9 +29,9 @@
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{$tierMeta['name'] ?? 'Bronze'}}</div>
               <p class="mt-2 mb-0 small text-muted">{{$tierMeta['benefits'] ?? 'Ưu đãi thành viên mới'}}</p>
               @if($nextTier)
-                <p class="small mb-0 mt-2">Cần thêm <strong>{{max(0,$remainingOrders)}}</strong> đơn hoặc <strong>{{number_format(max(0,$remainingSpent),0)}} VNĐ</strong> để lên hạng <strong>{{$nextTier['name']}}</strong>.</p>
+              <p class="small mb-0 mt-2">Cần thêm <strong>{{max(0,$remainingOrders)}}</strong> đơn hoặc <strong>{{number_format(max(0,$remainingSpent),0)}} VNĐ</strong> để lên hạng <strong>{{$nextTier['name']}}</strong>.</p>
               @else
-                <p class="small mb-0 mt-2 text-success"><i class="fas fa-crown mr-1"></i>Bạn đang ở hạng cao nhất!</p>
+              <p class="small mb-0 mt-2 text-success"><i class="fas fa-crown mr-1"></i>Bạn đang ở hạng cao nhất!</p>
               @endif
             </div>
             <div class="col-auto">
@@ -50,7 +50,7 @@
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{number_format($user->total_spent ?? 0,0)}} VNĐ</div>
               <p class="small text-muted mb-0 mt-2">Đã hoàn thành {{$user->total_orders ?? 0}} đơn hàng.</p>
               @if($user->last_order_at)
-                <p class="small text-muted mb-0">Đơn gần nhất: {{\Carbon\Carbon::parse($user->last_order_at)->format('d/m/Y')}}</p>
+              <p class="small text-muted mb-0">Đơn gần nhất: {{\Carbon\Carbon::parse($user->last_order_at)->format('d/m/Y')}}</p>
               @endif
             </div>
             <div class="col-auto">
@@ -87,48 +87,48 @@
         </div>
         <div class="card-body p-0">
           @if($activeOrders->isEmpty())
-            <p class="text-muted text-center my-4">Hiện tại bạn chưa có đơn hàng nào đang được xử lý.</p>
+          <p class="text-muted text-center my-4">Hiện tại bạn chưa có đơn hàng nào đang được xử lý.</p>
           @else
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="thead-light">
-                  <tr>
-                    <th>Mã</th>
-                    <th>Ngày</th>
-                    <th>Trạng thái</th>
-                    <th>Giao hàng</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($activeOrders as $order)
-                  @php
-                    $deliveryStatusMap = [
-                      'pending' => ['Chờ nhận', 'secondary'],
-                      'accepted' => ['Đã nhận', 'info'],
-                      'in_transit' => ['Đang giao', 'warning'],
-                      'completed' => ['Hoàn thành', 'success'],
-                      'cancelled' => ['Huỷ', 'danger'],
-                    ];
-                    $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
-                  @endphp
-                  <tr>
-                    <td>{{$order->order_number}}</td>
-                    <td>{{$order->created_at->format('d/m/Y')}}</td>
-                    <td><span class="badge badge-info text-uppercase">{{$order->status}}</span></td>
-                    <td>
-                      @if($deliveryMeta)
-                        <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
-                      @else
-                        <span class="badge badge-light text-dark">Đang điều phối</span>
-                      @endif
-                    </td>
-                    <td class="text-right"><a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-primary">Chi tiết</a></td>
-                  </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th>Mã</th>
+                  <th>Ngày</th>
+                  <th>Trạng thái</th>
+                  <th>Giao hàng</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($activeOrders as $order)
+                @php
+                $deliveryStatusMap = [
+                'pending' => ['Chờ nhận', 'secondary'],
+                'accepted' => ['Đã nhận', 'info'],
+                'in_transit' => ['Đang giao', 'warning'],
+                'completed' => ['Hoàn thành', 'success'],
+                'cancelled' => ['Huỷ', 'danger'],
+                ];
+                $deliveryMeta = $order->delivery ? ($deliveryStatusMap[$order->delivery->status] ?? [$order->delivery->status, 'secondary']) : null;
+                @endphp
+                <tr>
+                  <td>{{$order->order_number}}</td>
+                  <td>{{$order->created_at->format('d/m/Y')}}</td>
+                  <td><span class="badge badge-info text-uppercase">{{$order->status}}</span></td>
+                  <td>
+                    @if($deliveryMeta)
+                    <span class="badge badge-{{$deliveryMeta[1]}}">{{$deliveryMeta[0]}}</span>
+                    @else
+                    <span class="badge badge-light text-dark">Đang điều phối</span>
+                    @endif
+                  </td>
+                  <td class="text-right"><a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-primary">Chi tiết</a></td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
           @endif
         </div>
       </div>
@@ -142,22 +142,22 @@
         </div>
         <div class="card-body p-0">
           @if($recentCompletedOrders->isEmpty())
-            <p class="text-muted text-center my-4">Bạn chưa có đơn hàng nào được giao thành công.</p>
+          <p class="text-muted text-center my-4">Bạn chưa có đơn hàng nào được giao thành công.</p>
           @else
-            <div class="list-group list-group-flush">
-              @foreach($recentCompletedOrders as $order)
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 class="mb-1">{{$order->order_number}}</h6>
-                    <p class="mb-1 small text-muted">Tổng cộng: {{number_format($order->total_amount,0)}} VNĐ</p>
-                    <p class="mb-0 small text-muted">Giao ngày: {{$order->updated_at->format('d/m/Y H:i')}}</p>
-                  </div>
-                  <a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-success">Đánh giá</a>
+          <div class="list-group list-group-flush">
+            @foreach($recentCompletedOrders as $order)
+            <div class="list-group-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{$order->order_number}}</h6>
+                  <p class="mb-1 small text-muted">Tổng cộng: {{number_format($order->total_amount,0)}} VNĐ</p>
+                  <p class="mb-0 small text-muted">Giao ngày: {{$order->updated_at->format('d/m/Y H:i')}}</p>
                 </div>
+                <a href="{{route('user.order.show',$order->id)}}" class="btn btn-sm btn-outline-success">Đánh giá</a>
               </div>
-              @endforeach
             </div>
+            @endforeach
+          </div>
           @endif
         </div>
       </div>
@@ -167,31 +167,31 @@
   <div class="card shadow-sm mb-5">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
       <h6 class="m-0 font-weight-bold text-primary">Gợi ý dành riêng cho bạn</h6>
-      <a href="{{route('product-grids')}}" class="small">Khám phá thêm</a>
+      <a href="{{route('product-lists')}}" class="small">Khám phá thêm</a>
     </div>
     <div class="card-body">
       @if($recommendedProducts->isEmpty())
-        <p class="text-muted mb-0">Chúng tôi đang cập nhật gợi ý cho bạn. Hãy tiếp tục mua sắm để nhận các đề xuất phù hợp hơn.</p>
+      <p class="text-muted mb-0">Chúng tôi đang cập nhật gợi ý cho bạn. Hãy tiếp tục mua sắm để nhận các đề xuất phù hợp hơn.</p>
       @else
-        <div class="row">
-          @foreach($recommendedProducts as $product)
-          @php
-            $photos = $product->photo ? explode(',', $product->photo) : [];
-            $photo = count($photos) ? $photos[0] : asset('frontend/img/no-image.png');
-          @endphp
-          <div class="col-xl-2 col-md-3 col-sm-6 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-              <a href="{{route('product-detail',$product->slug)}}" target="_blank" class="text-decoration-none text-dark">
-                <img src="{{$photo}}" class="card-img-top" alt="{{$product->title}}">
-                <div class="card-body p-3">
-                  <h6 class="card-title mb-1">{{$product->title}}</h6>
-                  <p class="card-text text-primary font-weight-bold mb-0">{{number_format($product->price,0)}} VNĐ</p>
-                </div>
-              </a>
-            </div>
+      <div class="row">
+        @foreach($recommendedProducts as $product)
+        @php
+        $photos = $product->photo ? explode(',', $product->photo) : [];
+        $photo = count($photos) ? $photos[0] : asset('frontend/img/no-image.png');
+        @endphp
+        <div class="col-xl-2 col-md-3 col-sm-6 mb-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <a href="{{route('product-detail',$product->slug)}}" target="_blank" class="text-decoration-none text-dark">
+              <img src="{{$photo}}" class="card-img-top" alt="{{$product->title}}">
+              <div class="card-body p-3">
+                <h6 class="card-title mb-1">{{$product->title}}</h6>
+                <p class="card-text text-primary font-weight-bold mb-0">{{number_format($product->price,0)}} VNĐ</p>
+              </div>
+            </a>
           </div>
-          @endforeach
         </div>
+        @endforeach
+      </div>
       @endif
     </div>
   </div>

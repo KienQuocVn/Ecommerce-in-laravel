@@ -250,23 +250,8 @@
 									@endif
 								</div>
 
-								@php
-								$currentRoute = \Illuminate\Support\Facades\Route::currentRouteName();
-								$query = request()->query();
-								$activeView = $viewMode ?? ($currentRoute === 'product-grids' ? 'grid' : 'list');
-								$gridUrl = in_array($currentRoute, ['product-grids', 'product-lists'])
-								? route('product-grids', $query)
-								: request()->fullUrlWithQuery(array_merge($query, ['view' => 'grid']));
-								$listUrl = in_array($currentRoute, ['product-grids', 'product-lists'])
-								? route('product-lists', $query)
-								: request()->fullUrlWithQuery(array_merge($query, ['view' => 'list']));
-								@endphp
-								<ul class="view-mode">
-									<li class="{{ $activeView === 'grid' ? 'active' : '' }}"><a href="{{ $gridUrl }}"><i class="fa fa-th-large"></i></a></li>
-									<li class="{{ $activeView === 'list' ? 'active' : '' }}"><a href="{{ $activeView === 'list' ? 'javascript:void(0)' : $listUrl }}"><i class="fa fa-th-list"></i></a></li>
-								</ul>
+								<!--/ End Shop Top - View mode toggle disabled, only using list view -->
 							</div>
-							<!--/ End Shop Top -->
 
 							<!-- HIỂN THỊ THÔNG TIN BỘ LỌC -->
 							@if(!empty($_GET) && count(array_filter($_GET)) > 0)

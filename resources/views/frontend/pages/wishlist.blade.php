@@ -54,9 +54,7 @@
 						@else
 						<tr>
 							<td class="text-center">
-								Không có danh sách mong muốn nào có sẵn. <a href="{{route('product-grids')}}" style="color:blue;">Tiếp tục mua sắm</a>
-
-							</td>
+								Không có danh sách mong muốn nào có sẵn. <a href="{{route('product-lists')}}" style="color:blue;">Tiếp tục mua sắm</a> </td>
 						</tr>
 						@endif
 

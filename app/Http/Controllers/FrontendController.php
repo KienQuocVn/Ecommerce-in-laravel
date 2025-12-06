@@ -70,117 +70,10 @@ class FrontendController extends Controller
         return view('frontend.pages.product_detail')->with('product_detail', $product_detail);
     }
 
-    public function productGrids()
-    {
-        $products = Product::where('status', 'active');
-
-        // Lọc theo category
-        if (!empty($_GET['category'])) {
-            $slug = explode(',', $_GET['category']);
-            $cat_ids = Category::select('id')->whereIn('slug', $slug)->pluck('id')->toArray();
-            $products->whereIn('cat_id', $cat_ids);
-        }
-
-        // Lọc theo brand
-        if (!empty($_GET['brand'])) {
-            $slugs = explode(',', $_GET['brand']);
-            $brand_ids = Brand::select('id')->whereIn('slug', $slugs)->pluck('id')->toArray();
-            $products->whereIn('brand_id', $brand_ids);
-        }
-
-        // Lọc theo size
-        if (!empty($_GET['size'])) {
-            $sizes = explode(',', $_GET['size']);
-            $products->where(function ($query) use ($sizes) {
-                foreach ($sizes as $size) {
-                    $query->orWhere('size', 'like', "%{$size}%");
-                }
-            });
-        }
-
-        // Lọc theo condition
-        if (!empty($_GET['condition'])) {
-            $products->where('condition', $_GET['condition']);
-        }
-
-        // Lọc theo đánh giá
-        if (!empty($_GET['rating'])) {
-            $rating = (int)$_GET['rating'];
-            $product_ids = DB::table('product_reviews')
-                ->select('product_id')
-                ->groupBy('product_id')
-                ->havingRaw('AVG(rate) >= ?', [$rating])
-                ->pluck('product_id')
-                ->toArray();
-            $products->whereIn('id', $product_ids);
-        }
-
-        // Lọc theo giá
-        if (!empty($_GET['price'])) {
-            $price = explode('-', $_GET['price']);
-            $products->whereBetween('price', $price);
-        }
-
-        // Sắp xếp
-        if (!empty($_GET['sortBy'])) {
-            switch ($_GET['sortBy']) {
-                case 'title':
-                    $products->orderBy('title', 'ASC');
-                    break;
-                case 'title_desc':
-                    $products->orderBy('title', 'DESC');
-                    break;
-                case 'price':
-                case 'price_asc':
-                    $products->orderBy('price', 'ASC');
-                    break;
-                case 'price_desc':
-                    $products->orderBy('price', 'DESC');
-                    break;
-                case 'discount':
-                    $products->orderBy('discount', 'DESC');
-                    break;
-                case 'newest':
-                    $products->orderBy('id', 'DESC');
-                    break;
-                case 'popular':
-                    $products->withCount('carts')->orderBy('carts_count', 'DESC');
-                    break;
-                default:
-                    $products->orderBy('id', 'DESC');
-            }
-        } else {
-            $products->orderBy('id', 'DESC');
-        }
-
-        $recent_products = Product::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
-
-        // Phân trang - Mặc định 30 sản phẩm
-        $per_page = !empty($_GET['show']) ? (int)$_GET['show'] : 30;
-        $products = $products->paginate($per_page);
-
-        // Lấy danh sách sizes
-        $available_sizes = Product::where('status', 'active')
-            ->whereNotNull('size')
-            ->get()
-            ->pluck('size')
-            ->flatMap(function ($size) {
-                return explode(',', $size);
-            })
-            ->map(function ($size) {
-                return trim($size);
-            })
-            ->unique()
-            ->sort()
-            ->values();
-
-        return view('frontend.pages.product-grids')
-            ->with('products', $products)
-            ->with('recent_products', $recent_products)
-            ->with('available_sizes', $available_sizes)
-            ->with('viewMode', 'grid');
-    }
-
+    /**
+     * Hiển thị danh sách sản phẩm (List view)
+     * Sử dụng để hiển thị sản phẩm dưới dạng danh sách
+     */
     public function productLists()
     {
         $products = Product::where('status', 'active');
@@ -345,14 +238,8 @@ class FrontendController extends Controller
             $params['price'] = $data['price_range'];
         }
 
-        // Xác định trang hiện tại dựa trên URL referrer
-        $referer = $request->headers->get('referer');
-
-        if (strpos($referer, 'product-lists') !== false) {
-            return redirect()->route('product-lists', $params);
-        } else {
-            return redirect()->route('product-grids', $params);
-        }
+        // Luôn redirect sang product-lists (chỉ sử dụng product-lists)
+        return redirect()->route('product-lists', $params);
     }
 
     public function productSearch(Request $request)
@@ -393,7 +280,7 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        return view('frontend.pages.product-grids', [
+        return view('frontend.pages.product-lists', [
             'products' => $products,
             'recent_products' => $recent_products,
             'available_sizes' => $available_sizes
@@ -434,14 +321,12 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        $viewMode = $request->get('view');
-        $template = $viewMode === 'grid' ? 'frontend.pages.product-grids' : 'frontend.pages.product-lists';
-
-        return view($template, [
+        // Luôn sử dụng product-lists
+        return view('frontend.pages.product-lists', [
             'products' => $products,
             'recent_products' => $recent_products,
             'available_sizes' => $available_sizes,
-            'viewMode' => $viewMode,
+            'viewMode' => 'list',
         ]);
     }
 
@@ -479,14 +364,12 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        $viewMode = $request->get('view');
-        $template = $viewMode === 'grid' ? 'frontend.pages.product-grids' : 'frontend.pages.product-lists';
-
-        return view($template, [
+        // Luôn sử dụng product-lists
+        return view('frontend.pages.product-lists', [
             'products' => $products,
             'recent_products' => $recent_products,
             'available_sizes' => $available_sizes,
-            'viewMode' => $viewMode,
+            'viewMode' => 'list',
         ]);
     }
 
@@ -524,17 +407,11 @@ class FrontendController extends Controller
             ->sort()
             ->values();
 
-        if (request()->is('product-grids')) {
-            return view('frontend.pages.product-grids')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        } else {
-            return view('frontend.pages.product-lists')
-                ->with('products', $products)
-                ->with('recent_products', $recent_products)
-                ->with('available_sizes', $available_sizes);
-        }
+        // Luôn sử dụng product-lists
+        return view('frontend.pages.product-lists')
+            ->with('products', $products)
+            ->with('recent_products', $recent_products)
+            ->with('available_sizes', $available_sizes);
     }
 
 

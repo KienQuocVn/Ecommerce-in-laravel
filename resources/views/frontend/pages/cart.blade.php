@@ -85,9 +85,7 @@
 							@else
 							<tr>
 								<td class="text-center">
-									Không có sản phẩm nào trong giỏ hàng. <a href="{{route('product-grids')}}" style="color:blue;">Tiếp tục mua sắm</a>
-
-								</td>
+									Không có sản phẩm nào trong giỏ hàng. <a href="{{route('product-lists')}}" style="color:blue;">Tiếp tục mua sắm</a> </td>
 							</tr>
 							@endif
 
@@ -141,7 +139,7 @@
 								</ul>
 								<div class="button5">
 									<a href="{{route('checkout')}}" class="btn">Thanh toán</a>
-									<a href="{{route('product-grids')}}" class="btn">Tiếp tục mua sắm</a>
+									<a href="{{route('product-lists')}}" class="btn">Tiếp tục mua sắm</a>
 								</div>
 							</div>
 						</div>
