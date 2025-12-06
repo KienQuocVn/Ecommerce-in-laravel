@@ -10,7 +10,7 @@
   </div>
   <div class="card-header py-3">
     <h6 class="m-0 font-weight-bold text-primary float-left">Danh sách vận chuyển</h6>
-    <a href="{{route('shipping.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Shipping</a>
+    <a href="{{route('shipping.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Thêm Vận chuyển</a>
   </div>
   <div class="card-body">
     <div class="table-responsive">

@@ -68,6 +68,11 @@ class BannerController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
+        // Tạo slug mới nếu title thay đổi
+        if ($banner->title !== $request->title) {
+            $validatedData['slug'] = $this->generateUniqueSlug($request->title);
+        }
+
         $status = $banner->update($validatedData);
 
         $message = $status

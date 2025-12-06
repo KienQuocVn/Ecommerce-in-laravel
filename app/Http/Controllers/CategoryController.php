@@ -106,6 +106,11 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
+        // Tạo slug mới nếu title thay đổi
+        if ($category->title !== $request->title) {
+            $validatedData['slug'] = generateUniqueSlug($request->title, Category::class);
+        }
+
         $validatedData['is_parent'] = $request->input('is_parent', 0);
 
         $status = $category->update($validatedData);

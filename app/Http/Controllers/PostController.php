@@ -96,6 +96,17 @@ class PostController extends Controller
         ]);
 
         $data = $request->all();
+
+        // Tạo slug mới nếu title thay đổi
+        if ($post->title !== $request->title) {
+            $slug = Str::slug($request->title);
+            $count = Post::where('slug', $slug)->count();
+            if ($count > 0) {
+                $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
+            }
+            $data['slug'] = $slug;
+        }
+
         $tags = $request->input('tags');
         if ($tags) {
             $data['tags'] = implode(',', $tags);

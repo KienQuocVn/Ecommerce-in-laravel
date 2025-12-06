@@ -107,6 +107,11 @@ class ProductController extends Controller
             'discount' => 'nullable|numeric',
         ]);
 
+        // Tạo slug mới nếu title thay đổi
+        if ($product->title !== $request->title) {
+            $validatedData['slug'] = generateUniqueSlug($request->title, Product::class);
+        }
+
         $validatedData['is_featured'] = $request->input('is_featured', 0);
 
         if ($request->has('size')) {

@@ -97,6 +97,17 @@ class PostCategoryController extends Controller
             'status' => 'required|in:active,inactive'
         ]);
         $data = $request->all();
+
+        // Tạo slug mới nếu title thay đổi
+        if ($postCategory->title !== $request->title) {
+            $slug = Str::slug($request->title);
+            $count = PostCategory::where('slug', $slug)->count();
+            if ($count > 0) {
+                $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
+            }
+            $data['slug'] = $slug;
+        }
+
         $status = $postCategory->fill($data)->save();
         if ($status) {
             session()->flash('success', 'Danh mục bài viết đã được cập nhật thành công');

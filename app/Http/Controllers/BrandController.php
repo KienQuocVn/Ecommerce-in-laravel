@@ -76,6 +76,11 @@ class BrandController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
+        // Tạo slug mới nếu title thay đổi
+        if ($brand->title !== $request->title) {
+            $validatedData['slug'] = generateUniqueSlug($request->title, Brand::class);
+        }
+
         $status = $brand->update($validatedData);
 
         $message = $status

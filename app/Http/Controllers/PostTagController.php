@@ -61,6 +61,17 @@ class PostTagController extends Controller
             'status' => 'required|in:active,inactive'
         ]);
         $data = $request->all();
+
+        // Tạo slug mới nếu title thay đổi
+        if ($postTag->title !== $request->title) {
+            $slug = Str::slug($request->title);
+            $count = PostTag::where('slug', $slug)->count();
+            if ($count > 0) {
+                $slug = $slug . '-' . date('ymdis') . '-' . rand(0, 999);
+            }
+            $data['slug'] = $slug;
+        }
+
         $status = $postTag->fill($data)->save();
         if ($status) {
             session()->flash('success', 'Thẻ bài viết đã được cập nhật thành công');
