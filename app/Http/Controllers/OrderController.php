@@ -8,7 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Shipping;
 use App\Models\User;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Helper;
@@ -315,5 +315,13 @@ class OrderController extends Controller
             $data[$monthName] = (!empty($result[$i])) ? number_format((float)($result[$i]), 2, '.', '') : 0.0;
         }
         return $data;
+    }
+
+    public function pdf($id)
+    {
+        $order = Order::with(['cart_info', 'shipping', 'appliedCoupon'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('backend.order.pdf', compact('order'));
+        return $pdf->download('order-' . $order->order_number . '.pdf');
     }
 }

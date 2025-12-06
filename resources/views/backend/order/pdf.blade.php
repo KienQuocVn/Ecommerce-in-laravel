@@ -1,74 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+  <meta charset="UTF-8">
   <title>Order @if($order)- {{$order->order_number}} @endif</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
+
 <body>
 
-@if($order)
-<style type="text/css">
-  .invoice-header {
-    background: #f7f7f7;
-    padding: 10px 20px 10px 20px;
-    border-bottom: 1px solid gray;
-  }
-  .site-logo {
-    margin-top: 20px;
-  }
-  .invoice-right-top h3 {
-    padding-right: 20px;
-    margin-top: 20px;
-    color: green;
-    font-size: 30px!important;
-    font-family: serif;
-  }
-  .invoice-left-top {
-    border-left: 4px solid green;
-    padding-left: 20px;
-    padding-top: 20px;
-  }
-  .invoice-left-top p {
-    margin: 0;
-    line-height: 20px;
-    font-size: 16px;
-    margin-bottom: 3px;
-  }
-  thead {
-    background: green;
-    color: #FFF;
-  }
-  .authority h5 {
-    margin-top: -10px;
-    color: green;
-  }
-  .thanks h4 {
-    color: green;
-    font-size: 25px;
-    font-weight: normal;
-    font-family: serif;
-    margin-top: 20px;
-  }
-  .site-address p {
-    line-height: 6px;
-    font-weight: 300;
-  }
-  .table tfoot .empty {
-    border: none;
-  }
-  .table-bordered {
-    border: none;
-  }
-  .table-header {
-    padding: .75rem 1.25rem;
-    margin-bottom: 0;
-    background-color: rgba(0,0,0,.03);
-    border-bottom: 1px solid rgba(0,0,0,.125);
-  }
-  .table td, .table th {
-    padding: .30rem;
-  }
-</style>
+  @if($order)
+  <style type="text/css">
+    * {
+      font-family: sans-serif;
+    }
+
+    body,
+    html {
+      font-family: sans-serif;
+      color: #333;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: sans-serif;
+    }
+
+    table,
+    td,
+    th,
+    p,
+    span,
+    div {
+      font-family: sans-serif;
+    }
+
+    .invoice-header {
+      background: #f7f7f7;
+      padding: 10px 20px 10px 20px;
+      border-bottom: 1px solid gray;
+    }
+
+    .site-logo {
+      margin-top: 20px;
+    }
+
+    .invoice-right-top h3 {
+      padding-right: 20px;
+      margin-top: 20px;
+      color: green;
+      font-size: 30px !important;
+      font-family: serif;
+    }
+
+    .invoice-left-top {
+      border-left: 4px solid green;
+      padding-left: 20px;
+      padding-top: 20px;
+    }
+
+    .invoice-left-top p {
+      margin: 0;
+      line-height: 20px;
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+
+    thead {
+      background: green;
+      color: #FFF;
+    }
+
+    .authority h5 {
+      margin-top: -10px;
+      color: green;
+    }
+
+    .thanks h4 {
+      color: green;
+      font-size: 25px;
+      font-weight: normal;
+      font-family: serif;
+      margin-top: 20px;
+    }
+
+    .site-address p {
+      line-height: 6px;
+      font-weight: 300;
+    }
+
+    .table tfoot .empty {
+      border: none;
+    }
+
+    .table-bordered {
+      border: none;
+    }
+
+    .table-header {
+      padding: .75rem 1.25rem;
+      margin-bottom: 0;
+      background-color: rgba(0, 0, 0, .03);
+      border-bottom: 1px solid rgba(0, 0, 0, .125);
+    }
+
+    .table td,
+    .table th {
+      padding: .30rem;
+    }
+  </style>
   <div class="invoice-header">
     <div class="float-left site-logo">
       <img src="{{asset('backend/img/logo.png')}}" alt="">
@@ -84,8 +128,8 @@
   <div class="invoice-description">
     <div class="invoice-left-top float-left">
       <h6>Hóa đơn cho</h6>
-       <h3>{{$order->first_name}} {{$order->last_name}}</h3>
-       <div class="address">
+      <h3>{{$order->first_name}} {{$order->last_name}}</h3>
+      <div class="address">
         <p>
           <strong>Quốc gia: </strong>
           {{$order->country}}
@@ -94,9 +138,9 @@
           <strong>Địa chỉ: </strong>
           {{ $order->address1 }} OR {{ $order->address2}}
         </p>
-         <p><strong>Số điện thoại:</strong> {{ $order->phone }}</p>
-         <p><strong>Email:</strong> {{ $order->email }}</p>
-       </div>
+        <p><strong>Số điện thoại:</strong> {{ $order->phone }}</p>
+        <p><strong>Email:</strong> {{ $order->email }}</p>
+      </div>
     </div>
     <div class="invoice-right-top float-right" class="text-right">
       <h3>Hóa đơn #{{$order->order_number}}</h3>
@@ -118,20 +162,15 @@
         </tr>
       </thead>
       <tbody>
-      @foreach($order->cart_info as $cart)
-      @php 
-        $product=DB::table('products')->select('title')->where('id',$cart->product_id)->get();
-      @endphp
+        @foreach($order->cart_info as $cart)
         <tr>
           <td><span>
-              @foreach($product as $pro)
-                {{$pro->title}}
-              @endforeach
+              {{ $cart->product ? $cart->product->title : 'Sản phẩm không tồn tại' }}
             </span></td>
           <td>x{{$cart->quantity}}</td>
           <td><span>{{number_format($cart->price,0)}} VNĐ</span></td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
         <tr>
@@ -139,27 +178,24 @@
           <th scope="col" class="text-right">Tổng phụ:</th>
           <th scope="col"> <span>{{number_format($order->sub_total,0)}} VNĐ</span></th>
         </tr>
-      {{-- @if(!empty($order->coupon))
+        {{-- @if(!empty($order->coupon))
         <tr>
           <th scope="col" class="empty"></th>
           <th scope="col" class="text-right">Giảm giá:</th>
           <th scope="col"><span>-{{$order->coupon->discount(Helper::orderPrice($order->id, $order->user->id))}}{{Helper::base_currency()}}</span></th>
         </tr>
-      @endif --}}
+        @endif --}}
         <tr>
           <th scope="col" class="empty"></th>
-          @php
-            $shipping_charge=DB::table('shippings')->where('id',$order->shipping_id)->pluck('price');
-          @endphp
           <th scope="col" class="text-right ">Vận chuyển:</th>
-          <th><span>{{number_format($shipping_charge[0],0)}} VNĐ</span></th>
+          <th><span>{{number_format($order->shipping->price ?? 0, 0)}} VNĐ</span></th>
         </tr>
         <tr>
           <th scope="col" class="empty"></th>
           <th scope="col" class="text-right">Tổng cộng:</th>
           <th>
             <span>
-                {{number_format($order->total_amount,0)}} VNĐ
+              {{number_format($order->total_amount,0)}} VNĐ
             </span>
           </th>
         </tr>
@@ -174,8 +210,9 @@
     <h5>Chữ ký của cơ quan có thẩm quyền:</h5>
   </div>
   <div class="clearfix"></div>
-@else
+  @else
   <h5 class="text-danger">Không hợp lệ</h5>
-@endif
+  @endif
 </body>
+
 </html>
