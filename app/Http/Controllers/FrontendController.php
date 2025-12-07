@@ -433,12 +433,12 @@ class FrontendController extends Controller
         }
 
         if (!empty($_GET['show'])) {
-            $posts = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate($_GET['show']);
+            $posts = $post->where('status', 'active')->orderBy('id', 'asc')->paginate($_GET['show']);
         } else {
-            $posts = $post->where('status', 'active')->orderBy('id', 'DESC')->paginate(9);
+            $posts = $post->where('status', 'active')->orderBy('id', 'asc')->paginate(9);
         }
 
-        $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
+        $recent_posts = Post::where('status', 'active')->orderBy('id', 'asc')->limit(3)->get();
         return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
 
@@ -493,14 +493,18 @@ class FrontendController extends Controller
     public function blogByCategory(Request $request)
     {
         $category = PostCategory::getBlogByCategory($request->slug);
-        $posts = $category->post;
+        // Lấy posts theo category và phân trang
+        $posts = Post::where('post_cat_id', $category->id)
+            ->where('status', 'active')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
         $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
         return view('frontend.pages.blog', compact('posts', 'recent_posts'));
     }
 
     public function blogByTag($slug)
     {
-        // Lấy posts theo tag slug
+        // Lấy posts theo tag slug (getBlogByTag đã paginate rồi)
         $posts = Post::getBlogByTag($slug);
         $recent_posts = Post::where('status', 'active')->orderBy('id', 'DESC')->limit(3)->get();
 
