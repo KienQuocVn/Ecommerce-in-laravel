@@ -136,11 +136,22 @@ class CartController extends Controller
         $availableSizes = $product->size ? explode(',', $product->size) : [];
         $availableSizes = array_map('trim', $availableSizes);
 
-        if (!in_array($request->size, $availableSizes)) {
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Size không hợp lệ. Vui lòng chọn size phù hợp.'], 400);
+        // If product has no size, allow "One Size" as default
+        if (empty($availableSizes)) {
+            if ($request->size !== 'One Size') {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Sản phẩm này không có size. Vui lòng sử dụng size mặc định.'], 400);
+                }
+                return back()->with('error', 'Sản phẩm này không có size. Vui lòng sử dụng size mặc định.');
             }
-            return back()->with('error', 'Size không hợp lệ. Vui lòng chọn size phù hợp.');
+        } else {
+            // Product has sizes, validate the selected size
+            if (!in_array($request->size, $availableSizes)) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Size không hợp lệ. Vui lòng chọn size phù hợp.'], 400);
+                }
+                return back()->with('error', 'Size không hợp lệ. Vui lòng chọn size phù hợp.');
+            }
         }
 
         // Check stock
