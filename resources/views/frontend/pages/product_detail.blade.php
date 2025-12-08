@@ -123,7 +123,7 @@
 							<!--/ End Size -->
 							<!-- Product Buy -->
 							<div class="product-buy">
-								<form action="{{route('single-add-to-cart')}}" method="POST">
+								<form action="{{route('single-add-to-cart')}}" method="POST" class="add-to-cart-form">
 									@csrf
 									@if($product_detail->size)
 									<input type="hidden" name="size" id="selected_size" required>
@@ -229,7 +229,7 @@
 																</div>
 																<div class="col-lg-12 col-12">
 																	<div class="form-group">
-																		<label>Write a review</label>
+																		<label>Viết bài đánh giá</label>
 																		<textarea name="review" rows="6" placeholder=""></textarea>
 																	</div>
 																</div>
@@ -258,8 +258,7 @@
 																				$rate +=$rate
 																			}
 																		@endphp --}}
-														<h4>{{ceil($product_detail->getReview->avg('rate'))}} <span>(Overall)</span></h4>
-														<span>Dựa trên {{$product_detail->getReview->count()}} bình luận</span>
+														<span>Có {{$product_detail->getReview->count()}} bình luận</span>
 													</div>
 													@foreach($product_detail['getReview'] as $data)
 													<!-- Single Rating -->
@@ -561,8 +560,8 @@
 			$('#add-to-cart-btn').prop('disabled', false);
 		});
 
-		// Form validation before submit
-		$('form').on('submit', function(e) {
+		// Form validation before submit - ONLY for add-to-cart form
+		$('.add-to-cart-form').on('submit', function(e) {
 			if (productHasSize && !$('#selected_size').val()) {
 				e.preventDefault();
 				alert('Vui lòng chọn size sản phẩm!');

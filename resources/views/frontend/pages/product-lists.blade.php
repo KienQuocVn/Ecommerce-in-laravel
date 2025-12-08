@@ -422,17 +422,18 @@
 							@if($product->size)
 							<div class="size">
 								<h5 class="title">Size</h5>
-								<select>
+								<select name="size" class="product-size-select" data-product-id="{{$product->id}}" required>
+									<option value="">-- Chọn size --</option>
 									@php
 									$sizes=explode(',',$product->size);
 									@endphp
 									@foreach($sizes as $size)
-									<option>{{$size}}</option>
+									<option value="{{trim($size)}}">{{$size}}</option>
 									@endforeach
 								</select>
 							</div>
 							@endif
-							<form action="{{route('single-add-to-cart')}}" method="POST">
+							<form action="{{route('single-add-to-cart')}}" method="POST" class="add-to-cart-form">
 								@csrf
 								<div class="quantity">
 									<div class="input-group">
@@ -442,6 +443,11 @@
 											</button>
 										</div>
 										<input type="hidden" name="slug" value="{{$product->slug}}">
+										@if($product->size)
+										<input type="hidden" name="size" class="size-input" value="">
+										@else
+										<input type="hidden" name="size" value="One Size">
+										@endif
 										<input type="text" name="quant[1]" class="input-number" data-min="1" data-max="1000" value="1">
 										<div class="button plus">
 											<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
@@ -679,5 +685,34 @@
 		$('input[name="rating"]').prop('checked', false);
 		$('#filterForm').submit();
 	}
+
+	// Handle size selection for modal add-to-cart
+	$(document).on('change', '.product-size-select', function() {
+		const selectedSize = $(this).val();
+		const productId = $(this).data('product-id');
+		const $form = $(this).closest('.quickview-content').find('.add-to-cart-form');
+
+		if (selectedSize) {
+			$form.find('.size-input').val(selectedSize);
+		}
+	});
+
+	// Validate size before form submission
+	$(document).on('submit', '.add-to-cart-form', function(e) {
+		const $sizeInput = $(this).find('input[name="size"]');
+		const $sizeSelect = $(this).closest('.quickview-content').find('.product-size-select');
+
+		// If there's a size dropdown, validate that a size is selected
+		if ($sizeSelect.length > 0) {
+			const selectedSize = $sizeSelect.val();
+			if (!selectedSize) {
+				e.preventDefault();
+				alert('Vui lòng chọn size trước khi thêm vào giỏ hàng');
+				return false;
+			}
+			// Update hidden size input with selected value
+			$sizeInput.val(selectedSize);
+		}
+	});
 </script>
 @endpush
