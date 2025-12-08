@@ -4,7 +4,10 @@
 
 @section('main-content')
 <div class="card">
-  <h5 class="card-header">Order <a href="{{route('order.pdf',$order->id)}}" class=" btn btn-sm btn-primary shadow-sm float-right"><i class="fas fa-download fa-sm text-white-50"></i> Tạo PDF</a>
+  <h5 class="card-header">Order 
+    <!-- <a href="{{route('order.pdf',$order->id)}}" class=" btn btn-sm btn-primary shadow-sm float-right">
+      <i class="fas fa-download fa-sm text-white-50"></i> Tạo PDF
+    </a> -->
   </h5>
   <div class="card-body">
     @if($order)

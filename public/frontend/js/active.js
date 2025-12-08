@@ -19,14 +19,57 @@ window.onload = () => {
      $(document).on('ready', function() {	
 		
 		/*====================================
-			Mobile Menu
-		======================================*/ 	
+			Mobile Menu (off-canvas)
+		======================================*/
+		const body = $('body');
+		const overlayId = '#mobile-menu-overlay';
+
+		// Add overlay once
+		if (!$(overlayId).length) {
+			body.append('<div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>');
+		}
+
+		const openMobileMenu = () => {
+			body.addClass('mobile-menu-open');
+			$(overlayId).stop(true, true).fadeIn(150);
+		};
+
+		const closeMobileMenu = () => {
+			body.removeClass('mobile-menu-open');
+			$(overlayId).stop(true, true).fadeOut(150);
+		};
+
 		$('.menu').slicknav({
-			prependTo:".mobile-nav",
-			duration:300,
-			animateIn: 'fadeIn',
-			animateOut: 'fadeOut',
-			closeOnClick:true,
+			prependTo: ".mobile-nav",
+			label: "",
+			duration: 0, // we control animation with CSS transform
+			closeOnClick: true,
+			allowParentLinks: true,
+			init: function () {
+				const $nav = $('.slicknav_nav');
+
+				// Inject a close button at top of panel
+				if (!$nav.find('.mobile-menu-close').length) {
+					$nav.prepend('<li class="mobile-menu-close"><button type="button" aria-label="Đóng menu">&times;</button></li>');
+				}
+
+				// Ensure panel starts hidden
+				closeMobileMenu();
+			},
+			beforeOpen: openMobileMenu,
+			beforeClose: closeMobileMenu,
+		});
+
+		// Overlay click closes menu
+		body.on('click', overlayId, function (e) {
+			e.preventDefault();
+			$('.slicknav_btn').trigger('click');
+		});
+
+		// Close button inside panel
+		body.on('click', '.mobile-menu-close button', function (e) {
+			e.preventDefault();
+			$('.slicknav_btn').trigger('click');
 		});
 		
 		/*====================================

@@ -285,7 +285,11 @@
                                 <div class="col-lg-6 col-md-6 col-12 no-padding">
                                     <div class="content">
                                         <h4 class="title"><a href="#">{{$product->title}}</a></h4>
-                                        <p class="price with-discount">{{number_format($product->discount,0)}} VNĐ</p>
+                                        
+                                        @php
+                                        $after_discount=($product->price-($product->price*$product->discount)/100)
+                                        @endphp
+                                        <p class="price with-discount">{{number_format($after_discount,0)}} VNĐ</p>
                                     </div>
                                 </div>
                             </div>

@@ -220,6 +220,9 @@
 .quickview-content .size .title {
 	margin-top: 16px;
 }
+.midium-banner .single-banner {
+	height: 280px;
+}
 .midium-banner .single-banner .content {
 	padding: 35px;
 }
@@ -1309,6 +1312,7 @@
 }
 .midium-banner .single-banner{
 	margin-bottom:15px;
+	height: 250px;
 }
 .midium-banner .single-banner h3 {
 	font-size: 17px;
@@ -1805,10 +1809,17 @@
 		max-width: 100%;
 	}
 	.shop-home-list .single-list .list-image img,
-	.small-banner .single-banner img,
-	.midium-banner .single-banner img {
+	.small-banner .single-banner img {
 		width: 100%;
 		height: auto;
+	}
+	.midium-banner .single-banner {
+		height: 200px;
+	}
+	.midium-banner .single-banner img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 	.footer .copyright .left,
 	.footer .copyright .right {
@@ -1919,6 +1930,82 @@
     /* Mobile Nav Toggle (Slicknav) */
     .mobile-actions .mobile-nav {
         flex: 0 0 auto;
+    }
+    /* Slicknav toggle button */
+    .slicknav_menu {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 10000;
+    }
+    .slicknav_btn {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .slicknav_icon-bar {
+        height: 2px;
+    }
+    /* Off-canvas panel */
+    .slicknav_nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh !important;
+        background: #fff;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.15);
+        padding: 15px 18px;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 99999;
+        display: block !important;
+    }
+    .slicknav_nav ul {
+        margin: 0;
+    }
+    .slicknav_nav a {
+        padding: 10px 0;
+        font-size: 15px;
+    }
+    body.mobile-menu-open .slicknav_nav {
+        transform: translateX(0);
+    }
+    body.mobile-menu-open {
+        overflow: hidden;
+    }
+    /* Close button */
+    .mobile-menu-close {
+        text-align: right;
+        margin-bottom: 8px;
+        list-style: none;
+    }
+    .mobile-menu-close button {
+        background: none;
+        border: none;
+        font-size: 28px;
+        line-height: 1;
+        color: #333;
+        cursor: pointer;
+    }
+    .mobile-menu-close button:hover {
+        color: #F7941D;
+    }
+    /* Overlay */
+    .mobile-menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 9998;
+        display: none;
     }
     
     /* ===== MOBILE HEADER ROW 2 - SEARCH BAR ===== */
